@@ -94,7 +94,10 @@ head(x$osm_polygons)
 
 ```
 
-Map building age focusing on post-war buildings
+## Mapping attributes
+
+For instance: the building age focusing on post-war buildings.
+
 ```{r reproject-and-map-age}
 buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
 
