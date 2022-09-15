@@ -1,8 +1,20 @@
 ---
-title: "Geospatial Carpentry | Session 4"
+source: Rmd
+title: "Vector data from OpenStreetMap"
 author: "Clémentine Cottineau"
-date: "7/18/2022"
 output: html_document
+teaching: 10
+exercises: 2
+questions:
+- "How do I write a lesson using RMarkdown?"
+objectives:
+- "Explain how to use RMarkdown with the new lesson template."
+- "Demonstrate how to include pieces of code, figures, and challenges."
+keypoints:
+- "Edit the .Rmd files not the .md files"
+- "Run `make serve` to knit documents and preview lesson website locally"
+---
+
 ---
 
 ```{r setup, include=FALSE}

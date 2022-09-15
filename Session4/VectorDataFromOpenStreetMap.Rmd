@@ -1,0 +1,106 @@
+---
+source: Rmd
+title: "Vector data from OpenStreetMap"
+author: "Clémentine Cottineau"
+teaching: 30
+exercises: 15
+questions:
+- "How can I use vector data from Open Street Map?"
+objectives:
+- "Explain how OpenStreetMap (OSM) geodata works"
+- "Demonstrate how to import, select, and visualise OSM vector data"
+keypoints:
+- "Use the `osmextract` package"
+- "Select features and attributes among osm tags"
+- "Use ggplot to map OSM data"
+---
+
+
+
+```{r, include=FALSE}
+source("bin/chunk-options.R")
+knitr_fig_path("04-")
+```
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{r lib}
+library(dplyr)
+library(sf)
+library(ggplot2)
+# library(tibble)
+# library(rgdal)
+# library(proj4)
+library(remotes)
+remotes::install_github('ropensci/osmdata')
+library(osmdata)
+library(osmextract)
+# proj_db <- system.file("proj/proj.db", package = "sf")
+```
+
+# Import vector data from Open Street Map
+
+## What is Open Street Map?
+
+Open Street Map (OSM) is a collaborative project which aims at mapping the world and sharing geospatial data in an open way. Anyone can contribute, by mapping geographical objects their encounter, by adding topical information on existing map objects (their name, function, capacity, etc.), or by mapping buildings and roads from satellite imagery (cf. [HOT: Humanitarian OpenStreetMap Team](https://www.hotosm.org/)).
+
+This information is then validated by other users and eventually added to the common "map" or information system. This ensures that the information is accessible, open, verified, accurate and up-to-date.
+
+The result looks like this:
+![View of OSM web interface](fig/OSM1.png)
+The geospatial data underlying this interface is made of geometrical objects (i.e. points, lines, polygons) and their associated tags (#building #height, #road #secondary #90kph, etc.).
+
+## How to extract geospatial data from Open Street Map?
+
+### Bonding-box
+
+The first thing to do is to define the area within which you want to retrieve data, aka the *bounding box*. This can be defined easily using a place name and the function `getbb()` from the package `osmdata`. 
+
+> "This function uses the free Nominatim API provided by OpenStreetMap to find the bounding box (bb) associated with place names."
+
+```{r osm-bounding-box}
+bb <- getbb('Delft', format_out = 'sf_polygon')
+
+bb
+```
+
+- Why multiple polygons?
+
+Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.
+
+### Extracting features
+
+A [feature](https://wiki.openstreetmap.org/wiki/Map_features) in the OSM language is a category or tag of a geospatial object. Features are described by general keys (e.g. "building", "boundary", "landuse", "highway"), themselves decomposed into sub-categories (values) such as "farm", "hotel" or "house" for `buildings`, "motorway", "secondary" and "residential" for `highway`. This determines how they are represented on the map.
+
+
+```{r osm-feature}
+x <- opq(bbox = bb) %>% 
+   add_osm_feature(key = 'building') %>%
+    osmdata_sf ()
+```
+
+What is this x object made of? It is a table of all the buildings contained in the bounding box, which gives us their OSM id, their geometry and a range of attributes, such as their name, building material, building date, etc. The completion level of this table depends on user contributions and open resources (here for instance: BAG, different in other countries).
+
+```{r osm-feature-preview}
+head(x$osm_polygons)
+
+```
+
+Map building age focusing on post-war buildings
+```{r reproject-and-map-age}
+buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+
+buildings$build_date <- ifelse(buildings$start_date <1945, 1945,buildings$start_date)
+ ggplot(data = buildings) +
+   geom_sf(aes(fill = as.numeric(build_date), colour=as.numeric(build_date)))  +
+   scale_fill_viridis_c(option = "viridis")+
+   scale_colour_viridis_c(option = "viridis")
+```
