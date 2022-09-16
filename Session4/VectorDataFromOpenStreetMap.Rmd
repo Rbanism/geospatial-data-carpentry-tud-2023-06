@@ -36,14 +36,10 @@ knitr::opts_chunk$set(
 library(dplyr)
 library(sf)
 library(ggplot2)
-# library(tibble)
-# library(rgdal)
-# library(proj4)
 library(remotes)
 remotes::install_github('ropensci/osmdata')
 library(osmdata)
 library(osmextract)
-# proj_db <- system.file("proj/proj.db", package = "sf")
 ```
 
 # Import vector data from Open Street Map
@@ -98,12 +94,59 @@ head(x$osm_polygons)
 
 For instance: the building age focusing on post-war buildings.
 
-```{r reproject-and-map-age}
-buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centred on the Netherlands.
 
-buildings$build_date <- ifelse(buildings$start_date <1945, 1945,buildings$start_date)
+```{r reproject}
+buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+```
+
+Then we create a variable which a threshold at 1945. Every date prior to 1945 will be recoded 1945, so that buildings older than 1945 will be represented with the same shade.
+
+Then we use the `ggplot` function to visualise the buildings by age. The specific function to represent information as a map is `geom_sf()`. The rest works like other graphs and visualisation, with `aes()` for the aesthetics.
+
+```{r map-age}
+buildings$build_date <- as.numeric(ifelse(buildings$start_date <1900, 1900,buildings$start_date))
+
  ggplot(data = buildings) +
-   geom_sf(aes(fill = as.numeric(build_date), colour=as.numeric(build_date)))  +
+   geom_sf(aes(fill = build_date, colour=build_date))  +
+   scale_fill_viridis_c(option = "viridis")+
+   scale_colour_viridis_c(option = "viridis")
+```
+
+So this reveals the historical centre of Delft and the various extensions, the first ring in the 1920s, towards the South-West of the city (1970s-1990s), East of the city (2000s) and North-West (2010s).
+This centre-periphery and sectoral urban development is quite common. Now for a less typical example, can you reproduce this map for the city of Rotterdam. But instead of pre-XXth century building, we want to look at pre-war buildings. It will take some time to extract all buildings, so we will check the result after the coffee break.
+
+````
+> ## Challenge: Map building age in Rotterdam, with World War II as a threshold
+>
+> > ## Solution
+> >
+> > ```{r, echo=FALSE}`r ''`
+> > bb <- getbb('Rotterdam', format_out = 'sf_polygon')
+> > x <- opq(bbox = bb) %>% 
+> >    add_osm_feature(key = 'building') %>%
+> >     osmdata_sf ()
+> > buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+> > buildings$build_date <- as.numeric(ifelse(buildings$start_date <1945, 1945,buildings$start_date))
+> > ggplot(data = buildings) +
+> >    geom_sf(aes(fill = build_date, colour=build_date))  +
+> >    scale_fill_viridis_c(option = "viridis")+
+> >    scale_colour_viridis_c(option = "viridis")
+> > ```
+> {: .solution}
+{: .challenge}
+````
+
+
+```{r, echo=FALSE}
+bb <- getbb('Rotterdam', format_out = 'sf_polygon')
+x <- opq(bbox = bb) %>% 
+   add_osm_feature(key = 'building') %>%
+    osmdata_sf ()
+buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+buildings$build_date <- as.numeric(ifelse(buildings$start_date <1945, 1945,buildings$start_date))
+ggplot(data = buildings) +
+   geom_sf(aes(fill = build_date, colour=build_date))  +
    scale_fill_viridis_c(option = "viridis")+
    scale_colour_viridis_c(option = "viridis")
 ```
