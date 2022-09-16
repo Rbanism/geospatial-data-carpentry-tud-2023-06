@@ -19,7 +19,7 @@ keypoints:
 
 ```{r, include=FALSE}
 source("bin/chunk-options.R")
-knitr_fig_path("04-")
+knitr_fig_path("04a-")
 ```
 
 ---
@@ -90,15 +90,19 @@ head(x$osm_polygons)
 
 ```
 
-## Mapping attributes
+# Mapping attributes
 
 For instance: the building age focusing on post-war buildings.
+
+## Projections
 
 First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centred on the Netherlands.
 
 ```{r reproject}
 buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
 ```
+
+## Mapping
 
 Then we create a variable which a threshold at 1945. Every date prior to 1945 will be recoded 1945, so that buildings older than 1945 will be represented with the same shade.
 
@@ -137,16 +141,3 @@ This centre-periphery and sectoral urban development is quite common. Now for a 
 {: .challenge}
 ````
 
-
-```{r, echo=FALSE}
-bb <- getbb('Rotterdam', format_out = 'sf_polygon')
-x <- opq(bbox = bb) %>% 
-   add_osm_feature(key = 'building') %>%
-    osmdata_sf ()
-buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
-buildings$build_date <- as.numeric(ifelse(buildings$start_date <1945, 1945,buildings$start_date))
-ggplot(data = buildings) +
-   geom_sf(aes(fill = build_date, colour=build_date))  +
-   scale_fill_viridis_c(option = "viridis")+
-   scale_colour_viridis_c(option = "viridis")
-```
