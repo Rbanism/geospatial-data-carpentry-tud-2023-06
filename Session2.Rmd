@@ -1,7 +1,7 @@
 ---
 title: "Geospatial Carpentry | Session 2: Working with vector data"
 author: "Claudiu Forgaci"
-date: "9/19/2022"
+date: "2022-11-18"
 output: html_document
 ---
 
@@ -354,7 +354,7 @@ ggplot() +
   coord_sf()
 ```
 
-# Plot multiple shapefiles (40 + 20 minutes)
+# Plot multiple shapefiles (40 + 20 minutes - 15 minutes from plot costomisation)
 
 ```{r}
 ggplot() + 
@@ -445,6 +445,7 @@ ggplot() +
 
 ```{r}
 # we will come back to raster data on day 2
+# DROP THIS CHALLENGE
 ggplot() +
   geom_raster(data = CHM_HARV_df, aes(x = x, y = y, fill = layer)) +
   geom_sf(data = lines_HARV, color = "black") +
