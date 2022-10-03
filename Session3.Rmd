@@ -1,7 +1,7 @@
 ---
-title: "Session3"
+title: "Geospatial Carpentry | Session 3: Working with raster data"
 author: "Claudiu Forgaci"
-date: "2022-10-03"
+date: "2022-11-21"
 output: html_document
 ---
 
@@ -15,44 +15,46 @@ knitr::opts_chunk$set(
 )
 ```
 
-Let's import important libraries
 ```{r lib}
 # Install packages
-library(remotes)
+# library(remotes)
 # remotes::install_github('ropensci/osmdata')
 
 # Data manipulation
-library(tibble)
+# library(tibble)
 library(dplyr)
-library(reshape)
+# library(reshape)
 
 # Data visualisation
 library(ggplot2)
 
 # Working with spatial data
-library(sf)
-library(leaflet)
+# library(sf)
+# library(leaflet)
 library(raster)
 library(rgdal)
-library(proj4)
-library(scales)
+# library(proj4)
+# library(scales)
 
 # Working with OSM data
-library(osmdata)
-library(osmextract)
+# library(osmdata)
+# library(osmextract)
 ```
 
 # Intro to raster data (30 + 20 minutes)
-## Examining raster data
+## View Raster File Attirbutes
 ```{r}
 GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
+```
 
+```{r}
 HARV_dsmCrop_info <- capture.output(
   GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
 )
 ```
 
-## Open a raster in R
+## Open a Raster in R
+
 We are going to work with a Digital Surface Model (DSM) which is in the GeoTIFF format.
 ```{r}
 DSM_HARV <- 
@@ -72,6 +74,7 @@ summary(DSM_HARV, maxsamp = ncell(DSM_HARV))
 ```{r}
 DSM_HARV_df <- as.data.frame(DSM_HARV, xy = TRUE)
 ```
+
 ```{r}
 str(DSM_HARV_df)
 ```
@@ -86,16 +89,18 @@ ggplot() +
 ```{r}
 plot(DSM_HARV)
 ```
+
+## View Raster Coordinate Reference System (CRS) in R
+
 But what units are these?
 ```{r}
+# CRS have been explained on Day 1
 crs(DSM_HARV)
 ```
 
 <!-- Skip the explanation of CRS -->
 
-## Raster calculations
-
-### Calculate the Min and Max value
+## Calculate the Min and Max value
 ```{r}
 minValue(DSM_HARV)
 ```
@@ -106,6 +111,7 @@ maxValue(DSM_HARV)
 
 If Min and Max values haven't been calculated, you can set them with the `raster::setMinMax()` function.
 ```{r}
+# Maybe skip this
 DSM_HARV <- raster::setMinMax(DSM_HARV)
 ```
 
@@ -113,7 +119,7 @@ DSM_HARV <- raster::setMinMax(DSM_HARV)
 
 To see how many bands a raster dataset has, use the `raster::nlayers()` function.
 ```{r}
-raster::nlayers(DSM_HARV)
+nlayers(DSM_HARV)
 ```
 This dataset has only 1 band. We will discuss multi-band raster data in a later episode.
 
@@ -121,7 +127,7 @@ This dataset has only 1 band. We will discuss multi-band raster data in a later 
 
 In raster data, pixels with no value are represented with `NoDataValue`. That is usually the case with edge values where data is missing from the rectangular region of the raster. Use `raster::GDALinfo()` to check the metadata for missing data values.
 ```{r}
-
+GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
 ```
 
 
@@ -129,9 +135,8 @@ In raster data, pixels with no value are represented with `NoDataValue`. That is
 
 Bad values are usually miscalculations that result in values out of a predefined range.
 ```{r}
-
+# This code chunk is hidden in the lesson material
 ```
-
 
 ## Creating a histogram of raster values
 
@@ -147,48 +152,14 @@ ggplot() +
     geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop), bins = 40)
 ```
 
-## Challenge
+### Challenge
 
 ```{r}
 GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif")
-
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Plotting raster data (40 + 30 minutes)
+# Plotting raster data (40 + 30 minutes - 10 minutes about plot formatting - 15 minutes details = 45 minutes)
 
 ```{r}
 DSM_HARV_df <- DSM_HARV_df %>%
@@ -236,6 +207,8 @@ ggplot() +
   coord_quickmap()
 ```
 
+<!-- Remove the plot formatting part -->
+
 Customising colors:
 ```{r}
 terrain.colors(3)
@@ -281,6 +254,7 @@ ggplot() +
   labs(title = "Elevation Classes of the Harvard Forest Digital Surface Model (DSM)")
 ```
 
+<!-- Remove the plot formatting part -->
 ## Layering rasters
 ```{r}
 DSM_hill_HARV <- raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif")
@@ -387,7 +361,7 @@ ggplot() +
     coord_quickmap()
 ```
 
-# Reproject raster data (40 + 20 minutes)
+# Reproject raster data (40 + 20 minutes - 10 minutes instruction details - 20 minutes challenges = 30 minutes)
 
 What happens when maps don't line up? That is usually a sign that layers are in different coordinate reference systems (CRS).
 
@@ -431,6 +405,17 @@ geom_raster(data = DTM_hill_HARV_df,
     alpha = HARV_DTMhill_WGS84)) + 
     coord_quickmap()
 ```
+### Challenge
+
+```{r}
+crs(DTM_HARV)
+```
+
+```{r}
+crs(DTM_hill_HARV)
+```
+
+## Reproject rasters
 
 ```{r}
 DTM_hill_UTMZ18N_HARV <- projectRaster(DTM_hill_HARV,
@@ -452,6 +437,8 @@ extent(DTM_hill_UTMZ18N_HARV)
 ```{r}
 extent(DTM_hill_HARV)
 ```
+
+### Challenge
 
 ## Dealing with raster resolution
 
@@ -494,6 +481,9 @@ ggplot() +
 ```
 
 ### Challenge
+
+<!-- Skip this challenge -->
+
 ```{r}
 # import DSM
 DSM_SJER <- raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif")
@@ -525,8 +515,8 @@ ggplot() +
      coord_quickmap()
 ```
 
-# Raster calculations (40 + 20 minutes)
-
+# Raster calculations (40 + 20 minutes - 15 minutes raster math - 15 minutes challenges = 30 minutes)
+## Raster calculations in R
 ```{r}
 GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif")
 ```
@@ -551,7 +541,7 @@ GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
      coord_quickmap()
 ```
 
-## Raster math and Canopy Height Models
+## Raster math and Canopy Height Models (DROP THIS PART)
 
 ```{r}
 CHM_HARV <- DSM_HARV - DTM_HARV
@@ -659,9 +649,10 @@ ggplot(CHM_ov_SJER_df) +
     geom_histogram(aes(layer))
 ```
 
-# Work with multi-band rasters (40 + 20 minutes)
+# Work with multi-band rasters (40 + 20 minutes - 15 minutes details - 15 minutes challenges = 30 minutes)
+##Getting Started with Multi-Band Data in R
 
-The `raster()` frunction only reads in the first band, in this case the red band of an RGB raster
+The `raster()` function only reads in the first band, in this case the red band of an RGB raster
 ```{r}
 RGB_band1_HARV <- raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif")
 ```
@@ -810,8 +801,9 @@ methods(class=class(RGB_stack_HARV))
 methods(class=class(RGB_stack_HARV[1]))
 ```
 
----
-# Manipulate raster data (40 + 20 minutes)
+# ---
+
+# Manipulate raster data (40 + 20 minutes) INTEGRATE INTO THE LAST PART
 
 ## Crop a raster to a vector extent
 
@@ -956,7 +948,7 @@ ggplot(data = mean_tree_height_plots_HARV, aes(ID, layer)) +
   ylab("Tree Height (m)")
 ```
 
-# Raster time-series data (40 + 20 minutes)
+# Raster time-series data (40 + 20 minutes) DROP
 
 ```{r}
 NDVI_HARV_path <- "data/NEON-DS-Landsat-NDVI/HARV/2011/NDVI"
@@ -1080,7 +1072,7 @@ ggplot() +
   ggtitle("Julian day 293")
 ```
 
-# Create publication-ready graphics (40 + 20 minutes)
+# Create publication-ready graphics (40 + 20 minutes) DROP
 
 ```{r}
 ggplot() +
@@ -1185,7 +1177,7 @@ ggplot() +
   scale_fill_gradientn(name = "NDVI", colours = brown_green_colors(20))
 ```
 
-# Derive values from raster time series (40 + 20 minutes)
+# Derive values from raster time series (40 + 20 minutes) DROP
 
 ```{r}
 avg_NDVI_HARV <- cellStats(NDVI_HARV_stack, mean)
