@@ -64,6 +64,8 @@ Frequent use cases of cropping a raster file include reducing file size and crea
 
 ## Import the raster 
 
+Data available [here](https://ndownloader.figshare.com/articles/2009586/versions/10).
+
 ```{r}
 GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/CHM/HARV_chmCrop.tif")
 
