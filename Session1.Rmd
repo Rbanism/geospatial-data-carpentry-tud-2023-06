@@ -1,0 +1,338 @@
+---
+title: 'Geospatial Carpentry: Session 1: Intro to R'
+author: "Aleksandra Wilczynska"
+date: "2022-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+# Load libraries ----------------------------------------------------------
+# Package names
+packages <- c("tidyverse")
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+
+```
+
+- [Coordination document](https://docs.google.com/document/d/1x4mRcsSTyUueN_mCiZHE1TOTvF-OZRwq2gV_J9svPRI/edit#heading=h.rv3i711oni3d)
+- [Introduction to R for Geospatial Data](https://datacarpentry.org/r-intro-geospatial/)
+
+<!-- need to reduce this part by  15 minutes -> to 80 minutes -->
+
+# [Introduction to  RStudio](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html) and [Project management](https://datacarpentry.org/r-intro-geospatial/02-project-intro/index.html) (35 min)
+
+## Why R?
+
+- It is a **free** and **open-source** programming language/software! 
+- It was created by statisticians for **statistics** 
+- It's script-based, hence great for **reproducibility** 
+
+## Why RStudio?
+
+- RStudio is an integrated development environment (IDE)
+- It provides a (much prettier) interface for the R software
+- R is integrated into RStudio, so you never actually have to open R 
+
+## Default layout
+
+- Entire Left / Bottom Left : **R console** (what R would look and be like without RStudio)
+- Top right: **Environment/History** (look here to see what you have done)
+- Bottom Right: Files/Plots/Packages/Help/Viewer (see the contents of the project/working directory)
+
+![](assets/img/01-rstudio.png)
+
+- Top left: Once you open files, such as R scripts, an editor panel will also open in the top left.
+
+![](assets/img/02-rstudio.png)
+
+## Interacting with R
+
+### Two main ways to interact with R
+
++ Test and play within the interactive R console 
+    + Pros: immediate results
+    + Cons: work lost once we close RStudio
++ Start writing in an .R file
+    + File still will be executed in the console
+    + Pros: complete record of what you did!
+    - Cons?
+
+### Running the code
++ In the console: `Enter`
++ In the script:
+   + `Ctrl` + `Enter` 
+   + `Run` button on right left - current line or selection
+
+### Escaping 
+The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed. 
+
+Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`.
+
+## Project managament 
+R Studio gives a functionality of creating projects: self-contained working space (i.e. working directory), to which R will refer to, when looking for and saving files.
+
+We’re going to create a new project in RStudio:
+
++ `File` 
++ `New Project` 
++ `Empty project` 
++ browse for directory where you want to keep it 
++ type **r-geospatial** as the name of the project 
++`Create project`
+
+### Tips for project organisation
++ Raw data is read only
++ Cleaned data as read only
++ Generated output is disposable
++ Related data together (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles)
++ Keep consistent naming scheme
++ Name all files to reflect their content or function
++ Stage your scripts: Creating separate R scripts or Rmarkdown documents for different stages of a project
+
+### Organising project/working directory
+
+![](assets/img/rstudio_project_files.jpeg)
+ 
+*Should I create all of them or only /data ?*
+ 
+
+### Download files 
+
+#### Part 1: 
+```{r download-files}
+download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/nordic-data.csv', 'data/nordic-data.csv', mode = 'wb')
+
+download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/nordic-data-2.csv', 'data/nordic-data-2.csv', mode = 'wb')
+
+download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/gapminder_data.csv', 'data/gapminder_data.csv', mode = 'wb')
+
+```
+
+#### Part 2: 
++ Download zip file by clicking on [this link](https://ndownloader.figshare.com/articles/2009586/versions/10)
++ Move the downloaded zip file to the data directory.
++ Once the data have been moved, unzip all files. 
+
+# [Intro to R](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html)  (20+5 min)
+
+## Use R as a calculator
+
+*Should I go through order of operations?*
+*Should I go through scientific notation?*
+
+```{r calculator}
+1+100
+
+12/7
+
+3*5
+
+```
+## Comparing things 
+
+```{r comparison}
+1 == 1 # 1 equal to 1
+
+1 != 2 # 1 not equal to 2
+
+1 < 2 # 1 lower than 2
+
+1 <= 1 # 1 lower than or equal to 1
+
+1 > 0 # 1 greater than 0
+
+1 >= -9 # 1 greater than or equal to -9
+
+```
+
+*If you want to test 'near equality' (small differences), use `all.equal()`.
+
+## Variables and assignment
+
+We can store values in variables using the assignment operator `<-`, like this:
+
+```{r asignment-operator}
+x <- 1/40
+```
+
+Notice that assignment does not print a value. Instead, we stored it for later in something called a variable. x now contains the value 0.025:
+```{r asignment-operator2}
+x
+```
+
+Look for the Environment tab in one of the panes of RStudio, and you will see that x and its value have appeared. 
+
+Our variable x can be used in place of a number in any calculation that expects a number:
+```{r use-variable}
+sqrt(x)
+```
+
+Variables can be also ressigned:
+```{r reassign}
+x <- 100
+```
+
+You can use the 'old' value when reassigning the value
+```{r reassign2}
+x <- x + 1 #notice how RStudio updates its description of x on the top right tab
+y <- x * 2
+```
+
+## Challanges 
+
+### Challenge 1 (5 min)
+
+What will be the value of each variable after each statement in the following program?
+
+```{r ex1}
+mass <- 47.5
+age <- 122
+mass <- mass * 2.3
+age <- age - 20
+
+```
+
+## Challenge 2
+Compare mass to age. Is mass larger than age?
+```{r ex2}
+mass > age
+```
+
+
+# [Data Structures](https://datacarpentry.org/r-intro-geospatial/03-data-structures-part1/index.html) (40+15 min)
+
+## Data types 
+There are 6 main types: `numeric`, `integer`, `complex`, `logical`, `character`, and `factor`.
+We will skip explanation of the `complex` data type for now. 
+
+```{r data-types}
+class(3.14)
+
+class(1) # Although there are no decimal points, R still treats 1 as numeric/double/float
+class(1L) # The L suffix forces the number to be an integer, since by default R uses float numbers
+class('1')
+
+class(TRUE)
+
+class('banana')
+
+class(factor('banana'))
+
+```
+
+## Vectors 
+
+Vectors are arrays of values of a same data type. You can create vector with a `c()` function. 
+
+```{r vectors}
+
+numeric_vector <- c(2, 6, 3)
+numeric_vector
+
+character_vector <- c('banana', 'apple', 'orange')
+character_vector
+
+logical_vector <- c(TRUE, FALSE, TRUE)
+logical_vector
+
+```
+
+## Challenge 3 ( taken from [intro to R for social sciences](https://datacarpentry.org/r-socialsci/01-intro-to-r/index.html#exercise-3))
+What will happen in each of these examples? (hint: use `class()` to check the data type of your objects)
+```{r ex3}
+num_char <- c(1, 2, 3, "a")
+num_logical <- c(1, 2, 3, TRUE)
+char_logical <- c("a", "b", "c", TRUE)
+tricky <- c(1, 2, 3, "4")
+
+```
+
+### Type coersion
+
+This is something called type coercion, and it is the source of many surprises and the reason why we need to be aware of the basic data types and how R will interpret them. When R encounters a mix of types (here numeric and character) to be combined into a single vector, it will force them all to be the same type. 
+
+The coercion rules go: `logical -> integer -> numeric -> character`.
+You can try to force coercion against this flow using the `as.` functions:
+
+```{r as-functions}
+numeric_vector <- c(2, 6, 3)
+numeric_vector
+
+numeric_to_character <- as.character(numeric_vector)
+numeric_to_character
+
+back_to_numeric <- as.numeric(numeric_to_character)
+back_to_numeric
+
+```
+
+### Combining vectors 
+
+The combine function, c(), will also append things to an existing vector:
+
+```{r combine-vectors}
+
+ab_vector <- c('a', 'b')
+ab_vector
+
+abcd_vector <- c(ab_vector, 'DC')
+abcd_vector
+
+```
+
+You can also make series of numbers:
+
+```{r num-series}
+my_series <- 1:10
+my_series
+```
+
+## Factors 
+
+Another important data structure is called a factor. Factors look like character data, but are used to represent categorical information. For example, let’s make a vector of strings labeling Nordic countries for all the countries in our study:
+
+
+
+
+
+
+<!-- need to reduce this part by by 55 minutes -->
+# [Exploring Data frames](https://datacarpentry.org/r-intro-geospatial/04-data-structures-part2/index.html) (20+10 min)
+
+## Reading data
+
+`read.csv()` is a function used to read coma separated data files (`.csv` format). There are other functions for files separated with other delimiters. 
+
+```{r reading-data}
+nordic <- read.csv("data/nordic-data.csv")
+
+
+```
+
+
+
+# [Subsetting Data](https://datacarpentry.org/r-intro-geospatial/05-data-subsetting/index.html) (25+10 min)
+
+
+# [Data frame Manipulation with dplyr](https://datacarpentry.org/r-intro-geospatial/06-dplyr/index.html) (30+10 min)
+
+
+# [Introducition to Visualisation](https://datacarpentry.org/r-intro-geospatial/07-plot-ggplot2/index.html) (20+15 min)
+
+
+# [Writing Data](https://datacarpentry.org/r-intro-geospatial/08-writing-data/index.html0) (10+10 min)
+
+
