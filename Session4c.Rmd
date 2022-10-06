@@ -36,10 +36,10 @@ library(dplyr)
 library(sf)
 library(tibble)
 library(ggplot2)
-library(remotes)
-remotes::install_github('ropensci/osmdata')
-library(osmdata)
-library(osmextract)
+library(raster)
+library(rgdal)
+library(ggplot2)
+library(dplyr)
 ```
 
 ---
@@ -61,6 +61,21 @@ The graphic below illustrates the extent of several of the spatial layers that w
 ![Image Source: DCC](fig/rmd-11-compare-data-extents-1.png)
 
 Frequent use cases of cropping a raster file include reducing file size and creating maps. Sometimes we have a raster file that is much larger than our study area or area of interest. It is often more efficient to crop the raster to the extent of our study area to reduce file sizes as we process our data. Cropping a raster can also be useful when creating pretty maps so that the raster layer matches the extent of the desired vector layers.
+
+## Import the raster 
+
+```{r}
+GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/CHM/HARV_chmCrop.tif")
+
+CHM_HARV <- 
+  raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/CHM/HARV_chmCrop.tif")
+
+CHM_HARV_df <- as.data.frame(CHM_HARV, xy = TRUE)
+
+aoi_boundary_HARV <- st_read(
+  "data/NEON-DS-Site-Layout-Files/HARV/HarClip_UTMZ18.shp")
+
+```
 
 
 
@@ -131,6 +146,12 @@ st_bbox(aoi_boundary_HARV)
 ```
 
 ```{r}
+plot_locations_HARV <-
+  read.csv("data/NEON-DS-Site-Layout-Files/HARV/HARV_PlotLocations.csv")
+point_HARV <- st_read("data/NEON-DS-Site-Layout-Files/HARV/HARVtower_UTM18N.shp")
+utm18nCRS <- st_crs(point_HARV)
+plot_locations_sp_HARV <- st_as_sf(plot_locations_HARV, coords = c("easting", "northing"), crs = utm18nCRS)
+
 st_bbox(plot_locations_sp_HARV)
 ```
 
