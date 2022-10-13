@@ -27,12 +27,15 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 ```
 
+
+# Resources
+
 - [Coordination document](https://docs.google.com/document/d/1x4mRcsSTyUueN_mCiZHE1TOTvF-OZRwq2gV_J9svPRI/edit#heading=h.rv3i711oni3d)
 - [Introduction to R for Geospatial Data](https://datacarpentry.org/r-intro-geospatial/)
 
 <!-- need to reduce this part by  15 minutes -> to 80 minutes -->
 
-# [Introduction to  RStudio](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html) and [Project management](https://datacarpentry.org/r-intro-geospatial/02-project-intro/index.html) (35 min)
+# [Introduction to  RStudio](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html) and [Project management](https://datacarpentry.org/r-intro-geospatial/02-project-intro/index.html) 
 
 ## Why R?
 
@@ -60,40 +63,23 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 ## Interacting with R
 
-### Two main ways to interact with R
+## Project management 
 
-+ Test and play within the interactive R console 
-    + Pros: immediate results
-    + Cons: work lost once we close RStudio
-+ Start writing in an .R file
-    + File still will be executed in the console
-    + Pros: complete record of what you did!
-    - Cons?
-
-### Running the code
-+ In the console: `Enter`
-+ In the script:
-   + `Ctrl` + `Enter` 
-   + `Run` button on right left - current line or selection
-
-### Escaping 
-The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed. 
-
-Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`.
-
-## Project managament 
 R Studio gives a functionality of creating projects: self-contained working space (i.e. working directory), to which R will refer to, when looking for and saving files.
 
 We’re going to create a new project in RStudio:
 
-+ `File` 
-+ `New Project` 
-+ `Empty project` 
-+ browse for directory where you want to keep it 
-+ type **r-geospatial** as the name of the project 
-+`Create project`
+- `File` 
+- `New Project` 
+- `Empty project` 
+- browse for directory where you want to keep it 
+- type **r-geospatial** as the name of the project 
+-`Create project`
+
+
 
 ### Tips for project organisation
+
 + **Raw data** is read only
 + **Cleaned data** as read only
 + **Generated output** is disposable
@@ -104,9 +90,46 @@ We’re going to create a new project in RStudio:
 
 ### Organising project/working directory
 
+This is one suggestion of how your R project can look like. Let's go ahead and create the folders. 
+
 ![](assets/img/rstudio_project_files.jpeg)
+
+### Two main ways to interact with R
+
+- Test and play within the interactive R console (chat)
+    - Pros: immediate results
+    - Cons: work lost once we close RStudio
+    
+- Start writing in an .R file ( email )
+    - File still will be executed in the console
+    - Pros: complete record of what you did!
+    - Cons: Can be messy if we're just want to print things out
+
+### Running the code
+
+- In the console: `Enter`
+- In the script:
+   - `Ctrl` + `Enter` 
+   - `Run` button on right left - current line or selection
+
+### Creating a script
+We're going to work with a script. Let's create one now and save it in the `scripts` directory.
+
+- `File` 
+- `New File` 
+- `R Script` 
+- A new `Untitled` script will appear in the source pane. Save it using floppy disc icon.
+- Name it `intro-to-r.R`
+
+### Escaping 
+
+The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed. 
+
+Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`.
+
 ### Packages 
-A great power of R lays in packages add-on sets of functions that are build by the community and once they go through a quality proccess they are available to download from a repository called CRAN. They need to be explicitly activated. 
+
+A great power of R lays in packages add-on sets of functions that are build by the community and once they go through a quality process they are available to download from a repository called CRAN. They need to be explicitly activated. 
 Now, we will be using `tidyverse` package, which is actually a collection of useful packages. Another package that will be useful for us is `here`.
 
 If you have have not installed this package earlier, please do so. You can check if you have it installed in the `Packages` pane in the bottom-right window.
@@ -124,15 +147,24 @@ library(here)
 
 ```
 
-### `here()` package
+### Handling paths 
 
-![](../assets/img/here.png){height=500px}
+![](assets/img/relative_root.png)
+
+<font size="3">*Credit*:[kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)</font>
+
+
+
+You have created a project which is your working directory, and a number of subfolders, that will help you organise your project better. But now each time you will save or retrieve a file from those folders, you will need to specify the path from the folder your in (most likely scripts). 
+
+That can become complicated and can become a reproducibility problem if the person using your code (e.g. future you) is working in a different subfolder. 
+
+`here()` to the rescue! This package provides absolute paths from the root (main directory) of your project. 
+
+![](assets/img/here.png)
 
 <font size="3">*Credit*:[Allison horst](https://github.com/allisonhorst)</font>
 
-You have created a project which is your working directory, and a number of subfolders, that will help you organise your project better. But now each time you will save or retrieve a file from those folders, you will need to specify the path from the folder your in (most likely scripts). That can become complicated and can become a reproducibility problem if the person using your code (e.g. future you) is working in a different subfolder. 
-
-`here()` to the rescue! This package provides absolute paths from the root (main directory) of your project. 
 
 ```{r here}
 here('data')
@@ -152,7 +184,7 @@ download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatia
 + Move the downloaded zip file to the data directory.
 + Once the data have been moved, unzip all files. 
 
-# [Intro to R](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html)  (20+5 min)
+# [Intro to R](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html)
 
 ## Use R as a calculator
 
@@ -164,24 +196,6 @@ download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatia
 3*5
 
 ```
-## Comparing things 
-
-```{r comparison}
-1 == 1 # 1 equal to 1
-
-1 != 2 # 1 not equal to 2
-
-1 < 2 # 1 lower than 2
-
-1 <= 1 # 1 lower than or equal to 1
-
-1 > 0 # 1 greater than 0
-
-1 >= -9 # 1 greater than or equal to -9
-
-```
-
-<!-- *If you want to test 'near equality' (small differences), use `all.equal()`. -->
 
 ## Variables and assignment
 
@@ -196,14 +210,13 @@ Notice that assignment does not print a value. Instead, we stored it for later i
 x
 ```
 
-Look for the Environment tab in one of the panes of RStudio, and you will see that x and its value have appeared. 
-
-Our variable x can be used in place of a number in any calculation that expects a number:
+Look for the Environment tab in one of the panes of RStudio, and you will see that `x` and its value have appeared. 
+Our variable `x` can be used in place of a number in any calculation that expects a number, e.g. when caclulating a square root:
 ```{r use-variable}
 sqrt(x)
 ```
 
-Variables can be also ressigned:
+Variables can be also reassigned:
 ```{r reassign}
 x <- 100
 x
@@ -216,98 +229,29 @@ y
 ```
 
 
-### Challenge 1
-```{r ex1, class.source="bg-info"}
-# What will be the value of each variable after each statement in the following program?
-
-mass <- 47.5
-age <- 122
-mass <- mass * 2.3
-age <- age - 20
-
-```
-
-### Challenge 2
-```{r ex2, class.source="bg-info", eval = F}
-# Compare mass to age. Is mass larger than age?
-
-mass > age
-```
-
-
 # [Data Structures](https://datacarpentry.org/r-intro-geospatial/03-data-structures-part1/index.html) (40+15 min)
 
-## Data types 
-There are 6 main types: `numeric`, `integer`, `complex`, `logical`, `character`, and `factor`.
-We will skip explanation of the `complex` data type for now. 
-
-```{r data-types}
-class(3.14) # a float number
-
-class(1) # Although there are no decimal points, R still treats 1 as numeric/double/float
-class(1L) # The L suffix forces the number to be an integer, since by default R uses float numbers
-
-
-class(TRUE) # Logical value TRUE/FALSE
-
-class('banana') # String of characters
-class('1') # A number in quotation marks is also a character
-
-class(factor('banana')) # factor  - a special data class that we will discuss later
-
-```
-
 ## Vectors 
+So far we've looked on individual values. Now we will move to a data structure called vectors. Vectors are arrays of values of a same data type (will explain in a second :) ) .
 
-Vectors are arrays of values of a same data type. You can create vector with a `c()` function. 
+You can create a vector with a `c()` function. 
 
 ```{r vectors}
 
-numeric_vector <- c(2, 6, 3)
+numeric_vector <- c(2, 6, 3) # vector of numbers - numeric data type.
 numeric_vector
 
-character_vector <- c('banana', 'apple', 'orange')
+character_vector <- c('banana', 'apple', 'orange') # vector of words - more precisely strings of characters- character data type
 character_vector
 
-logical_vector <- c(TRUE, FALSE, TRUE)
+logical_vector <- c(TRUE, FALSE, TRUE) # vector of logical values (is something true or false?)- logical data type.
 logical_vector
 
 ```
 
-<!-- ### Challenge 3 (taken from [intro to R for social sciences](https://datacarpentry.org/r-socialsci/01-intro-to-r/index.html#exercise-3)) -->
-
-<!-- ```{r ex3, class.source="bg-info"} -->
-<!-- # What will happen in each of these examples? (hint: use class() to check the data type of your objects) -->
-
-<!-- num_char <- c(1, 2, 3, "a") -->
-<!-- num_logical <- c(1, 2, 3, TRUE) -->
-<!-- char_logical <- c("a", "b", "c", TRUE) -->
-<!-- tricky <- c(1, 2, 3, "4") -->
-
-<!-- ``` -->
-
-<!-- ### Type coersion -->
-
-<!-- This is something called type coercion, and it is the source of many surprises and the reason why we need to be aware of the basic data types and how R will interpret them. When R encounters a mix of types (here numeric and character) to be combined into a single vector, it will force them all to be the same type.  -->
-
-<!-- The coercion rules go: `logical -> integer -> numeric -> character`. -->
-<!-- You can try to force coercion against this flow using the `as.` functions: -->
-
-<!-- ```{r as-functions} -->
-<!-- numeric_vector <- c(2, 6, 3) -->
-<!-- numeric_vector -->
-
-<!-- numeric_to_character <- as.character(numeric_vector) -->
-<!-- numeric_to_character -->
-
-<!-- back_to_numeric <- as.numeric(numeric_to_character) -->
-<!-- back_to_numeric -->
-
-<!-- ``` -->
-
 ### Combining vectors 
 
-The combine function, c(), will also append things to an existing vector:
+The combine function, `c()`, will also append things to an existing vector:
 
 ```{r combine-vectors}
 
@@ -319,103 +263,36 @@ abcd_vector
 
 ```
 
-<!-- You can also make series of numbers: -->
-
-<!-- ```{r num-series} -->
-<!-- my_series <- 1:10 -->
-<!-- my_series -->
-<!-- ``` -->
-
-### Inspecting vectors 
-
-We can ask a few questions about vectors:
-
-```{r}
-my_series <- 1:100
-
-head(my_series) # Shows the first 5 (or a chosen number) elements of the vectors
-tail(my_series) # Shows the last 5 (or a chosen number) elements of the vectors
-
-length(my_series) # Returns number of elements in the vector
-
-class(my_series) # shows the data type of the elements in the vector
-```
-
-### Subsetting vectors
-
-#### Subsetting through indices 
-More often than not, you will need only specific elements of vectors. There are several ways to access them. We will look at it now. To access a data structure, you use square brackets `[]` and the position of the element.
-
-```{r subsetting-vector}
-my_letters <- c(letters[1:6])
-my_letters[1] # the first element of the  vector
-```
-
-In many programming languages (C and Python, for example), the first element of a vector has an index of 0. In R, the first element is 1.
-
-
-```{r subsetting-vector2}
-my_letters[1:4] # 1-4 elements of the  vector
-
-my_letters[c(1,3)] # first and third element of the  vector
-
-```
-
-In a similar way you can also exclude elements from the vector
-
-```{r subsetting-excluding}
-my_letters[-2] #  vector excluding the 2nd element
-
-my_letters[-c(1,5)] #  vector excluding 1st and 5th element
-
-my_letters[-(1:3)] #  vector excluding first 3 elements
-
-```
-
-### Challenge 4 
-```{r ex4, class.source="bg-info"}
-# Given the following code:
-
-x <- c(5.4, 6.2, 7.1, 4.8, 7.5)
-names(x) <- c('a', 'b', 'c', 'd', 'e')
-print(x)
-```
-
-Come up with at least 3 different commands that will produce the following output:
-
-```{r echo=F}
-x[2:4]
-```
-
-#### Subsetting through logical operators
-
-You can also use logical vectors to subset:
-
-```{r subset-logical}
-my_letters[c(TRUE, FALSE, TRUE, FALSE, TRUE)] # Returns only the elements of x that have 'TRUE' value on the corresponding position: 1,3,5
-
-```
-We can use this functionality to use comparison operators (remember that they return TRUE or FALSE?):
-```{r}
-my_floats <- c(5.4, 6.2, 7.1, 4.8, 7.5)
-
-my_floats > 7 # This operation returns the vector of logical values, indicating if the condition is fulfilled for each element
-
-my_floats[my_floats > 7] # Returns all the elements of y greater than 7
-
-my_floats[my_floats > 7 | my_floats < 5] # Returns all the elements of y greater than 7 or lower than 5
-my_floats[my_floats > 7 & my_floats < 7.5] # Returns all the elements of y greater than 7 and lower than 7.5
-
-```
+### Missing values  
 
 A common operation you want to perform is to remove all the missing values (in R denoted as `NA`). Let's have a look how to do it: 
 
 ```{r remove-na}
-with_na <- c(1, 2, 1, 1, NA, 3) # vector including missing value)
+with_na <- c(1, 2, 1, 1, NA, 3, NA ) # vector including missing value
+```
 
-is.na(with_na) # With missing values, you cannot compare them directly, you need to do it using is.na() function
+First, let's try to calculate mean for the values in this vector
+```{r remove-na1}
+mean(with_na) # mean() function cannot interpret the missing values
 
-without_na <- with_na[!is.na(with_na)] # The ! operator means negation ,i.e. not is.na(with_na)
+mean(with_na, na.rm = T) # You can add the argument na.rm=TRUE to calculate the result while ignoring the missing values.
+```
+
+However, sometimes, you would like to have the `NA` completely removed from your vector. for this you need to identify which elements of the vector hold missing values with `is.na()` function. 
+
+```{r remove-na2}
+is.na(with_na) #  This will produce a vector of logical values, stating if a statement 'This element of the vector is a missing value' is true or not
+!is.na(with_na) # # The ! operator means negation ,i.e. not is.na(with_na)
+
+```
+
+We know which elements in the vectors are `NA`. Now we need to retrieve the subset of the `with_na` vector that is not `NA`. Any subsetting in `R` is done with square brackets`[ ]`. 
+
+
+```{r remove-na3}
+
+without_na <- with_na[!is.na(with_na)] # this notation will return only the elements that have TRUE on their respective positions
+
 without_na
 
 ```
@@ -462,6 +339,8 @@ nordic_cat
 
 str(nordic_cat) # you can also inspect vectors with str() function. In facto vectors, it shows the underlying values of each category. You can also see the structure in the environment tab of RStudio.
 ```
+There is more than one way to reorder factors. Later in the lesson, we will use `fct_relevel()` function from `forcats` package to do the reordering.
+
 
 ### Note of caution 
 Remember that once created, factors can only contain a pre-defined set of values, known as levels. 
@@ -528,24 +407,7 @@ country_vec <- gapminder$country  # Notation means: From dataset gapminder, give
 head(country_vec)
 
 ```
-<!-- Sometimes, however, you want to maintain a structure of a data frame. You can call the name of the column using it's name and square brackets  `[]`. This way you can also create a subset of your data set.  -->
-<!-- ```{r subset-name} -->
-<!-- country_df<-gapminder["country"]  -->
-<!-- head(country_df) -->
-
-<!-- ``` -->
-
-<!-- as in the case of vectors, we can use indices together with `[]` to select specific sections of the data set.  -->
-
-<!-- ```{r subset-indices} -->
-<!-- gapminder[1:3,] # first 3 rows of the data frame -->
-
-<!-- head(gapminder[,3]) # third column of the data set; returns a vector; equivalent to gapminder$pop -->
-
-<!-- head(gapminder[3]) # equivalent to gapminder[,3]; returns a data frame; equivalent to gapminder['pop'] -->
-
-<!-- ``` -->
-
+Note that the calling a column with a `$` sign will return a vector, it's not a data frame anymore.
 
 # [Data frame Manipulation with dplyr](https://datacarpentry.org/r-intro-geospatial/06-dplyr/index.html) (30+10 min)
 
@@ -570,7 +432,8 @@ The `select()` statement with pipe would look like that:
 
 ```{r dplyr-pipe}
 
-year_country_gdp <- gapminder %>% select(year,country,gdpPercap)
+year_country_gdp <- gapminder %>% 
+  select(year,country,gdpPercap)
 
 head(year_country_gdp)
 
@@ -581,21 +444,21 @@ First we define data set, then with the use of pipe we pass it on to the `select
 ## Filter
 
 We already now how to select only the needed columns. But now, we also want to filter the data set via certain condition with `filter()` function. Instead doing it in separate steps , we can do it all together. 
-In the `gapminder` data set, we want to see the results only for Europe. 
+In the `gapminder` data set, we want to see the results only for Europe for 21st century. 
 ```{r}
 year_country_gdp_euro <- gapminder %>% 
-  filter(continent == "Europe") %>%
+  filter(continent == "Europe" & year> 2000) %>%
   select(year, country, gdpPercap)
 ```
 
-### Challenge 5
-<div class="alert alert-info">
 
+<div class="alert alert-info">
+<strong>Challenge</strong> 
 Write a single command (which can span multiple lines and includes pipes) that will produce a dataframe that has the African values for life expectancy, country and year, but not for other Continents. How many rows does your dataframe have and why?
 </div>
 ```{r ex5, class.source="bg-info", include = F}
 year_country_lifeExp_Africa <- gapminder %>%
-                           filter(continent=="Africa") %>%
+                           filter(continent=="Africa"  ) %>%
                            select(year,country,lifeExp)
 
 ```
@@ -612,10 +475,9 @@ gapminder %>% # select the dataset
 
 ```
 
-### Challenge 6
 <div class="alert alert-info">
-
-Calculate the average life expectancy per country. Which has the longest average life expectancy and which has the shortest average life expectancy?
+<strong>Challenge</strong> 
+Calculate the average life expectancy per country. Which country has the longest average life expectancy and which has the shortest average life expectancy?
 </div>
 ```{r ex6 , class.source="bg-info", include=F}
 lifeExp_bycountry <- gapminder %>%
@@ -628,7 +490,7 @@ lifeExp_bycountry %>%
 ```
 
 
-You can group by multiple columns:
+You can also group by multiple columns:
 
 ```{r dplyr-group-multi}
 
@@ -662,24 +524,13 @@ gapminder %>%
 
 ```
 
-Sometimes you need the number of observations per group for your calculations. You can use `n()` function for this. 
-
-```{r dplyr-n}
-gapminder %>%
-    group_by(continent) %>%
-    summarize(
-      n = n(),
-      se_le = sd( lifeExp )/sqrt( n() ) 
-      )
-```
-
 ## Mutate
 
 Frequently you’ll want to create new columns based on the values in existing columns, for example to do unit conversions, or to find the ratio of values in two columns. For this we’ll use `mutate()`.
 
 ```{r dplyr-mutate}
 gapminder_gdp <- gapminder %>%
-  mutate(gdp_billion = gdpPercap*pop/10^9)
+  mutate(gdpBillion = gdpPercap*pop/10^9)
 
 head(gapminder_gdp)
 
@@ -728,6 +579,7 @@ gapminder %>%
   geom_col()+ 
   coord_flip()
 ```
+
 One thing you might want to change here is the order in which countries are displayed. It would be easier to compare GDP per capita, if theY were showed in order. 
 To do that, we need to reorder factor levels (you remember, we've already done this before).
 the order of the levels will depend on another variable - GDP per capita.
@@ -736,13 +588,12 @@ the order of the levels will depend on another variable - GDP per capita.
 gapminder %>%  
   filter(year == 2007, 
          continent == 'Americas') %>% 
-  mutate(country_reordered = fct_reorder(country, gdpPercap )) %>%
-  ggplot(aes(x = country_reordered , y = gdpPercap)) + 
+  mutate(country = fct_reorder(country, gdpPercap )) %>%
+  ggplot(aes(x = country , y = gdpPercap)) + 
   geom_col() +
   coord_flip()
 
 ```
-
 
 Let's make things more colorful - let's represent the average life expectancy of a country by color
 
@@ -750,8 +601,8 @@ Let's make things more colorful - let's represent the average life expectancy of
 gapminder %>%  
   filter(year == 2007, 
          continent == 'Americas') %>% 
-  mutate(country_reordered = fct_reorder(country, gdpPercap )) %>%
-  ggplot(aes(x = country_reordered, y = gdpPercap, fill = lifeExp   )) + # fill argument for coloring surfaces, color for points and lines
+  mutate(country = fct_reorder(country, gdpPercap )) %>%
+  ggplot(aes(x = country, y = gdpPercap, fill = lifeExp   )) + # fill argument for coloring surfaces, color for points and lines
   geom_col()+ 
   coord_flip()
 
@@ -760,15 +611,31 @@ gapminder %>%
 
 We can also adapt the color scale. Common choice that is used for its colorblind-proofness is `viridis` package.
 ```{r ggplot-colors-adapt}
+  gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  mutate(country = fct_reorder(country, gdpPercap )) %>%
+  ggplot(aes(x = country, y = gdpPercap, fill = lifeExp   )) + 
+  geom_col()+ 
+  coord_flip()+
+  scale_fill_viridis_c() # _c stands for continous scale 
+
+```
+
+Maybe we don't need that much information about the life expectancy. We only want to know if it's below or above average.
+
+```{r ggplot-colors-discrete}
 plot_2007_amr <-  # this time let's save the plot in the object.
   gapminder %>%  
   filter(year == 2007, 
          continent == 'Americas') %>% 
-  mutate(country_reordered = fct_reorder(country, gdpPercap )) %>%
-  ggplot(aes(x = country_reordered, y = gdpPercap, fill = lifeExp   )) + # fill argument for coloring surfaces, color for points and lines
+  mutate(country_reordered = fct_reorder(country, gdpPercap ),
+         lifeExpCat = if_else(lifeExp >= mean(lifeExp), 'high', 'low' )
+         ) %>%
+  ggplot(aes(x = country_reordered, y = gdpPercap, fill = lifeExpCat   )) + 
   geom_col()+ 
   coord_flip()+
-  scale_fill_viridis_c()
+  scale_fill_viridis_d() # _c stands for continous scale ; _d for discrete
 
 ```
 
