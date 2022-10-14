@@ -99,7 +99,7 @@ ggplot() +
 
 ```
 
-Now that we have visualized the area of the CHM we want to subset, we can perform the cropping operation. We are going to `crop()` function from the raster package to create a new object with only the portion of the CHM data that falls within the boundaries of the AOI.
+Now that we have visualized the area of the CHM we want to subset, we can perform the cropping operation. We are going to `crop()` function from the `raster` package to create a new object with only the portion of the CHM data that falls within the boundaries of the AOI.
 
 
 ```{r}
