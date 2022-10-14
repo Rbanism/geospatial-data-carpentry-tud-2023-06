@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 # Load libraries ----------------------------------------------------------
 # Package names
-packages <- c("tidyverse")
+packages <- c("tidyverse", "here")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
@@ -27,12 +27,15 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 ```
 
+
+# Resources
+
 - [Coordination document](https://docs.google.com/document/d/1x4mRcsSTyUueN_mCiZHE1TOTvF-OZRwq2gV_J9svPRI/edit#heading=h.rv3i711oni3d)
 - [Introduction to R for Geospatial Data](https://datacarpentry.org/r-intro-geospatial/)
 
 <!-- need to reduce this part by  15 minutes -> to 80 minutes -->
 
-# [Introduction to  RStudio](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html) and [Project management](https://datacarpentry.org/r-intro-geospatial/02-project-intro/index.html) (35 min)
+# [Introduction to  RStudio](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html) and [Project management](https://datacarpentry.org/r-intro-geospatial/02-project-intro/index.html) 
 
 ## Why R?
 
@@ -60,60 +63,119 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 ## Interacting with R
 
-### Two main ways to interact with R
+## Project management 
 
-+ Test and play within the interactive R console 
-    + Pros: immediate results
-    + Cons: work lost once we close RStudio
-+ Start writing in an .R file
-    + File still will be executed in the console
-    + Pros: complete record of what you did!
-    - Cons?
-
-### Running the code
-+ In the console: `Enter`
-+ In the script:
-   + `Ctrl` + `Enter` 
-   + `Run` button on right left - current line or selection
-
-### Escaping 
-The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed. 
-
-Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`.
-
-## Project managament 
 R Studio gives a functionality of creating projects: self-contained working space (i.e. working directory), to which R will refer to, when looking for and saving files.
 
 We’re going to create a new project in RStudio:
 
-+ `File` 
-+ `New Project` 
-+ `Empty project` 
-+ browse for directory where you want to keep it 
-+ type **r-geospatial** as the name of the project 
-+`Create project`
+- `File` 
+- `New Project` 
+- `Empty project` 
+- browse for directory where you want to keep it 
+- type **r-geospatial** as the name of the project 
+-`Create project`
+
+
 
 ### Tips for project organisation
-+ Raw data is read only
-+ Cleaned data as read only
-+ Generated output is disposable
-+ Related data together (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles)
-+ Keep consistent naming scheme
+
++ **Raw data** is read only
++ **Cleaned data** as read only
++ **Generated output** is disposable
++ **Related data together** (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles)
++ Keep consistent **naming schema**
 + Name all files to reflect their content or function
 + Stage your scripts: Creating separate R scripts or Rmarkdown documents for different stages of a project
 
 ### Organising project/working directory
 
-![](assets/img/rstudio_project_files.jpeg)
- 
-*Should I create all of them or only /data ?*
- 
+This is one suggestion of how your R project can look like. Let's go ahead and create the folders. 
 
-### Download files 
+![](assets/img/rstudio_project_files.jpeg)
+
+### Two main ways to interact with R
+
+- Test and play within the interactive R console (chat)
+    - Pros: immediate results
+    - Cons: work lost once we close RStudio
+    
+- Start writing in an .R file ( email )
+    - File still will be executed in the console
+    - Pros: complete record of what you did!
+    - Cons: Can be messy if we're just want to print things out
+
+### Running the code
+
+- In the console: `Enter`
+- In the script:
+   - `Ctrl` + `Enter` 
+   - `Run` button on right left - current line or selection
+
+### Creating a script
+We're going to work with a script. Let's create one now and save it in the `scripts` directory.
+
+- `File` 
+- `New File` 
+- `R Script` 
+- A new `Untitled` script will appear in the source pane. Save it using floppy disc icon.
+- Name it `intro-to-r.R`
+
+### Escaping 
+
+The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed. 
+
+Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`.
+
+### Packages 
+
+A great power of R lays in packages add-on sets of functions that are build by the community and once they go through a quality process they are available to download from a repository called CRAN. They need to be explicitly activated. 
+Now, we will be using `tidyverse` package, which is actually a collection of useful packages. Another package that will be useful for us is `here`.
+
+If you have have not installed this package earlier, please do so. You can check if you have it installed in the `Packages` pane in the bottom-right window.
+
+```{r install-package, eval=FALSE}
+install.packages('tidyverse')
+install.packages('here')
+```
+
+You need to install package only once, but you will need to load it each time you want to use its functionalities. To do that you use `library()` command:
+
+```{r load-package}
+library(tidyverse)
+library(here)
+
+```
+
+### Handling paths 
+
+![](assets/img/relative_root.png)
+
+<font size="3">*Credit*:[kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)</font>
+
+
+
+You have created a project which is your working directory, and a number of subfolders, that will help you organise your project better. But now each time you will save or retrieve a file from those folders, you will need to specify the path from the folder your in (most likely scripts). 
+
+That can become complicated and can become a reproducibility problem if the person using your code (e.g. future you) is working in a different subfolder. 
+
+`here()` to the rescue! This package provides absolute paths from the root (main directory) of your project. 
+
+![](assets/img/here.png)
+
+<font size="3">*Credit*:[Allison horst](https://github.com/allisonhorst)</font>
+
+
+```{r here}
+here('data')
+```
+
+
+### Download files  - Should be send via email in the zipped file? Then this part can be skipped
 
 #### Part 1: 
 ```{r download-files}
-download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/gapminder_data.csv', 'data/gapminder_data.csv', mode = 'wb')
+download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/gapminder_data.csv', here('data','gapminder_data.csv'), mode = 'wb')
 
 ```
 
@@ -122,12 +184,9 @@ download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatia
 + Move the downloaded zip file to the data directory.
 + Once the data have been moved, unzip all files. 
 
-# [Intro to R](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html)  (20+5 min)
+# [Intro to R](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html)
 
 ## Use R as a calculator
-
-*Should I go through order of operations?*
-*Should I go through scientific notation?*
 
 ```{r calculator}
 1+100
@@ -137,24 +196,6 @@ download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatia
 3*5
 
 ```
-## Comparing things 
-
-```{r comparison}
-1 == 1 # 1 equal to 1
-
-1 != 2 # 1 not equal to 2
-
-1 < 2 # 1 lower than 2
-
-1 <= 1 # 1 lower than or equal to 1
-
-1 > 0 # 1 greater than 0
-
-1 >= -9 # 1 greater than or equal to -9
-
-```
-
-*If you want to test 'near equality' (small differences), use `all.equal()`.
 
 ## Variables and assignment
 
@@ -169,14 +210,13 @@ Notice that assignment does not print a value. Instead, we stored it for later i
 x
 ```
 
-Look for the Environment tab in one of the panes of RStudio, and you will see that x and its value have appeared. 
-
-Our variable x can be used in place of a number in any calculation that expects a number:
+Look for the Environment tab in one of the panes of RStudio, and you will see that `x` and its value have appeared. 
+Our variable `x` can be used in place of a number in any calculation that expects a number, e.g. when caclulating a square root:
 ```{r use-variable}
 sqrt(x)
 ```
 
-Variables can be also ressigned:
+Variables can be also reassigned:
 ```{r reassign}
 x <- 100
 x
@@ -184,103 +224,34 @@ x
 
 You can use the 'old' value when reassigning the value
 ```{r reassign2}
-x <- x + 1 #notice how RStudio updates its description of x on the top right tab
-x
 y <- x * 2 # you can use value stored in object x to create y
-```
-
-## Challanges 
-
-### Challenge 1 (5 min)
-
-What will be the value of each variable after each statement in the following program?
-
-```{r ex1}
-mass <- 47.5
-age <- 122
-mass <- mass * 2.3
-age <- age - 20
-
-```
-
-## Challenge 2
-Compare mass to age. Is mass larger than age?
-```{r ex2}
-mass > age
+y
 ```
 
 
 # [Data Structures](https://datacarpentry.org/r-intro-geospatial/03-data-structures-part1/index.html) (40+15 min)
 
-## Data types 
-There are 6 main types: `numeric`, `integer`, `complex`, `logical`, `character`, and `factor`.
-We will skip explanation of the `complex` data type for now. 
-
-```{r data-types}
-class(3.14) # a float number
-
-class(1) # Although there are no decimal points, R still treats 1 as numeric/double/float
-class(1L) # The L suffix forces the number to be an integer, since by default R uses float numbers
-
-
-class(TRUE) # Logical value TRUE/FALSE
-
-class('banana') # String of characters
-class('1') # A number in quotation marks is also a character
-
-class(factor('banana')) # factor  - a special data class that we will discuss later
-
-```
-
 ## Vectors 
+So far we've looked on individual values. Now we will move to a data structure called vectors. Vectors are arrays of values of a same data type (will explain in a second :) ) .
 
-Vectors are arrays of values of a same data type. You can create vector with a `c()` function. 
+You can create a vector with a `c()` function. 
 
 ```{r vectors}
 
-numeric_vector <- c(2, 6, 3)
+numeric_vector <- c(2, 6, 3) # vector of numbers - numeric data type.
 numeric_vector
 
-character_vector <- c('banana', 'apple', 'orange')
+character_vector <- c('banana', 'apple', 'orange') # vector of words - more precisely strings of characters- character data type
 character_vector
 
-logical_vector <- c(TRUE, FALSE, TRUE)
+logical_vector <- c(TRUE, FALSE, TRUE) # vector of logical values (is something true or false?)- logical data type.
 logical_vector
-
-```
-
-## Challenge 3 (taken from [intro to R for social sciences](https://datacarpentry.org/r-socialsci/01-intro-to-r/index.html#exercise-3))
-What will happen in each of these examples? (hint: use `class()` to check the data type of your objects)
-```{r ex3}
-num_char <- c(1, 2, 3, "a")
-num_logical <- c(1, 2, 3, TRUE)
-char_logical <- c("a", "b", "c", TRUE)
-tricky <- c(1, 2, 3, "4")
-
-```
-
-### Type coersion
-
-This is something called type coercion, and it is the source of many surprises and the reason why we need to be aware of the basic data types and how R will interpret them. When R encounters a mix of types (here numeric and character) to be combined into a single vector, it will force them all to be the same type. 
-
-The coercion rules go: `logical -> integer -> numeric -> character`.
-You can try to force coercion against this flow using the `as.` functions:
-
-```{r as-functions}
-numeric_vector <- c(2, 6, 3)
-numeric_vector
-
-numeric_to_character <- as.character(numeric_vector)
-numeric_to_character
-
-back_to_numeric <- as.numeric(numeric_to_character)
-back_to_numeric
 
 ```
 
 ### Combining vectors 
 
-The combine function, c(), will also append things to an existing vector:
+The combine function, `c()`, will also append things to an existing vector:
 
 ```{r combine-vectors}
 
@@ -292,107 +263,39 @@ abcd_vector
 
 ```
 
-You can also make series of numbers:
-
-```{r num-series}
-my_series <- 1:10
-my_series
-```
-
-### Inspecting vectors 
-
-We can ask a few questions about vectors:
-
-```{r}
-my_series <- 1:100
-
-head(my_series) # Shows the first 5 (or a chosen number) elements of the vectors
-tail(my_series) # Shows the last 5 (or a chosen number) elements of the vectors
-
-length(my_series) # Returns number of elements in the vector
-
-class(my_series) # shows the data type of the elements in the vector
-```
-
-### Subsetting vectors
-
-#### Subsetting through indices 
-More often than not, you will need only specific elements of vectors. There are several ways to access them. We will look at it now. To access a data structure, you use square brackets `[]` and the position of the element.
-
-```{r subsetting-vector}
-my_letters <- c(letters[1:6])
-my_letters[1] # the first element of the  vector
-```
-
-In many programming languages (C and Python, for example), the first element of a vector has an index of 0. In R, the first element is 1.
-
-
-```{r subsetting-vector2}
-my_letters[1:4] # 1-4 elements of the  vector
-
-my_letters[c(1,3)] # first and third element of the  vector
-
-```
-
-In a similar way you can also exclude elements from the vector
-
-```{r subsetting-excluding}
-my_letters[-2] #  vector excluding the 2nd element
-
-my_letters[-c(1,5)] #  vector excluding 1st and 5th element
-
-my_letters[-(1:3)] #  vector excluding first 3 elements
-
-```
-
-## Challenge 4 
-Given the following code:
-```{r}
-x <- c(5.4, 6.2, 7.1, 4.8, 7.5)
-names(x) <- c('a', 'b', 'c', 'd', 'e')
-print(x)
-```
-
-Come up with at least 3 different commands that will produce the following output:
-
-```{r echo=F}
-x[2:4]
-```
-
-#### Subsetting through logical operators
-
-You can also use logical vectors to subset:
-
-```{r subset-logical}
-my_letters[c(TRUE, FALSE, TRUE, FALSE, TRUE)] # Returns only the elements of x that have 'TRUE' value on the corresponding position: 1,3,5
-
-```
-We can use this functionality to use comparison operators (remember that they return TRUE or FALSE?):
-```{r}
-my_floats <- c(5.4, 6.2, 7.1, 4.8, 7.5)
-
-my_floats > 7 # This operation returns the vector of logical values, indicating if the condition is fulfilled for each element
-
-my_floats[my_floats > 7] # Returns all the elements of y greater than 7
-
-my_floats[my_floats > 7 | my_floats < 5] # Returns all the elements of y greater than 7 or lower than 5
-my_floats[my_floats > 7 & my_floats < 7.5] # Returns all the elements of y greater than 7 and lower than 7.5
-
-```
+### Missing values  
 
 A common operation you want to perform is to remove all the missing values (in R denoted as `NA`). Let's have a look how to do it: 
 
 ```{r remove-na}
-with_na <- c(1, 2, 1, 1, NA, 3) # vector including missing value)
+with_na <- c(1, 2, 1, 1, NA, 3, NA ) # vector including missing value
+```
 
-is.na(with_na) # With missing values, you cannot compare them directly, you need to do it using is.na() function
+First, let's try to calculate mean for the values in this vector
+```{r remove-na1}
+mean(with_na) # mean() function cannot interpret the missing values
 
-without_na <- with_na[!is.na(with_na)] # The ! operator means negation ,i.e. not is.na(with_na)
-without_na
+mean(with_na, na.rm = T) # You can add the argument na.rm=TRUE to calculate the result while ignoring the missing values.
+```
+
+However, sometimes, you would like to have the `NA` completely removed from your vector. for this you need to identify which elements of the vector hold missing values with `is.na()` function. 
+
+```{r remove-na2}
+is.na(with_na) #  This will produce a vector of logical values, stating if a statement 'This element of the vector is a missing value' is true or not
+!is.na(with_na) # # The ! operator means negation ,i.e. not is.na(with_na)
 
 ```
 
+We know which elements in the vectors are `NA`. Now we need to retrieve the subset of the `with_na` vector that is not `NA`. Any subsetting in `R` is done with square brackets`[ ]`. 
 
+
+```{r remove-na3}
+
+without_na <- with_na[!is.na(with_na)] # this notation will return only the elements that have TRUE on their respective positions
+
+without_na
+
+```
 
 
 ## Factors (adapted from [Starting with Data](https://datacarpentry.org/r-socialsci/02-starting-with-data/index.html))
@@ -436,6 +339,8 @@ nordic_cat
 
 str(nordic_cat) # you can also inspect vectors with str() function. In facto vectors, it shows the underlying values of each category. You can also see the structure in the environment tab of RStudio.
 ```
+There is more than one way to reorder factors. Later in the lesson, we will use `fct_relevel()` function from `forcats` package to do the reordering.
+
 
 ### Note of caution 
 Remember that once created, factors can only contain a pre-defined set of values, known as levels. 
@@ -461,11 +366,11 @@ For example, here is a figure depicting a data frame comprising a numeric, a cha
 
 ## Reading data
 
-`read.csv()` is a function used to read coma separated data files (`.csv` format)). There are other functions for files separated with other delimiters. 
+`read_csv()` is a function used to read coma separated data files (`.csv` format)). There are other functions for files separated with other delimiters. 
 We're gonna read in the gap minder data set with information about countries' size, GDP and average life expectancy in different years.
 
 ```{r reading-data}
-gapminder <- read.csv("data/gapminder_data.csv") 
+gapminder <- read_csv(here('data','gapminder_data.csv') )
 
 ```
 
@@ -486,9 +391,6 @@ There are multiple ways to explore a data set. Here are just a few examples
 
 ```{r}
 head(gapminder) # see first 5  rows of the data set
-dim(gapminder) # get the dimensions of the data set (number of rows and columns)
-
-colnames(gapminder) # column names 
 
 summary(gapminder) # gives basic statistical information about each column. Information format differes by data type.
 
@@ -505,33 +407,276 @@ country_vec <- gapminder$country  # Notation means: From dataset gapminder, give
 head(country_vec)
 
 ```
-Sometimes, however, you want to maintain a structure of a data frame. You can call the name of the column using it's name and square brackets  `[]`. This way you can also create a subset of your data set. 
-```{r subset-name}
-country_df<-gapminder["country"] 
-head(country_df)
-
-```
-
-as in the case of vectors, we can use indices together with `[]` to select specific sections of the data set. 
-
-```{r subset-indices}
-gapminder[1:3,] # first 3 rows of the data frame
-
-head(gapminder[,3]) # third column of the data set; returns a vector; equivalent to gapminder$pop
-
-head(gapminder[3]) # equivalent to gapminder[,3]; returns a data frame; equivalent to gapminder['pop']
-
-```
-
+Note that the calling a column with a `$` sign will return a vector, it's not a data frame anymore.
 
 # [Data frame Manipulation with dplyr](https://datacarpentry.org/r-intro-geospatial/06-dplyr/index.html) (30+10 min)
-So far, we have been using base functionalities of R. Now, that we would like to move forward with our analysis, we can make use of packages - add-on sets of functions that need to be explicitly activated. Now, we will be using 
+
+## Select
+Let's start manipulating the data. 
+
+First we will adapt our dataset, by keeping only the columns we're interested in using the `select()` function from `dplyr` package:
+
+```{r dplyr-select}
+year_country_gdp <- select(gapminder, year, country, gdpPercap) 
+
+head(year_country_gdp)
+
+```
+
+## Pipe
+Now, this is not the most common notation when working with `dplyr` package. `dplyr` offers an operator `%>%` called a pipe, which allows you build up a very complicated commands in a readable way.
+
+In newer installation of `R` you can also find a notation `|>` . This pipe does exactly the same, the only difference is that you don't need to load any pacakges to have it available.
+
+The `select()` statement with pipe would look like that:
+
+```{r dplyr-pipe}
+
+year_country_gdp <- gapminder %>% 
+  select(year,country,gdpPercap)
+
+head(year_country_gdp)
+
+```
+
+First we define data set, then with the use of pipe we pass it on to the `select()` function. This way we can chain multiple functions together, which we will be doing now. 
+
+## Filter
+
+We already now how to select only the needed columns. But now, we also want to filter the data set via certain condition with `filter()` function. Instead doing it in separate steps , we can do it all together. 
+In the `gapminder` data set, we want to see the results only for Europe for 21st century. 
+```{r}
+year_country_gdp_euro <- gapminder %>% 
+  filter(continent == "Europe" & year> 2000) %>%
+  select(year, country, gdpPercap)
+```
+
+
+<div class="alert alert-info">
+<strong>Challenge</strong> 
+Write a single command (which can span multiple lines and includes pipes) that will produce a dataframe that has the African values for life expectancy, country and year, but not for other Continents. How many rows does your dataframe have and why?
+</div>
+```{r ex5, class.source="bg-info", include = F}
+year_country_lifeExp_Africa <- gapminder %>%
+                           filter(continent=="Africa"  ) %>%
+                           select(year,country,lifeExp)
+
+```
 
 
 
-# [Introducition to Visualisation](https://datacarpentry.org/r-intro-geospatial/07-plot-ggplot2/index.html) (20+15 min)
+## Group and summarize
+So far, we have created a dataset for one of the continents represented in the `gapminder` dataset. But rather than doing that, we want to know statistics about all of the continents, presented by group.
+
+```{r dplyr-group}
+gapminder %>% # select the dataset
+  group_by(continent) %>% # group by continent
+  summarize(mean_gdpPercap = mean(gdpPercap)) # summarize function creates statistics for the data set 
+
+```
+
+<div class="alert alert-info">
+<strong>Challenge</strong> 
+Calculate the average life expectancy per country. Which country has the longest average life expectancy and which has the shortest average life expectancy?
+</div>
+```{r ex6 , class.source="bg-info", include=F}
+lifeExp_bycountry <- gapminder %>%
+   group_by(country) %>%
+   summarize(mean_lifeExp=mean(lifeExp))
 
 
-# [Writing Data](https://datacarpentry.org/r-intro-geospatial/08-writing-data/index.html0) (10+10 min)
+lifeExp_bycountry %>%
+   filter(mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp))
+```
+
+
+You can also group by multiple columns:
+
+```{r dplyr-group-multi}
+
+gapminder %>%
+  group_by(continent, year) %>%
+  summarize(mean_gdpPercap = mean(gdpPercap))
+
+```
+
+On top of this, you can also make multiple summaries of those groups:
+```{r dplyr-summ}
+gdp_pop_bycontinents_byyear <- gapminder %>%
+  group_by(continent,year) %>%
+  summarize(
+    mean_gdpPercap = mean(gdpPercap),
+    sd_gdpPercap = sd(gdpPercap),
+    mean_pop = mean(pop),
+    sd_pop = sd(pop)
+    )
+
+```
+
+## Frequencies
+
+If you need a number of observations per group, you can use the `count()` function
+```{r dplyr-count}
+
+gapminder %>%
+    group_by(continent) %>%
+    count()
+
+```
+
+## Mutate
+
+Frequently you’ll want to create new columns based on the values in existing columns, for example to do unit conversions, or to find the ratio of values in two columns. For this we’ll use `mutate()`.
+
+```{r dplyr-mutate}
+gapminder_gdp <- gapminder %>%
+  mutate(gdpBillion = gdpPercap*pop/10^9)
+
+head(gapminder_gdp)
+
+```
+
+
+# [Introduction to Visualisation](https://datacarpentry.org/r-intro-geospatial/07-plot-ggplot2/index.html) (20+15 min)
+Package `ggplot2` is a powerful plotting system. I will introduce key features of `ggplot`. Later today/ on Monday you will use this package to visualize geospatial data.
+`gg` stands for grammar of graphics, the idea that three components needed to create a graph are:
+- data
+- aesthetics - coordinate system on which we map the data ( what is represented on x axis, what on y axis)
+- geometries - visual representation of the data (points, bars, etc.)
+
+fun part about `ggplot` is that you can then add additional layers to the plot providing more information and make it more beautiful. 
+
+First, lets plot distribution of life expectancy in the `gapminder` dataset. 
+
+```{r ggplot}
+
+gapminder %>%  # data layer
+  ggplot( aes(x = lifeExp)) + # aesthetics layer 
+  geom_histogram() # geometry layer
+
+```
+
+You can see that in `ggplot` you use `+` as a pipe, to add layers. Within `ggplot` call, it is the only pipe that will work. 
+But, it is possible to chain operations on a dataset with a pipe that we have already learned: `%>%` ( or `|>`) and follow them but ggplot grammar. 
+
+Let's create another plot, this time only on a subset of observations:
+
+```{r ggplot-col}
+gapminder %>%  # we select a dataset
+  filter(year == 2007, 
+         continent == 'Americas') %>% # and filter it to keep only one year and one continent
+  ggplot(aes(x = country, y = gdpPercap)) + # we create aesthetics, both x and y axis represent values of  columns
+  geom_col() # we select a column graph as a geometry
+```
+
+Now, you can iteratively improve how the plot looks. For example, you might want to flip it, to better display the labels.
+
+```{r ggplot-coord-flip}
+gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  ggplot(aes(x = country, y = gdpPercap)) + 
+  geom_col()+ 
+  coord_flip()
+```
+
+One thing you might want to change here is the order in which countries are displayed. It would be easier to compare GDP per capita, if theY were showed in order. 
+To do that, we need to reorder factor levels (you remember, we've already done this before).
+the order of the levels will depend on another variable - GDP per capita.
+
+```{r ggplot-color}
+gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  mutate(country = fct_reorder(country, gdpPercap )) %>%
+  ggplot(aes(x = country , y = gdpPercap)) + 
+  geom_col() +
+  coord_flip()
+
+```
+
+Let's make things more colorful - let's represent the average life expectancy of a country by color
+
+```{r ggplot-colors}
+gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  mutate(country = fct_reorder(country, gdpPercap )) %>%
+  ggplot(aes(x = country, y = gdpPercap, fill = lifeExp   )) + # fill argument for coloring surfaces, color for points and lines
+  geom_col()+ 
+  coord_flip()
+
+
+```
+
+We can also adapt the color scale. Common choice that is used for its colorblind-proofness is `viridis` package.
+```{r ggplot-colors-adapt}
+  gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  mutate(country = fct_reorder(country, gdpPercap )) %>%
+  ggplot(aes(x = country, y = gdpPercap, fill = lifeExp   )) + 
+  geom_col()+ 
+  coord_flip()+
+  scale_fill_viridis_c() # _c stands for continous scale 
+
+```
+
+Maybe we don't need that much information about the life expectancy. We only want to know if it's below or above average.
+
+```{r ggplot-colors-discrete}
+plot_2007_amr <-  # this time let's save the plot in the object.
+  gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  mutate(country_reordered = fct_reorder(country, gdpPercap ),
+         lifeExpCat = if_else(lifeExp >= mean(lifeExp), 'high', 'low' )
+         ) %>%
+  ggplot(aes(x = country_reordered, y = gdpPercap, fill = lifeExpCat   )) + 
+  geom_col()+ 
+  coord_flip()+
+  scale_fill_viridis_d() # _c stands for continous scale ; _d for discrete
+
+```
+
+Since we saved a plot as an object, nothing has been printed out. Just like with any other object in `R`, if you want to see it, you need to call it.  
+
+```{r ggplot-call}
+plot_2007_amr
+
+```
+
+Now we can make use of the saved object and add things to it.
+
+Let's also give it a title and name the axes:
+```{r ggplot-titles}
+plot_2007_amr <- 
+  plot_2007_amr +
+  ggtitle('GDP per capita in Americas', subtitle = 'Year 2007') +
+  xlab('Country')+
+  ylab('GDP per capita')
+
+plot_2007_amr
+```
+
+Once we are happy with our plot we can save it in a format of our choice. Remember to save it in the dedicated folder. 
+
+```{r save plot}
+ggsave(here('fig_output','plot_2007_amr.pdf') ) # By default, ggsave() saves the last displayed plot, but you can also explicitly name the plot you want to save
+
+```
+
+
+Another output of your work you want to save is a cleaned dataset. In your analysis, you can then load directly that dataset. Say we want to save the data only for Australia:
+
+```{r writing-data}
+gapminder_aus <- gapminder %>%  
+  filter(country == 'Australia') 
+
+write_csv(gapminder_aus, here('data_output', 'gapminder_australia.csv'))
+
+
+```
+
 
 
