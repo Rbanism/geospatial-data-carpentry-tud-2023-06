@@ -19,14 +19,15 @@ knitr::opts_chunk$set(
 # Install packages
 # library(remotes)
 # remotes::install_github('ropensci/osmdata')
+library(tidyverse)
 
 # Data manipulation
 # library(tibble)
-library(dplyr)
+# library(dplyr)
 # library(reshape)
 
 # Data visualisation
-library(ggplot2)
+# library(ggplot2)
 
 # Working with spatial data
 # library(sf)
@@ -44,12 +45,12 @@ library(rgdal)
 # Intro to raster data (30 + 20 minutes)
 ## View Raster File Attirbutes
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
+GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
 ```
 
 ```{r}
 HARV_dsmCrop_info <- capture.output(
-  GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
+  GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
 )
 ```
 
@@ -58,7 +59,7 @@ HARV_dsmCrop_info <- capture.output(
 We are going to work with a Digital Surface Model (DSM) which is in the GeoTIFF format.
 ```{r}
 DSM_HARV <- 
-  raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
+  raster(here("data", "NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
 
 DSM_HARV
 ```
@@ -125,9 +126,9 @@ This dataset has only 1 band. We will discuss multi-band raster data in a later 
 
 ## Dealing with missing data
 
-In raster data, pixels with no value are represented with `NoDataValue`. That is usually the case with edge values where data is missing from the rectangular region of the raster. Use `raster::GDALinfo()` to check the metadata for missing data values.
+In raster data, pixels with no value are represented with `NoDataValue`. That is usually the case with edge values where data is missing from the rectangular region of the raster. Use `rgdal::GDALinfo()` to check the metadata for missing data values.
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
+GDALinfo(here("data", "NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
 ```
 
 
@@ -155,7 +156,7 @@ ggplot() +
 ### Challenge
 
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif")
+GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif"))
 ```
 
 
@@ -163,7 +164,7 @@ GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif")
 
 ```{r}
 DSM_HARV_df <- DSM_HARV_df %>%
-                mutate(fct_elevation = cut(HARV_dsmCrop, breaks = 3))
+  mutate(fct_elevation = cut(HARV_dsmCrop, breaks = 3))
 
 ggplot() +
     geom_bar(data = DSM_HARV_df, aes(fct_elevation))
@@ -185,25 +186,25 @@ To customize cutoff values:
 custom_bins <- c(300, 350, 400, 450)
 
 DSM_HARV_df <- DSM_HARV_df %>%
-  mutate(fct_elevation_2 = cut(HARV_dsmCrop, breaks = custom_bins))
+  mutate(fct_elevation_cb = cut(HARV_dsmCrop, breaks = custom_bins))
 
-unique(DSM_HARV_df$fct_elevation_2)
+unique(DSM_HARV_df$fct_elevation_cb)
 ```
 
 ```{r}
 ggplot() +
-  geom_bar(data = DSM_HARV_df, aes(fct_elevation_2))
+  geom_bar(data = DSM_HARV_df, aes(fct_elevation_cb))
 ```
 
 ```{r}
 DSM_HARV_df %>%
-  group_by(fct_elevation_2) %>%
+  group_by(fct_elevation_cb) %>%
   count()
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = DSM_HARV_df , aes(x = x, y = y, fill = fct_elevation_2)) + 
+  geom_raster(data = DSM_HARV_df , aes(x = x, y = y, fill = fct_elevation_cb)) + 
   coord_quickmap()
 ```
 
@@ -217,7 +218,7 @@ terrain.colors(3)
 ```{r}
 ggplot() +
  geom_raster(data = DSM_HARV_df , aes(x = x, y = y,
-                                      fill = fct_elevation_2)) + 
+                                      fill = fct_elevation_cb)) + 
     scale_fill_manual(values = terrain.colors(3)) + 
     coord_quickmap()
 ```
@@ -227,7 +228,7 @@ my_col <- terrain.colors(3)
 
 ggplot() +
  geom_raster(data = DSM_HARV_df , aes(x = x, y = y,
-                                      fill = fct_elevation_2)) + 
+                                      fill = fct_elevation_cb)) + 
     scale_fill_manual(values = my_col, name = "Elevation") + 
     coord_quickmap()
 ```
@@ -257,7 +258,7 @@ ggplot() +
 <!-- Remove the plot formatting part -->
 ## Layering rasters
 ```{r}
-DSM_hill_HARV <- raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif")
+DSM_hill_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif"))
 
 DSM_hill_HARV
 ```
