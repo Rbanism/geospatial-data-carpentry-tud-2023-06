@@ -988,7 +988,7 @@ xres(NDVI_HARV_stack)
 
 ```{r}
 NDVI_HARV_stack_df <- as.data.frame(NDVI_HARV_stack, xy = TRUE) %>%
-    reshape2::melt(id.vars = c('x','y'))
+    gather(key = "variable", value = "value", -x,-y) #reshape2::melt(id.vars = c('x','y'))
 ```
 
 ```{r}
@@ -1003,7 +1003,8 @@ NDVI_HARV_stack <- NDVI_HARV_stack/10000
 
 ```{r}
 NDVI_HARV_stack_df <- as.data.frame(NDVI_HARV_stack, xy = TRUE) %>%
-    reshape2::melt(id.vars = c('x','y'))
+       gather(key = "variable", value = "value", -x,-y) #reshape2::melt(id.vars = c('x','y'))
+
 
 ggplot() +
   geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
