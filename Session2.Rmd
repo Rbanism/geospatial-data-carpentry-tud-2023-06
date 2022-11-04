@@ -75,8 +75,7 @@ aoi_boundary_HARV
 
 ```{r}
 # ggplot already introduced in the morning
-aoi_boundary_HARV %>%
-  ggplot() + 
+  ggplot(data = aoi_boundary_HARV) + 
   geom_sf( size = 3, color = "black", fill = "cyan1") + 
   ggtitle("AOI Boundary Plot") + 
   coord_sf()
@@ -173,16 +172,14 @@ nrow(footpath_HARV)
 ```
 
 ```{r}
-footpath_HARV %>% 
-  ggplot() + 
+  ggplot(data = footpath_HARV) + 
   geom_sf() +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Footpaths") + 
   coord_sf()
 ```
 
 ```{r}
-footpath_HARV %>% 
-  ggplot() + 
+  ggplot(data = footpath_HARV) + 
   geom_sf(aes(color = factor(OBJECTID)), size = 1.5) +
   labs(color = 'Footpath ID') +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Footpaths") + 
@@ -201,8 +198,7 @@ nrow(boardwalk_HARV)
 ```
 
 ```{r}
-boardwalk_HARV %>% 
-ggplot() + 
+ggplot(data = boardwalk_HARV) + 
   geom_sf( size = 1.5) +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Boardwalks") + 
   coord_sf()
@@ -216,8 +212,7 @@ nrow(stoneWall_HARV)
 ```
 
 ```{r}
-stoneWall_HARV %>%
-ggplot() +
+ggplot(data = stoneWall_HARV) +
   geom_sf( aes(color = factor(OBJECTID)), size = 1.5) +
   labs(color = 'Wall ID') +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Stonewalls") + 
@@ -235,8 +230,7 @@ road_colors <- c("blue", "green", "navy", "purple")
 ```
 
 ```{r}
-lines_HARV %>%
-  ggplot() +
+  ggplot(data = lines_HARV) +
   geom_sf(aes(color = TYPE)) + 
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') +
@@ -251,8 +245,7 @@ line_widths <- c(1, 2, 3, 4)
 ```
 
 ```{r}
-lines_HARV %>%
-  ggplot() +
+  ggplot(data = lines_HARV) +
   geom_sf( aes(color = TYPE, size = TYPE)) + 
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') +
@@ -273,8 +266,7 @@ line_width <- c(1, 3, 2, 6)
 ```
 
 ```{r}
-lines_HARV %>%
-ggplot() +
+ggplot(data = lines_HARV) +
   geom_sf(aes(size = TYPE)) +
   scale_size_manual(values = line_width) +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads & Trails - Line width varies") + 
@@ -284,8 +276,7 @@ ggplot() +
 ## Add plot legend
 
 ```{r}
-lines_HARV %>%
-ggplot() + 
+ggplot(data = lines_HARV) + 
   geom_sf( aes(color = TYPE), size = 1.5) +
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') + 
@@ -295,8 +286,7 @@ ggplot() +
 ```
 
 ```{r}
-lines_HARV %>%
-ggplot() + 
+ggplot(data = lines_HARV) + 
   geom_sf( aes(color = TYPE), size = 1.5) +
   scale_color_manual(values = road_colors) + 
   labs(color = 'Road Type') +
@@ -310,8 +300,7 @@ ggplot() +
 ```{r}
 new_colors <- c("springgreen", "blue", "magenta", "orange")
 
-lines_HARV %>%
-ggplot() + 
+ggplot(data = lines_HARV) + 
   geom_sf(aes(color = TYPE), size = 1.5) + 
   scale_color_manual(values = new_colors) +
   labs(color = 'Road Type') +
@@ -342,8 +331,7 @@ lines_showHarv <- lines_removeNA %>%
   filter(BicyclesHo == "Bicycles and Horses Allowed")
 
 # Next, visualise using ggplot
-lines_HARV %>%
-  ggplot() + 
+  ggplot(data = lines_HARV) + 
   geom_sf() + 
   geom_sf(data = lines_showHarv, aes(color = BicyclesHo), size = 2) + 
   scale_color_manual(values = "magenta") +
@@ -365,8 +353,7 @@ colors <- c("purple", "springgreen", "yellow", "brown", "navy")
 ```
 
 ```{r}
-state_boundary_US %>%
-ggplot() +
+ggplot(data = state_boundary_US) +
   geom_sf( aes(color = region), size = 1) +
   scale_color_manual(values = colors) +
   ggtitle("Contiguous U.S. State Boundaries") + 
@@ -462,11 +449,11 @@ ggplot() +
   coord_sf()
 ```
 
-```{r}
+```{r, eval = F}
 # we will come back to raster data on day 2
 # DROP THIS CHALLENGE
 ggplot() +
-  geom_raster(data = CHM_HARV_df, aes(x = x, y = y, fill = layer)) +
+  geom_raster(data = , aes(x = x, y = y, fill = layer)) +
   geom_sf(data = lines_HARV, color = "black") +
   geom_sf(data = aoi_boundary_HARV, color = "grey20", size = 1) +
   geom_sf(data = point_HARV, pch = 8) +
@@ -640,5 +627,5 @@ ggplot() +
 ## Export a shapefile
 ```{r}
 st_write(plot_locations_sp_HARV,
-         here("data","PlotLocations_HARV.shp"), driver = "ESRI Shapefile")
+         here("data_output","PlotLocations_HARV.shp"), driver = "ESRI Shapefile")
 ```
