@@ -40,6 +40,8 @@ library(rgdal)
 # Working with OSM data
 # library(osmdata)
 # library(osmextract)
+
+library(here)
 ```
 
 # Intro to raster data (30 + 20 minutes)
@@ -297,12 +299,12 @@ ggplot() +
 # CREATE DSM MAPS
 
 # import DSM data
-DSM_SJER <- raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif")
+DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
 # convert to a df for plotting
 DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
 
 # import DSM hillshade
-DSM_hill_SJER <- raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmHill.tif")
+DSM_hill_SJER <- raster(here("data", "NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmHill.tif"))
 # convert to a df for plotting
 DSM_hill_SJER_df <- as.data.frame(DSM_hill_SJER, xy = TRUE)
 
@@ -333,11 +335,11 @@ ggplot() +
 ```{r}
 # CREATE DTM MAP
 # import DTM
-DTM_SJER <- raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmCrop.tif")
+DTM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmCrop.tif"))
 DTM_SJER_df <- as.data.frame(DTM_SJER, xy = TRUE)
 
 # DTM Hillshade
-DTM_hill_SJER <- raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmHill.tif")
+DTM_hill_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmHill.tif"))
 DTM_hill_SJER_df <- as.data.frame(DTM_hill_SJER, xy = TRUE)
 
 ggplot() +
@@ -367,9 +369,9 @@ ggplot() +
 What happens when maps don't line up? That is usually a sign that layers are in different coordinate reference systems (CRS).
 
 ```{r}
-DTM_HARV <- raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif")
+DTM_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif"))
 
-DTM_hill_HARV <- raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_DTMhill_WGS84.tif")
+DTM_hill_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_DTMhill_WGS84.tif"))
 ```
 
 ```{r}
@@ -439,6 +441,7 @@ extent(DTM_hill_UTMZ18N_HARV)
 extent(DTM_hill_HARV)
 ```
 
+
 ### Challenge
 
 ## Dealing with raster resolution
@@ -487,10 +490,10 @@ ggplot() +
 
 ```{r}
 # import DSM
-DSM_SJER <- raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif")
+DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
 # import DSM hillshade
 DSM_hill_SJER_WGS <-
-raster("data/NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_DSMhill_WGS84.tif")
+raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_DSMhill_WGS84.tif"))
 
 # reproject raster
 DTM_hill_UTMZ18N_SJER <- projectRaster(DSM_hill_SJER_WGS,
@@ -519,11 +522,11 @@ ggplot() +
 # Raster calculations (40 + 20 minutes - 15 minutes raster math - 15 minutes challenges = 30 minutes)
 ## Raster calculations in R
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif")
+GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif"))
 ```
 
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif")
+GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
 ```
 
 ```{r}
@@ -600,7 +603,7 @@ CHM_ov_HARV_df <- as.data.frame(CHM_ov_HARV, xy = TRUE)
 ## Export a GeoTIFF
 
 ```{r}
-writeRaster(CHM_ov_HARV, "CHM_HARV.tiff",
+writeRaster(CHM_ov_HARV, here("fig_output","CHM_HARV.tiff"),
             format="GTiff",
             overwrite=TRUE,
             NAflag=-9999)
@@ -634,7 +637,7 @@ ggplot() +
 ```
 
 ```{r}
-writeRaster(CHM_ov_SJER, "chm_ov_SJER.tiff",
+writeRaster(CHM_ov_SJER, here("fig_output", "chm_ov_SJER.tiff"),
             format = "GTiff",
             overwrite = TRUE,
             NAflag = -9999)
@@ -655,7 +658,7 @@ ggplot(CHM_ov_SJER_df) +
 
 The `raster()` function only reads in the first band, in this case the red band of an RGB raster
 ```{r}
-RGB_band1_HARV <- raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif")
+RGB_band1_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
 ```
 
 ```{r}
@@ -665,7 +668,7 @@ RGB_band1_HARV_df  <- as.data.frame(RGB_band1_HARV, xy = TRUE)
 ```{r}
 ggplot() +
   geom_raster(data = RGB_band1_HARV_df,
-              aes(x = x, y = y, alpha = HARV_RGB_Ortho)) + 
+              aes(x = x, y = y, alpha = layer)) + 
   coord_quickmap()
 ```
 
@@ -679,7 +682,7 @@ nbands(RGB_band1_HARV)
 
 To import the green band:
 ```{r}
-RGB_band2_HARV <-  raster("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif", band = 2)
+RGB_band2_HARV <-  raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"), band = 2)
 ```
 
 ```{r}
@@ -689,7 +692,7 @@ RGB_band2_HARV_df <- as.data.frame(RGB_band2_HARV, xy = TRUE)
 ```{r}
 ggplot() +
   geom_raster(data = RGB_band2_HARV_df,
-              aes(x = x, y = y, alpha = HARV_RGB_Ortho)) + 
+              aes(x = x, y = y, alpha = layer)) + 
   coord_equal()
 ```
 
@@ -697,7 +700,7 @@ ggplot() +
 
 The `stack()` function brings in all bands
 ```{r}
-RGB_stack_HARV <- stack("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif")
+RGB_stack_HARV <- stack(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
 ```
 
 ```{r}
@@ -722,13 +725,13 @@ str(RGB_stack_HARV_df)
 
 ```{r}
 ggplot() +
-  geom_histogram(data = RGB_stack_HARV_df, aes(HARV_RGB_Ortho.1))
+  geom_histogram(data = RGB_stack_HARV_df, aes(HARV_RGB_Ortho_1))
 ```
 
 ```{r}
 ggplot() +
   geom_raster(data = RGB_stack_HARV_df,
-              aes(x = x, y = y, alpha = HARV_RGB_Ortho.2)) + 
+              aes(x = x, y = y, alpha = HARV_RGB_Ortho_2)) + 
   coord_quickmap()
 ```
 
@@ -762,11 +765,11 @@ plotRGB(RGB_stack_HARV,
 ### Challenge
 
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_Ortho_wNA.tif")
+GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_Ortho_wNA.tif"))
 ```
 
 ```{r}
-HARV_NA <- stack("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_Ortho_wNA.tif")
+HARV_NA <- stack(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_Ortho_wNA.tif"))
 ```
 
 ```{r}
@@ -775,7 +778,7 @@ plotRGB(HARV_NA,
 ```
 
 ```{r}
-GDALinfo("data/NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif")
+GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
 ```
 
 ## RasterStack vs. RasterBrick
@@ -952,7 +955,7 @@ ggplot(data = mean_tree_height_plots_HARV, aes(ID, layer)) +
 # Raster time-series data (40 + 20 minutes) DROP
 
 ```{r}
-NDVI_HARV_path <- "data/NEON-DS-Landsat-NDVI/HARV/2011/NDVI"
+NDVI_HARV_path <- here("data","NEON-DS-Landsat-NDVI/HARV/2011/NDVI")
 
 all_NDVI_HARV <- list.files(NDVI_HARV_path,
                             full.names = TRUE,
@@ -985,7 +988,7 @@ xres(NDVI_HARV_stack)
 
 ```{r}
 NDVI_HARV_stack_df <- as.data.frame(NDVI_HARV_stack, xy = TRUE) %>%
-    melt(id.vars = c('x','y'))
+    reshape2::melt(id.vars = c('x','y'))
 ```
 
 ```{r}
@@ -1000,7 +1003,7 @@ NDVI_HARV_stack <- NDVI_HARV_stack/10000
 
 ```{r}
 NDVI_HARV_stack_df <- as.data.frame(NDVI_HARV_stack, xy = TRUE) %>%
-    melt(id.vars = c('x','y'))
+    reshape2::melt(id.vars = c('x','y'))
 
 ggplot() +
   geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
@@ -1015,7 +1018,7 @@ ggplot(NDVI_HARV_stack_df) +
 
 ```{r}
 har_met_daily <-
-  read.csv("data/NEON-DS-Met-Time-Series/HARV/FisherTower-Met/hf001-06-daily-m.csv")
+  read.csv(here("data","NEON-DS-Met-Time-Series/HARV/FisherTower-Met/hf001-06-daily-m.csv"))
 
 str(har_met_daily)
 ```
@@ -1040,7 +1043,7 @@ ggplot() +
 ```
 
 ```{r}
-RGB_277 <- stack("data/NEON-DS-Landsat-NDVI/HARV/2011/RGB/277_HARV_landRGB.tif")
+RGB_277 <- stack(here("data","NEON-DS-Landsat-NDVI/HARV/2011/RGB/277_HARV_landRGB.tif"))
 RGB_277
 ```
 
@@ -1053,7 +1056,7 @@ RGB_277_df <- as.data.frame(RGB_277, xy = TRUE)
 ```
 
 ```{r}
-RGB_277_df$rgb <- with(RGB_277_df, rgb(X277_HARV_landRGB.1, X277_HARV_landRGB.2, X277_HARV_landRGB.3,1))
+RGB_277_df$rgb <- with(RGB_277_df, rgb(X277_HARV_landRGB_1, X277_HARV_landRGB_2, X277_HARV_landRGB_3,1))
 ```
 
 ```{r}
@@ -1064,10 +1067,10 @@ ggplot() +
 
 ```{r}
 # Julian day 293
-RGB_293 <- stack("data/NEON-DS-Landsat-NDVI/HARV/2011/RGB/293_HARV_landRGB.tif")
+RGB_293 <- stack(here("data","NEON-DS-Landsat-NDVI/HARV/2011/RGB/293_HARV_landRGB.tif"))
 RGB_293 <- RGB_293/255
 RGB_293_df <- as.data.frame(RGB_293, xy = TRUE)
-RGB_293_df$rgb <- with(RGB_293_df, rgb(X293_HARV_landRGB.1, X293_HARV_landRGB.2, X293_HARV_landRGB.3,1))
+RGB_293_df$rgb <- with(RGB_293_df, rgb(X293_HARV_landRGB_1, X293_HARV_landRGB_2, X293_HARV_landRGB_3,1))
 ggplot() +
   geom_raster(data = RGB_293_df, aes(x, y), fill = RGB_293_df$rgb) +
   ggtitle("Julian day 293")
@@ -1240,7 +1243,7 @@ class(avg_NDVI_HARV$Date)
 ```
 
 ```{r}
-NDVI_path_SJER <- "data/NEON-DS-Landsat-NDVI/SJER/2011/NDVI"
+NDVI_path_SJER <- here("data","NEON-DS-Landsat-NDVI/SJER/2011/NDVI")
 
 all_NDVI_SJER <- list.files(NDVI_path_SJER,
                             full.names = TRUE,
@@ -1332,7 +1335,7 @@ row.names(avg_NDVI_HARV_clean) <- NULL
 head(avg_NDVI_HARV_clean)
 ```
 ```{r}
-write.csv(avg_NDVI_HARV_clean, file="meanNDVI_HARV_2011.csv")
+write.csv(avg_NDVI_HARV_clean, file=here("data_output","meanNDVI_HARV_2011.csv"))
 ```
 
 ### Challenge
@@ -1344,6 +1347,6 @@ head(avg_NDVI_SJER_clean)
 ```
 
 ```{r}
-write.csv(avg_NDVI_SJER_clean, file = "meanNDVI_SJER_2011.csv")
+write.csv(avg_NDVI_SJER_clean, file = here("data_output","meanNDVI_SJER_2011.csv"))
 ```
 
