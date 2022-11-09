@@ -2,7 +2,9 @@
 title: 'Geospatial Carpentry: Session 1: Intro to R'
 author: "Aleksandra Wilczynska"
 date: "2022-11-18"
-output: html_document
+output: 
+  html_document:
+     toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -37,33 +39,10 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 # [Introduction to  RStudio](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html) and [Project management](https://datacarpentry.org/r-intro-geospatial/02-project-intro/index.html) 
 
-## Why R?
-
-- It is a **free** and **open-source** programming language/software! 
-- It was created by statisticians for **statistics** 
-- It's script-based, hence great for **reproducibility** 
-
-## Why RStudio?
- *I might remove that part*
-- RStudio is an integrated development environment (IDE)
-- It provides a (much prettier) interface for the R software
-- R is integrated into RStudio, so you never actually have to open R 
-
-## Default layout
-
-- Entire Left / Bottom Left : **R console** (what R would look and be like without RStudio)
-- Top right: **Environment/History** (look here to see what you have done)
-- Bottom Right: Files/Plots/Packages/Help/Viewer (see the contents of the project/working directory)
-
-![](assets/img/01-rstudio.png)
-
-- Top left: Once you open files, such as R scripts, an editor panel will also open in the top left.
-
-![](assets/img/02-rstudio.png)
-
-## Interacting with R
 
 ## Project management 
+RStudio is an integrated development environment (IDE). It provides a (much prettier) interface for the R software. R is integrated into RStudio, so you never actually have to open R.
+
 
 R Studio gives a functionality of creating projects: self-contained working space (i.e. working directory), to which R will refer to, when looking for and saving files.
 
@@ -75,8 +54,6 @@ We’re going to create a new project in RStudio:
 - browse for directory where you want to keep it 
 - type **r-geospatial** as the name of the project 
 -`Create project`
-
-
 
 ### Tips for project organisation
 
@@ -96,20 +73,20 @@ This is one suggestion of how your R project can look like. Let's go ahead and c
 
 ### Two main ways to interact with R
 
-- Test and play within the interactive R console (chat)
-    - Pros: immediate results
-    - Cons: work lost once we close RStudio
+- Test and play within the **interactive R console** (chat)
+    - **Pros:** immediate results
+    - **Cons:** work lost once we close RStudio
     
-- Start writing in an .R file ( email )
+- Start writing in an **.R file** ( email )
     - File still will be executed in the console
-    - Pros: complete record of what you did!
-    - Cons: Can be messy if we're just want to print things out
+    - **Pros:** complete record of what you did!
+    - **Cons:** Can be messy if we're just want to print things out
 
 ### Running the code
 
 - In the console: `Enter`
 - In the script:
-   - `Ctrl` + `Enter` 
+   - `Ctrl` + `Enter`  (for MAC users: `Command` + `Enter`)
    - `Run` button on right left - current line or selection
 
 ### Creating a script
@@ -121,15 +98,15 @@ We're going to work with a script. Let's create one now and save it in the `scri
 - A new `Untitled` script will appear in the source pane. Save it using floppy disc icon.
 - Name it `intro-to-r.R`
 
-### Escaping 
+<!-- ### Escaping  -->
 
-The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed. 
+<!-- The console shows it's ready to get new commands with `>` sign. It will show `+` sign if it still requires input for the command to be executed.  -->
 
-Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`.
+<!-- Sometimes you don't know what is missing/ you change your mind and want to run something else, or your code is running much too long and you just want it to stop. The way to do it is to hit `Esc`. -->
 
 ### Packages 
 
-A great power of R lays in packages add-on sets of functions that are build by the community and once they go through a quality process they are available to download from a repository called CRAN. They need to be explicitly activated. 
+A great power of R lays in **packages: add-on sets of functions** that are build by the community and once they go through a quality process they are available to download from a repository called CRAN. They need to be explicitly activated. 
 Now, we will be using `tidyverse` package, which is actually a collection of useful packages. Another package that will be useful for us is `here`.
 
 If you have have not installed this package earlier, please do so. You can check if you have it installed in the `Packages` pane in the bottom-right window.
@@ -154,8 +131,7 @@ library(here)
 <font size="3">*Credit*:[kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)</font>
 
 
-
-You have created a project which is your working directory, and a number of subfolders, that will help you organise your project better. But now each time you will save or retrieve a file from those folders, you will need to specify the path from the folder your in (most likely scripts). 
+You have created a project which is your working directory, and a number of subfolders, that will help you organise your project better. But now each time you will save or retrieve a file from those folders, you will need to specify the path from the folder you are in (most likely `scripts`). 
 
 That can become complicated and can become a reproducibility problem if the person using your code (e.g. future you) is working in a different subfolder. 
 
@@ -210,7 +186,7 @@ Notice that assignment does not print a value. Instead, we stored it for later i
 x
 ```
 
-Look for the Environment tab in one of the panes of RStudio, and you will see that `x` and its value have appeared. 
+Look for the `Environment` tab in one of the panes of RStudio, and you will see that `x` and its value have appeared. 
 Our variable `x` can be used in place of a number in any calculation that expects a number, e.g. when caclulating a square root:
 ```{r use-variable}
 sqrt(x)
@@ -229,7 +205,7 @@ y
 ```
 
 
-# [Data Structures](https://datacarpentry.org/r-intro-geospatial/03-data-structures-part1/index.html) (40+15 min)
+# [Data Structures](https://datacarpentry.org/r-intro-geospatial/03-data-structures-part1/index.html) 
 
 ## Vectors 
 So far we've looked on individual values. Now we will move to a data structure called vectors. Vectors are arrays of values of a same data type (will explain in a second :) ) .
@@ -354,7 +330,7 @@ nordic_cat2 # since we have not included Sweden in the list of factor levels, it
 
 
 <!-- need to reduce this part by by 55 minutes -->
-# [Exploring Data frames](https://datacarpentry.org/r-intro-geospatial/04-data-structures-part2/index.html) (20+10 min)
+# [Exploring Data frames](https://datacarpentry.org/r-intro-geospatial/04-data-structures-part2/index.html)
 
 Now we turn to the bread-and-butter of working with R: working with tabular data. In R data are stored in a data structure called **data frames**.  
 
@@ -366,11 +342,11 @@ For example, here is a figure depicting a data frame comprising a numeric, a cha
 
 ## Reading data
 
-`read_csv()` is a function used to read coma separated data files (`.csv` format)). There are other functions for files separated with other delimiters. 
+`read.csv()` is a function used to read coma separated data files (`.csv` format)). There are other functions for files separated with other delimiters. 
 We're gonna read in the gap minder data set with information about countries' size, GDP and average life expectancy in different years.
 
 ```{r reading-data}
-gapminder <- read_csv(here('data','gapminder_data.csv') )
+gapminder <- read.csv(here('data','gapminder_data.csv') )
 
 ```
 
@@ -409,7 +385,7 @@ head(country_vec)
 ```
 Note that the calling a column with a `$` sign will return a vector, it's not a data frame anymore.
 
-# [Data frame Manipulation with dplyr](https://datacarpentry.org/r-intro-geospatial/06-dplyr/index.html) (30+10 min)
+# [Data frame Manipulation with dplyr](https://datacarpentry.org/r-intro-geospatial/06-dplyr/index.html) 
 
 ## Select
 Let's start manipulating the data. 
@@ -449,6 +425,8 @@ In the `gapminder` data set, we want to see the results only for Europe for 21st
 year_country_gdp_euro <- gapminder %>% 
   filter(continent == "Europe" & year> 2000) %>%
   select(year, country, gdpPercap)
+
+head(year_country_gdp_euro)
 ```
 
 
@@ -461,7 +439,7 @@ year_country_lifeExp_Africa <- gapminder %>%
                            filter(continent=="Africa"  ) %>%
                            select(year,country,lifeExp)
 
-```
+``` 
 
 
 
@@ -478,6 +456,8 @@ gapminder %>% # select the dataset
 <div class="alert alert-info">
 <strong>Challenge</strong> 
 Calculate the average life expectancy per country. Which country has the longest average life expectancy and which has the shortest average life expectancy?
+
+<strong>Hint</strong> You can sort data.frame by `arrange()` function from `dplyr` package or make use of `max()`  and `min()` functions.
 </div>
 ```{r ex6 , class.source="bg-info", include=F}
 lifeExp_bycountry <- gapminder %>%
@@ -537,7 +517,7 @@ head(gapminder_gdp)
 ```
 
 
-# [Introduction to Visualisation](https://datacarpentry.org/r-intro-geospatial/07-plot-ggplot2/index.html) (20+15 min)
+# [Introduction to Visualisation](https://datacarpentry.org/r-intro-geospatial/07-plot-ggplot2/index.html) 
 Package `ggplot2` is a powerful plotting system. I will introduce key features of `ggplot`. Later today/ on Monday you will use this package to visualize geospatial data.
 `gg` stands for grammar of graphics, the idea that three components needed to create a graph are:
 - data
@@ -549,15 +529,13 @@ fun part about `ggplot` is that you can then add additional layers to the plot p
 First, lets plot distribution of life expectancy in the `gapminder` dataset. 
 
 ```{r ggplot}
-
-gapminder %>%  # data layer
-  ggplot( aes(x = lifeExp)) + # aesthetics layer 
+  ggplot(data =gapminder,  aes(x = lifeExp)) + # aesthetics layer 
   geom_histogram() # geometry layer
 
 ```
 
 You can see that in `ggplot` you use `+` as a pipe, to add layers. Within `ggplot` call, it is the only pipe that will work. 
-But, it is possible to chain operations on a dataset with a pipe that we have already learned: `%>%` ( or `|>`) and follow them but ggplot grammar. 
+But, it is possible to chain operations on a dataset with a pipe that we have already learned: `%>%` ( or `|>`) and follow them by ggplot grammar. 
 
 Let's create another plot, this time only on a subset of observations:
 
@@ -659,6 +637,8 @@ plot_2007_amr <-
 plot_2007_amr
 ```
 
+# [Writing data](https://datacarpentry.org/r-intro-geospatial/08-writing-data/index.html)
+
 Once we are happy with our plot we can save it in a format of our choice. Remember to save it in the dedicated folder. 
 
 ```{r save plot}
@@ -670,10 +650,15 @@ ggsave(here('fig_output','plot_2007_amr.pdf') ) # By default, ggsave() saves the
 Another output of your work you want to save is a cleaned dataset. In your analysis, you can then load directly that dataset. Say we want to save the data only for Australia:
 
 ```{r writing-data}
-gapminder_aus <- gapminder %>%  
-  filter(country == 'Australia') 
+gapminder_amr_2007 <-  gapminder %>%  
+  filter(year == 2007, 
+         continent == 'Americas') %>% 
+  mutate(country_reordered = fct_reorder(country, gdpPercap ),
+         lifeExpCat = if_else(lifeExp >= mean(lifeExp), 'high', 'low' )) 
 
-write_csv(gapminder_aus, here('data_output', 'gapminder_australia.csv'))
+write.csv(gapminder_amr_2007, 
+          here('data_output', 'gapminder_americas_2007.csv'), 
+          row.names=FALSE)
 
 
 ```
