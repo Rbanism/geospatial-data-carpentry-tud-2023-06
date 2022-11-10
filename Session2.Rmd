@@ -20,13 +20,16 @@ knitr::opts_chunk$set(
 # library(remotes)
 # remotes::install_github('ropensci/osmdata')
 
+
+library(tidyverse)
+
 # Data manipulation
 # library(tibble)
 # library(dplyr)
 # library(reshape)
 
 # Data visualisation
-library(ggplot2)
+# library(ggplot2)
 
 # Working with spatial data
 library(sf)
@@ -39,6 +42,7 @@ library(sf)
 # Working with OSM data
 # library(osmdata)
 # library(osmextract)
+library(here)
 ```
 
 # Open and plot shapefiles (20 + 10 minutes)
@@ -46,8 +50,7 @@ library(sf)
 ## Import shapefiles
 
 ```{r}
-aoi_boundary_HARV <- st_read(
-  "data/NEON-DS-Site-Layout-Files/HARV/HarClip_UTMZ18.shp")
+aoi_boundary_HARV <- st_read(here("data", "NEON-DS-Site-Layout-Files/HARV/HarClip_UTMZ18.shp"))
 ```
 
 ## Shapefile Metadata & Attributes
@@ -72,18 +75,18 @@ aoi_boundary_HARV
 
 ```{r}
 # ggplot already introduced in the morning
-ggplot() + 
-  geom_sf(data = aoi_boundary_HARV, size = 3, color = "black", fill = "cyan1") + 
+  ggplot(data = aoi_boundary_HARV) + 
+  geom_sf( size = 3, color = "black", fill = "cyan1") + 
   ggtitle("AOI Boundary Plot") + 
   coord_sf()
 ```
 
 ```{r}
-lines_HARV <- st_read("data/NEON-DS-Site-Layout-Files/HARV/HARV_roads.shp")
+lines_HARV <- st_read(here("data", "NEON-DS-Site-Layout-Files/HARV/HARV_roads.shp"))
 ```
 
-```{r}
-point_HARV <- st_read("data/NEON-DS-Site-Layout-Files/HARV/HARVtower_UTM18N.shp")
+```{r} 
+point_HARV <- st_read(here("data", "NEON-DS-Site-Layout-Files/HARV/HARVtower_UTM18N.shp" ))
 ```
 
 ```{r}
@@ -161,22 +164,23 @@ levels(factor(lines_HARV$TYPE))
 ## Subset features
 
 ```{r}
-# data wragling with dplyr introduced in the morning
+# data wrangling with dplyr introduced in the morning
 footpath_HARV <- lines_HARV %>% 
   filter(TYPE == "footpath")
+
 nrow(footpath_HARV)
 ```
 
 ```{r}
-ggplot() + 
-  geom_sf(data = footpath_HARV) +
+  ggplot(data = footpath_HARV) + 
+  geom_sf() +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Footpaths") + 
   coord_sf()
 ```
 
 ```{r}
-ggplot() + 
-  geom_sf(data = footpath_HARV, aes(color = factor(OBJECTID)), size = 1.5) +
+  ggplot(data = footpath_HARV) + 
+  geom_sf(aes(color = factor(OBJECTID)), size = 1.5) +
   labs(color = 'Footpath ID') +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Footpaths") + 
   coord_sf()
@@ -194,8 +198,8 @@ nrow(boardwalk_HARV)
 ```
 
 ```{r}
-ggplot() + 
-  geom_sf(data = boardwalk_HARV, size = 1.5) +
+ggplot(data = boardwalk_HARV) + 
+  geom_sf( size = 1.5) +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Boardwalks") + 
   coord_sf()
 ```
@@ -203,12 +207,13 @@ ggplot() +
 ```{r}
 stoneWall_HARV <- lines_HARV %>% 
   filter(TYPE == "stone wall")
+
 nrow(stoneWall_HARV)
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = stoneWall_HARV, aes(color = factor(OBJECTID)), size = 1.5) +
+ggplot(data = stoneWall_HARV) +
+  geom_sf( aes(color = factor(OBJECTID)), size = 1.5) +
   labs(color = 'Wall ID') +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Stonewalls") + 
   coord_sf()
@@ -225,8 +230,8 @@ road_colors <- c("blue", "green", "navy", "purple")
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = lines_HARV, aes(color = TYPE)) + 
+  ggplot(data = lines_HARV) +
+  geom_sf(aes(color = TYPE)) + 
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads & Trails") + 
@@ -240,8 +245,8 @@ line_widths <- c(1, 2, 3, 4)
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = lines_HARV, aes(color = TYPE, size = TYPE)) + 
+  ggplot(data = lines_HARV) +
+  geom_sf( aes(color = TYPE, size = TYPE)) + 
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') +
   scale_size_manual(values = line_widths) +
@@ -261,8 +266,8 @@ line_width <- c(1, 3, 2, 6)
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = lines_HARV, aes(size = TYPE)) +
+ggplot(data = lines_HARV) +
+  geom_sf(aes(size = TYPE)) +
   scale_size_manual(values = line_width) +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads & Trails - Line width varies") + 
   coord_sf()
@@ -271,8 +276,8 @@ ggplot() +
 ## Add plot legend
 
 ```{r}
-ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1.5) +
+ggplot(data = lines_HARV) + 
+  geom_sf( aes(color = TYPE), size = 1.5) +
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') + 
   ggtitle("NEON Harvard Forest Field Site", 
@@ -281,8 +286,8 @@ ggplot() +
 ```
 
 ```{r}
-ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1.5) +
+ggplot(data = lines_HARV) + 
+  geom_sf( aes(color = TYPE), size = 1.5) +
   scale_color_manual(values = road_colors) + 
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
@@ -295,8 +300,8 @@ ggplot() +
 ```{r}
 new_colors <- c("springgreen", "blue", "magenta", "orange")
 
-ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1.5) + 
+ggplot(data = lines_HARV) + 
+  geom_sf(aes(color = TYPE), size = 1.5) + 
   scale_color_manual(values = new_colors) +
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
@@ -313,7 +318,7 @@ class(lines_HARV$BicyclesHo)
 ```
 
 ```{r}
-levels(lines_HARV$BicyclesHo)
+levels(factor(lines_HARV$BicyclesHo))
 ```
 
 ```{r}
@@ -322,11 +327,12 @@ lines_removeNA <- lines_HARV[!is.na(lines_HARV$BicyclesHo),]
 
 ```{r}
 # First, create a data frame with only those roads where bicycles and horses are allowed
-lines_showHarv <- lines_removeNA %>% filter(BicyclesHo == "Bicycles and Horses Allowed")
+lines_showHarv <- lines_removeNA %>% 
+  filter(BicyclesHo == "Bicycles and Horses Allowed")
 
 # Next, visualise using ggplot
-ggplot() + 
-  geom_sf(data = lines_HARV) + 
+  ggplot(data = lines_HARV) + 
+  geom_sf() + 
   geom_sf(data = lines_showHarv, aes(color = BicyclesHo), size = 2) + 
   scale_color_manual(values = "magenta") +
   ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads Where Bikes and Horses Are Allowed") + 
@@ -335,7 +341,7 @@ ggplot() +
 
 ```{r}
 state_boundary_US <- 
-st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-State-Boundaries-Census-2014.shp")
+st_read(here("data", "NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-State-Boundaries-Census-2014.shp"))
 ```
 
 ```{r}
@@ -347,8 +353,8 @@ colors <- c("purple", "springgreen", "yellow", "brown", "navy")
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = state_boundary_US, aes(color = region), size = 1) +
+ggplot(data = state_boundary_US) +
+  geom_sf( aes(color = region), size = 1) +
   scale_color_manual(values = colors) +
   ggtitle("Contiguous U.S. State Boundaries") + 
   coord_sf()
@@ -404,7 +410,7 @@ ggplot() +
 ### Challenge
 
 ```{r}
-plot_locations <- st_read("data/NEON-DS-Site-Layout-Files/HARV/PlotLocations_HARV.shp")
+plot_locations <- st_read(here("data","NEON-DS-Site-Layout-Files/HARV/PlotLocations_HARV.shp"))
 ```
 
 ```{r}
@@ -443,11 +449,11 @@ ggplot() +
   coord_sf()
 ```
 
-```{r}
+```{r, eval = F}
 # we will come back to raster data on day 2
 # DROP THIS CHALLENGE
 ggplot() +
-  geom_raster(data = CHM_HARV_df, aes(x = x, y = y, fill = layer)) +
+  geom_raster(data = , aes(x = x, y = y, fill = layer)) +
   geom_sf(data = lines_HARV, color = "black") +
   geom_sf(data = aoi_boundary_HARV, color = "grey20", size = 1) +
   geom_sf(data = point_HARV, pch = 8) +
@@ -460,7 +466,7 @@ ggplot() +
 ## Working with spatial data from different sources
 
 ```{r}
-state_boundary_US <- st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-State-Boundaries-Census-2014.shp")
+state_boundary_US <- st_read(here("data","NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-State-Boundaries-Census-2014.shp"))
 ```
 
 ```{r}
@@ -471,7 +477,7 @@ ggplot() +
 ```
 
 ```{r}
-country_boundary_US <- st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-Boundary-Dissolved-States.shp")
+country_boundary_US <- st_read(here("data", "NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-Boundary-Dissolved-States.shp"))
 ```
 
 ```{r}
@@ -512,7 +518,7 @@ ggplot() +
 ```
 
 ```{r}
-NE.States.Boundary.US <- st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/Boundary-US-State-NEast.shp")
+NE.States.Boundary.US <- st_read(here("data", "NEON-DS-Site-Layout-Files/US-Boundary-Layers/Boundary-US-State-NEast.shp"))
 ```
 
 ```{r}
@@ -531,7 +537,7 @@ ggplot() +
 ## Import .csv
 ```{r}
 plot_locations_HARV <-
-  read.csv("data/NEON-DS-Site-Layout-Files/HARV/HARV_PlotLocations.csv")
+  read.csv(here("data", "NEON-DS-Site-Layout-Files/HARV/HARV_PlotLocations.csv"))
 
 str(plot_locations_HARV)
 ```
@@ -594,7 +600,7 @@ ggplot() +
 
 ```{r}
 newplot_locations_HARV <-
-  read.csv("data/NEON-DS-Site-Layout-Files/HARV/HARV_2NewPhenPlots.csv")
+  read.csv(here("data","NEON-DS-Site-Layout-Files/HARV/HARV_2NewPhenPlots.csv"))
 str(newplot_locations_HARV)
 ```
 
@@ -621,5 +627,5 @@ ggplot() +
 ## Export a shapefile
 ```{r}
 st_write(plot_locations_sp_HARV,
-         "data/PlotLocations_HARV.shp", driver = "ESRI Shapefile")
+         here("data_output","PlotLocations_HARV.shp"), driver = "ESRI Shapefile")
 ```
