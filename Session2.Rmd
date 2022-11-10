@@ -28,7 +28,7 @@ library(sf)         # working with spatial vector data
 
 ```{r}
 # aoi_boundary_HARV <- st_read(here("data", "NEON-DS-Site-Layout-Files/HARV/HarClip_UTMZ18.shp"))
-boundary_Delft <- st_read(here("data", "delft-boundary-polygon.shp"))
+boundary_Delft <- st_read(here("data", "delft-boundary.shp"))
 ```
 
 ## Shapefile Metadata & Attributes
