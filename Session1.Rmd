@@ -55,15 +55,16 @@ We’re going to create a new project in RStudio:
 - type **r-geospatial** as the name of the project 
 -`Create project`
 
-### Tips for project organisation
 
-+ **Raw data** is read only
-+ **Cleaned data** as read only
-+ **Generated output** is disposable
-+ **Related data together** (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles)
-+ Keep consistent **naming schema**
-+ Name all files to reflect their content or function
-+ Stage your scripts: Creating separate R scripts or Rmarkdown documents for different stages of a project
+<!-- ### Tips for project organisation -->
+
+<!-- + **Raw data** is read only -->
+<!-- + **Cleaned data** as read only -->
+<!-- + **Generated output** is disposable -->
+<!-- + **Related data together** (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles) -->
+<!-- + Keep consistent **naming schema** -->
+<!-- + Name all files to reflect their content or function -->
+<!-- + Stage your scripts: Creating separate R scripts or Rmarkdown documents for different stages of a project -->
 
 ### Organising project/working directory
 
@@ -147,18 +148,18 @@ here('data')
 ```
 
 
-### Download files  - Should be send via email in the zipped file? Then this part can be skipped
+<!-- ### Download files  - Should be send via email in the zipped file? Then this part can be skipped -->
 
-#### Part 1: 
-```{r download-files}
-download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/gapminder_data.csv', here('data','gapminder_data.csv'), mode = 'wb')
+<!-- #### Part 1:  -->
+<!-- ```{r download-files} -->
+<!-- download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/gapminder_data.csv', here('data','gapminder_data.csv'), mode = 'wb') -->
 
-```
+<!-- ``` -->
 
-#### Part 2: 
-+ Download zip file by clicking on [this link](https://ndownloader.figshare.com/articles/2009586/versions/10)
-+ Move the downloaded zip file to the data directory.
-+ Once the data have been moved, unzip all files. 
+<!-- #### Part 2:  -->
+<!-- + Download zip file by clicking on [this link](https://ndownloader.figshare.com/articles/2009586/versions/10) -->
+<!-- + Move the downloaded zip file to the data directory. -->
+<!-- + Once the data have been moved, unzip all files.  -->
 
 # [Intro to R](https://datacarpentry.org/r-intro-geospatial/01-rstudio-intro/index.html)
 
