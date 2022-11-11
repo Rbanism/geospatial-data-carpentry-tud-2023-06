@@ -41,7 +41,12 @@ knitr::opts_chunk$set(
  
 ...which is a good thing `r emo::ji("sunglasses")`
 
-## Tips for project organisation
+
+## Organising working directory
+
+![](../assets/img/rstudio_project_files.jpeg){fig-align="center"}
+
+::: {.notes}
 
 - All files related to a project in **one location**
 - **Raw data** is read only
@@ -49,16 +54,12 @@ knitr::opts_chunk$set(
 - **Generated output** is disposable
 - **Related data together** (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles)
 - Keep consistent **naming schema**
-
-## Organising working directory
-
-![](../assets/img/rstudio_project_files.jpeg){fig-align="center"}
+::: 
 
 ## Handling paths
  ![*Credit*: [kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)](../assets/img/relative_root.png){fig-align="center" width="65%"}
 
----
-
+## `here` package
 ![*Credit*: [Allison horst](https://github.com/allisonhorst)](../assets/img/here.png){fig-align="center" width="65%"}
 
 
@@ -80,6 +81,7 @@ Write a single command (you can use pipes) that will produce a **data frame** th
 
 How many rows does your data frame have and why?
 
+`r countdown::countdown()`
 
 . . .
 
@@ -87,6 +89,8 @@ How many rows does your data frame have and why?
 year_country_lifeExp_Africa <- gapminder %>%
                            filter(continent=="Africa"  ) %>%
                            select(year,country,lifeExp)
+
+nrow(year_country_lifeExp_Africa)
 
 ```
 
@@ -96,18 +100,16 @@ year_country_lifeExp_Africa <- gapminder %>%
 Calculate the **average life expectancy per country**. Which country has the **longest** average life expectancy and which has the **shortest** average life expectancy?
 
 
-**Hint:** Use `arrange()` to sort data frame or find minimum and maximum using `max()`  and `min()` functions.
+**Hint:** Use `max()`  and `min()` functions to find minimum and maximum.
 
 . . .
 
 ```{r}
-#| eval: false
+
 gapminder %>%
   group_by(country) %>%
-  summarize(mean_lifeExp = mean(lifeExp) ) %>%
-  filter(
-    mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp)
-    )
+  summarize(avg_lifeExp = mean(lifeExp) ) %>%
+  filter(avg_lifeExp == min(avg_lifeExp) | avg_lifeExp == max(avg_lifeExp))
 
 ```
 
