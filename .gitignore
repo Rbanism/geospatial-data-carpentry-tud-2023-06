@@ -16,6 +16,7 @@
 
 # Data
 data/*
+download/*
 
 # Output files
 fig_output/*
