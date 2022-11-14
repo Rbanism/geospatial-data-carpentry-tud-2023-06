@@ -134,7 +134,9 @@ library(here)
 
 You have created a project which is your working directory, and a number of subfolders, that will help you organise your project better. But now each time you will save or retrieve a file from those folders, you will need to specify the path from the folder you are in (most likely `scripts`). 
 
+
 That can become complicated and can become a reproducibility problem if the person using your code (e.g. future you) is working in a different subfolder. 
+
 
 `here()` to the rescue! This package provides absolute paths from the root (main directory) of your project. 
 
@@ -168,9 +170,6 @@ here('data')
 ```{r calculator}
 1+100
 
-12/7
-
-3*5
 
 ```
 
@@ -201,7 +200,7 @@ x
 
 You can use the 'old' value when reassigning the value
 ```{r reassign2}
-y <- x * 2 # you can use value stored in object x to create y
+y <- sqrt(x) # you can use value stored in object x to create y
 y
 ```
 
@@ -235,7 +234,7 @@ The combine function, `c()`, will also append things to an existing vector:
 ab_vector <- c('a', 'b')
 ab_vector
 
-abcd_vector <- c(ab_vector, 'DC')
+abcd_vector <- c(ab_vector, 'c', 'd')
 abcd_vector
 
 ```
@@ -263,7 +262,8 @@ is.na(with_na) #  This will produce a vector of logical values, stating if a sta
 
 ```
 
-We know which elements in the vectors are `NA`. Now we need to retrieve the subset of the `with_na` vector that is not `NA`. Any subsetting in `R` is done with square brackets`[ ]`. 
+We know which elements in the vectors are `NA`. Now we need to retrieve the subset of the `with_na` vector that is not `NA`.
+Any subsetting in `R` is done with square brackets`[ ]`. 
 
 
 ```{r remove-na3}
@@ -336,6 +336,8 @@ nordic_cat2 # since we have not included Sweden in the list of factor levels, it
 Now we turn to the bread-and-butter of working with R: working with tabular data. In R data are stored in a data structure called **data frames**.  
 
 A data frame is the representation of data in the format of a **table** where the columns are **vectors** that all have the **same length**. 
+
+
 Because columns are vectors, each column must contain a **single type of data** (e.g., characters, integers, factors). 
 For example, here is a figure depicting a data frame comprising a numeric, a character, and a logical vector.
 
@@ -373,9 +375,8 @@ summary(gapminder) # gives basic statistical information about each column. Info
 
 ```
 
-## Accessing columns, rows and cells
 
-When you're analyzing a data set, you often need to access its specific elements.There are different way to go about it, and we will explore some of them.
+When you're analyzing a data set, you often need to access its specific columns.
 
 One handy way to access a column is using it's name and a dollar sign `$`: 
 ```{r subset-dollar-sign}
@@ -403,7 +404,9 @@ head(year_country_gdp)
 ## Pipe
 Now, this is not the most common notation when working with `dplyr` package. `dplyr` offers an operator `%>%` called a pipe, which allows you build up a very complicated commands in a readable way.
 
+
 In newer installation of `R` you can also find a notation `|>` . This pipe does exactly the same, the only difference is that you don't need to load any pacakges to have it available.
+
 
 The `select()` statement with pipe would look like that:
 
@@ -421,6 +424,7 @@ First we define data set, then with the use of pipe we pass it on to the `select
 ## Filter
 
 We already now how to select only the needed columns. But now, we also want to filter the data set via certain condition with `filter()` function. Instead doing it in separate steps , we can do it all together. 
+
 In the `gapminder` data set, we want to see the results only for Europe for 21st century. 
 ```{r}
 year_country_gdp_euro <- gapminder %>% 
@@ -428,6 +432,15 @@ year_country_gdp_euro <- gapminder %>%
   select(year, country, gdpPercap)
 
 head(year_country_gdp_euro)
+```
+Let's now find all the observations from Eurasia: 
+
+```{r}
+year_country_gdp_eurasia <- gapminder %>% 
+  filter(continent == "Europe" | continent == "Asia") %>%
+  select(year, country, gdpPercap)
+
+head(year_country_gdp_eurasia)
 ```
 
 
@@ -443,14 +456,13 @@ year_country_lifeExp_Africa <- gapminder %>%
 ``` 
 
 
-
 ## Group and summarize
 So far, we have created a dataset for one of the continents represented in the `gapminder` dataset. But rather than doing that, we want to know statistics about all of the continents, presented by group.
 
 ```{r dplyr-group}
 gapminder %>% # select the dataset
   group_by(continent) %>% # group by continent
-  summarize(mean_gdpPercap = mean(gdpPercap)) # summarize function creates statistics for the data set 
+  summarize(avg_gdpPercap = mean(gdpPercap)) # summarize function creates statistics for the data set 
 
 ```
 
@@ -458,16 +470,17 @@ gapminder %>% # select the dataset
 <strong>Challenge</strong> 
 Calculate the average life expectancy per country. Which country has the longest average life expectancy and which has the shortest average life expectancy?
 
-<strong>Hint</strong> You can sort data.frame by `arrange()` function from `dplyr` package or make use of `max()`  and `min()` functions.
+<strong>Hint</strong> Use `max()`  and `min()` functions to find minimum and maximum.
+
 </div>
 ```{r ex6 , class.source="bg-info", include=F}
 lifeExp_bycountry <- gapminder %>%
    group_by(country) %>%
-   summarize(mean_lifeExp=mean(lifeExp))
+   summarize(avg_lifeExp=mean(lifeExp))
 
 
 lifeExp_bycountry %>%
-   filter(mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp))
+   filter(avg_lifeExp == min(avg_lifeExp) | avg_lifeExp == max(avg_lifeExp))
 ```
 
 
@@ -477,7 +490,7 @@ You can also group by multiple columns:
 
 gapminder %>%
   group_by(continent, year) %>%
-  summarize(mean_gdpPercap = mean(gdpPercap))
+  summarize(avg_gdpPercap = mean(gdpPercap))
 
 ```
 
@@ -486,24 +499,25 @@ On top of this, you can also make multiple summaries of those groups:
 gdp_pop_bycontinents_byyear <- gapminder %>%
   group_by(continent,year) %>%
   summarize(
-    mean_gdpPercap = mean(gdpPercap),
+    avg_gdpPercap = mean(gdpPercap),
     sd_gdpPercap = sd(gdpPercap),
-    mean_pop = mean(pop),
-    sd_pop = sd(pop)
+    avg_pop = mean(pop),
+    sd_pop = sd(pop),
+    n_obs = n()
     )
 
 ```
 
 ## Frequencies
 
-If you need a number of observations per group, you can use the `count()` function
+If you need only a number of observations per group, you can use the `count()` function
 ```{r dplyr-count}
 
 gapminder %>%
     group_by(continent) %>%
     count()
-
 ```
+ 
 
 ## Mutate
 
@@ -590,6 +604,7 @@ gapminder %>%
 
 We can also adapt the color scale. Common choice that is used for its colorblind-proofness is `viridis` package.
 ```{r ggplot-colors-adapt}
+plot_c <-
   gapminder %>%  
   filter(year == 2007, 
          continent == 'Americas') %>% 
@@ -604,7 +619,7 @@ We can also adapt the color scale. Common choice that is used for its colorblind
 Maybe we don't need that much information about the life expectancy. We only want to know if it's below or above average.
 
 ```{r ggplot-colors-discrete}
-plot_2007_amr <-  # this time let's save the plot in the object.
+plot_d <-  # this time let's save the plot in the object.
   gapminder %>%  
   filter(year == 2007, 
          continent == 'Americas') %>% 
@@ -621,7 +636,7 @@ plot_2007_amr <-  # this time let's save the plot in the object.
 Since we saved a plot as an object, nothing has been printed out. Just like with any other object in `R`, if you want to see it, you need to call it.  
 
 ```{r ggplot-call}
-plot_2007_amr
+plot_d
 
 ```
 
@@ -629,13 +644,13 @@ Now we can make use of the saved object and add things to it.
 
 Let's also give it a title and name the axes:
 ```{r ggplot-titles}
-plot_2007_amr <- 
-  plot_2007_amr +
+plot_d <- 
+  plot_d +
   ggtitle('GDP per capita in Americas', subtitle = 'Year 2007') +
   xlab('Country')+
   ylab('GDP per capita')
 
-plot_2007_amr
+plot_d
 ```
 
 # [Writing data](https://datacarpentry.org/r-intro-geospatial/08-writing-data/index.html)
@@ -643,7 +658,7 @@ plot_2007_amr
 Once we are happy with our plot we can save it in a format of our choice. Remember to save it in the dedicated folder. 
 
 ```{r save plot}
-ggsave(here('fig_output','plot_2007_amr.pdf') ) # By default, ggsave() saves the last displayed plot, but you can also explicitly name the plot you want to save
+ggsave(plot = plot_d, filename = here('fig_output','plot_americas_2007.pdf') ) # By default, ggsave() saves the last displayed plot, but you can also explicitly name the plot you want to save
 
 ```
 
