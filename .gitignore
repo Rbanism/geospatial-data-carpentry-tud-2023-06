@@ -16,3 +16,6 @@
 
 # Data
 data/*
+
+# Output files
+fig_output/*
