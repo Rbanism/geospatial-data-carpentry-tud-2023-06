@@ -13,3 +13,6 @@
 # Mac-specific files
 .DS_Store
 .Thumbs.db
+
+# Data
+data/*
