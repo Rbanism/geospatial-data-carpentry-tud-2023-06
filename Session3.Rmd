@@ -16,43 +16,22 @@ knitr::opts_chunk$set(
 ```
 
 ```{r lib}
-# Install packages
-# library(remotes)
-# remotes::install_github('ropensci/osmdata')
 library(tidyverse)
-
-# Data manipulation
-# library(tibble)
-# library(dplyr)
-# library(reshape)
-
-# Data visualisation
-# library(ggplot2)
-
-# Working with spatial data
-# library(sf)
-# library(leaflet)
+library(here)
 library(raster)
 library(rgdal)
-# library(proj4)
-# library(scales)
-
-# Working with OSM data
-# library(osmdata)
-# library(osmextract)
-
-library(here)
 ```
 
 # Intro to raster data (30 + 20 minutes)
 ## View Raster File Attirbutes
 ```{r}
-GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+# GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+GDALinfo(here("data","tud-dsm.tif"))
 ```
 
 ```{r}
-HARV_dsmCrop_info <- capture.output(
-  GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+TUD_dsm_info <- capture.output(
+  GDALinfo(here("data","tud-dsm.tif"))
 )
 ```
 
@@ -60,37 +39,38 @@ HARV_dsmCrop_info <- capture.output(
 
 We are going to work with a Digital Surface Model (DSM) which is in the GeoTIFF format.
 ```{r}
-DSM_HARV <- 
-  raster(here("data", "NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
-
-DSM_HARV
+# DSM_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+DSM_TUD <- raster(here("data","tud-dsm.tif"))
+DSM_TUD
 ```
 
 ```{r}
-summary(DSM_HARV)
+summary(DSM_TUD)
 ```
 
 ```{r}
-summary(DSM_HARV, maxsamp = ncell(DSM_HARV))
+summary(DSM_TUD, maxsamp = ncell(DSM_TUD))
 ```
 
 ```{r}
-DSM_HARV_df <- as.data.frame(DSM_HARV, xy = TRUE)
+# DSM_HARV_df <- as.data.frame(DSM_HARV, xy = TRUE)
+DSM_TUD_df <- as.data.frame(DSM_TUD, xy = TRUE)
 ```
 
 ```{r}
-str(DSM_HARV_df)
+str(DSM_TUD_df)
 ```
 
 ```{r}
+# This might throw a memory error if the raster is too large
 ggplot() +
-    geom_raster(data = DSM_HARV_df , aes(x = x, y = y, fill = HARV_dsmCrop)) +
+    geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = tud.dsm)) +
     scale_fill_viridis_c() +
     coord_quickmap()
 ```
 
 ```{r}
-plot(DSM_HARV)
+plot(DSM_TUD)
 ```
 
 ## View Raster Coordinate Reference System (CRS) in R
@@ -98,31 +78,32 @@ plot(DSM_HARV)
 But what units are these?
 ```{r}
 # CRS have been explained on Day 1
-crs(DSM_HARV)
+crs(DSM_TUD)
 ```
 
 <!-- Skip the explanation of CRS -->
 
 ## Calculate the Min and Max value
 ```{r}
-minValue(DSM_HARV)
+# minValue(DSM_HARV)
+minValue(DSM_TUD)
 ```
 
 ```{r}
-maxValue(DSM_HARV)
+maxValue(DSM_TUD)
 ```
 
 If Min and Max values haven't been calculated, you can set them with the `raster::setMinMax()` function.
 ```{r}
 # Maybe skip this
-DSM_HARV <- raster::setMinMax(DSM_HARV)
+DSM_TUD <- raster::setMinMax(DSM_TUD)
 ```
 
 ## Raster bands
 
 To see how many bands a raster dataset has, use the `raster::nlayers()` function.
 ```{r}
-nlayers(DSM_HARV)
+nlayers(DSM_TUD)
 ```
 This dataset has only 1 band. We will discuss multi-band raster data in a later episode.
 
@@ -130,7 +111,8 @@ This dataset has only 1 band. We will discuss multi-band raster data in a later 
 
 In raster data, pixels with no value are represented with `NoDataValue`. That is usually the case with edge values where data is missing from the rectangular region of the raster. Use `rgdal::GDALinfo()` to check the metadata for missing data values.
 ```{r}
-GDALinfo(here("data", "NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+GDALinfo(here("data", "tud-dsm.tif"))
+GDALinfo(here("data", "HARV_dsmCrop.tif"))
 ```
 
 
@@ -145,68 +127,85 @@ Bad values are usually miscalculations that result in values out of a predefined
 
 A histogram can be used to inspect the distribution of raster values visually. It can show if there are values above the max or below the min of the expected range. We can create a histogram with the ggplot2 function `geom_histogram()`.
 ```{r}
+# ggplot() +
+#     geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop))
 ggplot() +
-    geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop))
+  geom_histogram(data = DSM_TUD_df, aes(tud.dsm))
 ```
 
 Adjust the level of desired detail by setting the number of bins.
 ```{r}
+# ggplot() +
+#     geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop), bins = 40)
 ggplot() +
-    geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop), bins = 40)
+  geom_histogram(data = DSM_TUD_df, aes(tud.dsm), bins = 40)
 ```
 
 ### Challenge
 
 ```{r}
-GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif"))
+GDALinfo(here("data","HARV_DSMhill.tif"))
 ```
 
 
 # Plotting raster data (40 + 30 minutes - 10 minutes about plot formatting - 15 minutes details = 45 minutes)
 
 ```{r}
-DSM_HARV_df <- DSM_HARV_df %>%
-  mutate(fct_elevation = cut(HARV_dsmCrop, breaks = 3))
+# DSM_HARV_df <- DSM_HARV_df %>%
+#   mutate(fct_elevation = cut(HARV_dsmCrop, breaks = 3))
+# 
+# ggplot() +
+#     geom_bar(data = DSM_HARV_df, aes(fct_elevation))
+
+DSM_TUD_df <- DSM_TUD_df %>%
+  mutate(fct_elevation = cut(tud.dsm, breaks = 3))
 
 ggplot() +
-    geom_bar(data = DSM_HARV_df, aes(fct_elevation))
+    geom_bar(data = DSM_TUD_df, aes(fct_elevation))
 ```
 To see the cutoff values:
 ```{r}
-unique(DSM_HARV_df$fct_elevation)
+unique(DSM_TUD_df$fct_elevation)
 ```
 
 To show count number of pixels in each group:
 ```{r}
-DSM_HARV_df %>%
+DSM_TUD_df %>%
         group_by(fct_elevation) %>%
         count()
 ```
 
 To customize cutoff values:
 ```{r}
-custom_bins <- c(300, 350, 400, 450)
+# custom_bins <- c(300, 350, 400, 450)
+# 
+# DSM_HARV_df <- DSM_HARV_df %>%
+#   mutate(fct_elevation_cb = cut(HARV_dsmCrop, breaks = custom_bins))
+# 
+# unique(DSM_HARV_df$fct_elevation_cb)
 
-DSM_HARV_df <- DSM_HARV_df %>%
-  mutate(fct_elevation_cb = cut(HARV_dsmCrop, breaks = custom_bins))
+custom_bins <- c(-10, 0, 5, 100)
 
-unique(DSM_HARV_df$fct_elevation_cb)
+DSM_TUD_df <- DSM_TUD_df %>%
+  mutate(fct_elevation_cb = cut(tud.dsm, breaks = custom_bins))
+
+unique(DSM_TUD_df$fct_elevation_cb)
 ```
 
 ```{r}
 ggplot() +
-  geom_bar(data = DSM_HARV_df, aes(fct_elevation_cb))
+  geom_bar(data = DSM_TUD_df, aes(fct_elevation_cb))
 ```
 
 ```{r}
-DSM_HARV_df %>%
+DSM_TUD_df %>%
   group_by(fct_elevation_cb) %>%
   count()
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = DSM_HARV_df , aes(x = x, y = y, fill = fct_elevation_cb)) + 
+  geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = fct_elevation_cb)) + 
   coord_quickmap()
 ```
 
@@ -219,7 +218,7 @@ terrain.colors(3)
 
 ```{r}
 ggplot() +
- geom_raster(data = DSM_HARV_df , aes(x = x, y = y,
+ geom_raster(data = DSM_TUD_df , aes(x = x, y = y,
                                       fill = fct_elevation_cb)) + 
     scale_fill_manual(values = terrain.colors(3)) + 
     coord_quickmap()
@@ -229,7 +228,7 @@ ggplot() +
 my_col <- terrain.colors(3)
 
 ggplot() +
- geom_raster(data = DSM_HARV_df , aes(x = x, y = y,
+ geom_raster(data = DSM_TUD_df , aes(x = x, y = y,
                                       fill = fct_elevation_cb)) + 
     scale_fill_manual(values = my_col, name = "Elevation") + 
     coord_quickmap()
@@ -238,17 +237,22 @@ ggplot() +
 ### Challenge
 
 ```{r}
-DSM_HARV_df <- DSM_HARV_df %>%
-  mutate(fct_elevation_6 = cut(HARV_dsmCrop, breaks = 6))
+# DSM_HARV_df <- DSM_HARV_df %>%
+#   mutate(fct_elevation_6 = cut(HARV_dsmCrop, breaks = 6))
+# 
+# unique(DSM_HARV_df$fct_elevation_6)
 
-unique(DSM_HARV_df$fct_elevation_6)
+DSM_TUD_df <- DSM_TUD_df %>%
+  mutate(fct_elevation_6 = cut(tud.dsm, breaks = 6))
+
+unique(DSM_TUD_df$fct_elevation_6)
 ```
 
 ```{r}
 my_col <- terrain.colors(6)
 
 ggplot() +
-  geom_raster(data = DSM_HARV_df, aes(x = x, y = y,
+  geom_raster(data = DSM_TUD_df, aes(x = x, y = y,
                                        fill = fct_elevation_6)) +
   scale_fill_manual(values = my_col, name = "Elevation") +
   coord_quickmap() +
@@ -260,33 +264,36 @@ ggplot() +
 <!-- Remove the plot formatting part -->
 ## Layering rasters
 ```{r}
-DSM_hill_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif"))
+# DSM_hill_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif"))
+# DSM_hill_HARV
 
-DSM_hill_HARV
+DSM_hill_TUD <- raster(here("data","tud-dsm-hill.tif"))
+DSM_hill_TUD
 ```
 
 ```{r}
-DSM_hill_HARV_df <- as.data.frame(DSM_hill_HARV, xy = TRUE)
-
-str(DSM_hill_HARV_df)
+# DSM_hill_HARV_df <- as.data.frame(DSM_hill_HARV, xy = TRUE)
+# str(DSM_hill_HARV_df)
+DSM_hill_TUD_df <- as.data.frame(DSM_hill_TUD, xy = TRUE)
+str(DSM_hill_TUD_df)
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = DSM_hill_HARV_df,
-              aes(x = x, y = y, alpha = HARV_DSMhill)) + 
+  geom_raster(data = DSM_hill_TUD_df,
+              aes(x = x, y = y, alpha = tud.dsm.hill)) + 
   scale_alpha(range =  c(0.15, 0.65), guide = "none") + 
   coord_quickmap()
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = DSM_HARV_df , 
+  geom_raster(data = DSM_TUD_df , 
               aes(x = x, y = y, 
-                  fill = HARV_dsmCrop)) + 
-  geom_raster(data = DSM_hill_HARV_df, 
+                  fill = tud.dsm)) + 
+  geom_raster(data = DSM_hill_TUD_df, 
               aes(x = x, y = y, 
-                  alpha = HARV_DSMhill)) +  
+                  alpha = tud.dsm.hill)) +  
   scale_fill_viridis_c() +  
   scale_alpha(range = c(0.15, 0.65), guide = "none") +  
   ggtitle("Elevation with hillshade") +
@@ -295,62 +302,93 @@ ggplot() +
 
 ### Challenge
 
+Repeat with DTM
+
 ```{r}
-# CREATE DSM MAPS
-
-# import DSM data
-DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
-# convert to a df for plotting
-DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
-
-# import DSM hillshade
-DSM_hill_SJER <- raster(here("data", "NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmHill.tif"))
-# convert to a df for plotting
-DSM_hill_SJER_df <- as.data.frame(DSM_hill_SJER, xy = TRUE)
-
-# Build Plot
-ggplot() +
-    geom_raster(data = DSM_SJER_df , 
-                aes(x = x, y = y, 
-                     fill = SJER_dsmCrop,
-                     alpha = 0.8)
-                ) + 
-    geom_raster(data = DSM_hill_SJER_df, 
-                aes(x = x, y = y, 
-                  alpha = SJER_dsmHill)
-                ) +
-    scale_fill_viridis_c() +
-    guides(fill = guide_colorbar()) +
-    scale_alpha(range = c(0.4, 0.7), guide = "none") +
-    # remove grey background and grid lines
-    theme_bw() + 
-    theme(panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank()) +
-    xlab("UTM Easting Coordinate (m)") +
-    ylab("UTM Northing Coordinate (m)") +
-    ggtitle("DSM with Hillshade") +
-    coord_quickmap()
+# # CREATE DSM MAPS
+# 
+# # import DSM data
+# DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
+# # convert to a df for plotting
+# DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
+# 
+# # import DSM hillshade
+# DSM_hill_SJER <- raster(here("data", "NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmHill.tif"))
+# # convert to a df for plotting
+# DSM_hill_SJER_df <- as.data.frame(DSM_hill_SJER, xy = TRUE)
+# 
+# # Build Plot
+# ggplot() +
+#     geom_raster(data = DSM_SJER_df ,
+#                 aes(x = x, y = y,
+#                      fill = SJER_dsmCrop,
+#                      alpha = 0.8)
+#                 ) +
+#     geom_raster(data = DSM_hill_SJER_df,
+#                 aes(x = x, y = y,
+#                   alpha = SJER_dsmHill)
+#                 ) +
+#     scale_fill_viridis_c() +
+#     guides(fill = guide_colorbar()) +
+#     scale_alpha(range = c(0.4, 0.7), guide = "none") +
+#     # remove grey background and grid lines
+#     theme_bw() +
+#     theme(panel.grid.major = element_blank(),
+#           panel.grid.minor = element_blank()) +
+#     xlab("UTM Easting Coordinate (m)") +
+#     ylab("UTM Northing Coordinate (m)") +
+#     ggtitle("DSM with Hillshade") +
+#     coord_quickmap()
 ```
 
 ```{r}
 # CREATE DTM MAP
+# # import DTM
+# DTM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmCrop.tif"))
+# DTM_SJER_df <- as.data.frame(DTM_SJER, xy = TRUE)
+# 
+# # DTM Hillshade
+# DTM_hill_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmHill.tif"))
+# DTM_hill_SJER_df <- as.data.frame(DTM_hill_SJER, xy = TRUE)
+# 
+# ggplot() +
+#     geom_raster(data = DTM_SJER_df ,
+#                 aes(x = x, y = y,
+#                      fill = SJER_dtmCrop,
+#                      alpha = 2.0)
+#                 ) +
+#     geom_raster(data = DTM_hill_SJER_df,
+#                 aes(x = x, y = y,
+#                   alpha = SJER_dtmHill)
+#                 ) +
+#     scale_fill_viridis_c() +
+#     guides(fill = guide_colorbar()) +
+#     scale_alpha(range = c(0.4, 0.7), guide = "none") +
+#     theme_bw() +
+#     theme(panel.grid.major = element_blank(), 
+#           panel.grid.minor = element_blank()) +
+#     theme(axis.title.x = element_blank(),
+#           axis.title.y = element_blank()) +
+#     ggtitle("DTM with Hillshade") +
+#     coord_quickmap()
+
 # import DTM
-DTM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmCrop.tif"))
-DTM_SJER_df <- as.data.frame(DTM_SJER, xy = TRUE)
+DTM_TUD <- raster(here("data","tud-dtm.tif"))
+DTM_TUD_df <- as.data.frame(DTM_TUD, xy = TRUE)
 
 # DTM Hillshade
-DTM_hill_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmHill.tif"))
-DTM_hill_SJER_df <- as.data.frame(DTM_hill_SJER, xy = TRUE)
+DTM_hill_TUD <- raster(here("data","tud-dtm-hill.tif"))
+DTM_hill_TUD_df <- as.data.frame(DTM_hill_TUD, xy = TRUE)
 
 ggplot() +
-    geom_raster(data = DTM_SJER_df ,
+    geom_raster(data = DTM_TUD_df ,
                 aes(x = x, y = y,
-                     fill = SJER_dtmCrop,
+                     fill = tud.dtm,
                      alpha = 2.0)
                 ) +
-    geom_raster(data = DTM_hill_SJER_df,
+    geom_raster(data = DTM_hill_TUD_df,
                 aes(x = x, y = y,
-                  alpha = SJER_dtmHill)
+                  alpha = tud.dtm.hill)
                 ) +
     scale_fill_viridis_c() +
     guides(fill = guide_colorbar()) +
@@ -369,76 +407,76 @@ ggplot() +
 What happens when maps don't line up? That is usually a sign that layers are in different coordinate reference systems (CRS).
 
 ```{r}
-DTM_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif"))
+DTM_TUD <- raster(here("data","tud-dtm.tif"))
 
-DTM_hill_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_DTMhill_WGS84.tif"))
+DTM_hill_TUD <- raster(here("data","tud-dtm-hill-ETRS89.tif"))
 ```
 
 ```{r}
-DTM_HARV_df <- as.data.frame(DTM_HARV, xy = TRUE)
+DTM_TUD_df <- as.data.frame(DTM_TUD, xy = TRUE)
 
-DTM_hill_HARV_df <- as.data.frame(DTM_hill_HARV, xy = TRUE)
+DTM_hill_TUD_df <- as.data.frame(DTM_hill_TUD, xy = TRUE)
 ```
 
 ```{r}
 ggplot() +
-     geom_raster(data = DTM_HARV_df , 
+     geom_raster(data = DTM_TUD_df , 
                  aes(x = x, y = y, 
-                  fill = HARV_dtmCrop)) + 
-     geom_raster(data = DTM_hill_HARV_df, 
+                  fill = tud.dtm)) + 
+     geom_raster(data = DTM_hill_TUD_df, 
                  aes(x = x, y = y, 
-                   alpha = HARV_DTMhill_WGS84)) +
+                   alpha = tud.dtm.hill.ETRS89)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
 
 ```{r}
 ggplot() +
-geom_raster(data = DTM_HARV_df,
+geom_raster(data = DTM_TUD_df,
     aes(x = x, y = y,
-    fill = HARV_dtmCrop)) +
+    fill = tud.dtm)) +
 scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
 coord_quickmap()
 ```
 
 ```{r}
 ggplot() +
-geom_raster(data = DTM_hill_HARV_df,
+geom_raster(data = DTM_hill_TUD_df,
     aes(x = x, y = y,
-    alpha = HARV_DTMhill_WGS84)) + 
+    alpha = tud.dtm.hill.ETRS89)) + 
     coord_quickmap()
 ```
 ### Challenge
 
 ```{r}
-crs(DTM_HARV)
+crs(DTM_TUD)
 ```
 
 ```{r}
-crs(DTM_hill_HARV)
+crs(DTM_hill_TUD)
 ```
 
 ## Reproject rasters
 
 ```{r}
-DTM_hill_UTMZ18N_HARV <- projectRaster(DTM_hill_HARV,
-                                       crs = crs(DTM_HARV))
+DTM_hill_EPSG28992_TUD <- projectRaster(DTM_hill_TUD,
+                                       crs = crs(DTM_TUD))
 ```
 
 ```{r}
-crs(DTM_hill_UTMZ18N_HARV)
+crs(DTM_hill_EPSG28992_TUD)
 ```
 
 ```{r}
-crs(DTM_hill_HARV)
+crs(DTM_hill_TUD)
 ```
 
 ```{r}
-extent(DTM_hill_UTMZ18N_HARV)
+extent(DTM_hill_EPSG28992_TUD)
 ```
 
 ```{r}
-extent(DTM_hill_HARV)
+extent(DTM_hill_TUD)
 ```
 
 
@@ -447,39 +485,39 @@ extent(DTM_hill_HARV)
 ## Dealing with raster resolution
 
 ```{r}
-res(DTM_hill_UTMZ18N_HARV)
+res(DTM_hill_EPSG28992_TUD)
 ```
 
 ```{r}
-res(DTM_HARV)
+res(DTM_TUD)
 ```
 
 ```{r}
-DTM_hill_UTMZ18N_HARV <- projectRaster(DTM_hill_HARV,
-                                         crs = crs(DTM_HARV),
-                                         res = res(DTM_HARV))
+DTM_hill_EPSG28992_TUD <- projectRaster(DTM_hill_TUD,
+                                         crs = crs(DTM_TUD),
+                                         res = res(DTM_TUD))
 ```
 
 ```{r}
-res(DTM_hill_UTMZ18N_HARV)
+res(DTM_hill_EPSG28992_TUD)
 ```
 
 ```{r}
-res(DTM_HARV)
+res(DTM_TUD)
 ```
 
 ```{r}
-DTM_hill_HARV_2_df <- as.data.frame(DTM_hill_UTMZ18N_HARV, xy = TRUE)
+DTM_hill_TUD_2_df <- as.data.frame(DTM_hill_EPSG28992_TUD, xy = TRUE)
 ```
 
 ```{r}
 ggplot() +
-     geom_raster(data = DTM_HARV_df , 
+     geom_raster(data = DTM_TUD_df , 
                  aes(x = x, y = y, 
-                  fill = HARV_dtmCrop)) + 
-     geom_raster(data = DTM_hill_HARV_2_df, 
+                  fill = tud.dtm)) + 
+     geom_raster(data = DTM_hill_TUD_2_df, 
                  aes(x = x, y = y, 
-                   alpha = HARV_DTMhill_WGS84)) +
+                   alpha = tud.dtm.hill.ETRS89)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
@@ -489,58 +527,58 @@ ggplot() +
 <!-- Skip this challenge -->
 
 ```{r}
-# import DSM
-DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
-# import DSM hillshade
-DSM_hill_SJER_WGS <-
-raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_DSMhill_WGS84.tif"))
-
-# reproject raster
-DTM_hill_UTMZ18N_SJER <- projectRaster(DSM_hill_SJER_WGS,
-                                  crs = crs(DSM_SJER),
-                                  res = 1)
-
-# convert to data.frames
-DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
-
-DSM_hill_SJER_df <- as.data.frame(DTM_hill_UTMZ18N_SJER, xy = TRUE)
-
-ggplot() +
-     geom_raster(data = DSM_hill_SJER_df, 
-                 aes(x = x, y = y, 
-                   alpha = SJER_DSMhill_WGS84)
-                 ) +
-     geom_raster(data = DSM_SJER_df, 
-             aes(x = x, y = y, 
-                  fill = SJER_dsmCrop,
-                  alpha=0.8)
-             ) + 
-     scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
-     coord_quickmap()
+# # import DSM
+# DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
+# # import DSM hillshade
+# DSM_hill_SJER_WGS <-
+# raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_DSMhill_WGS84.tif"))
+# 
+# # reproject raster
+# DTM_hill_UTMZ18N_SJER <- projectRaster(DSM_hill_SJER_WGS,
+#                                   crs = crs(DSM_SJER),
+#                                   res = 1)
+# 
+# # convert to data.frames
+# DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
+# 
+# DSM_hill_SJER_df <- as.data.frame(DTM_hill_UTMZ18N_SJER, xy = TRUE)
+# 
+# ggplot() +
+#      geom_raster(data = DSM_hill_SJER_df, 
+#                  aes(x = x, y = y, 
+#                    alpha = SJER_DSMhill_WGS84)
+#                  ) +
+#      geom_raster(data = DSM_SJER_df, 
+#              aes(x = x, y = y, 
+#                   fill = SJER_dsmCrop,
+#                   alpha=0.8)
+#              ) + 
+#      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
+#      coord_quickmap()
 ```
 
 # Raster calculations (40 + 20 minutes - 15 minutes raster math - 15 minutes challenges = 30 minutes)
 ## Raster calculations in R
 ```{r}
-GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DTM/HARV_dtmCrop.tif"))
+GDALinfo(here("data","tud-dtm.tif"))
 ```
 
 ```{r}
-GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+GDALinfo(here("data","tud-dsm.tif"))
 ```
 
 ```{r}
  ggplot() +
-      geom_raster(data = DTM_HARV_df , 
-              aes(x = x, y = y, fill = HARV_dtmCrop)) +
+      geom_raster(data = DTM_TUD_df , 
+              aes(x = x, y = y, fill = tud.dtm)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
 
 ```{r}
  ggplot() +
-      geom_raster(data = DSM_HARV_df , 
-              aes(x = x, y = y, fill = HARV_dsmCrop)) +
+      geom_raster(data = DSM_TUD_df , 
+              aes(x = x, y = y, fill = tud.dsm)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
@@ -548,33 +586,33 @@ GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"
 ## Raster math and Canopy Height Models (DROP THIS PART)
 
 ```{r}
-CHM_HARV <- DSM_HARV - DTM_HARV
+CHM_TUD <- DSM_TUD - DTM_TUD
 
-CHM_HARV_df <- as.data.frame(CHM_HARV, xy = TRUE)
+CHM_TUD_df <- as.data.frame(CHM_TUD, xy = TRUE)
 ```
 
 ```{r}
  ggplot() +
-   geom_raster(data = CHM_HARV_df , 
+   geom_raster(data = CHM_TUD_df , 
                aes(x = x, y = y, fill = layer)) + 
    scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
    coord_quickmap()
 ```
 
 ```{r}
-ggplot(CHM_HARV_df) +
+ggplot(CHM_TUD_df) +
     geom_histogram(aes(layer))
 ```
 
 ### Challenge
 
 ```{r}
-custom_bins <- c(0, 10, 20, 30, 40)
-CHM_HARV_df <- CHM_HARV_df %>%
+custom_bins <- c(0, 10, 20, 30, 100)
+CHM_TUD_df <- CHM_TUD_df %>%
                   mutate(canopy_discrete = cut(layer, breaks = custom_bins))
 
 ggplot() +
-  geom_raster(data = CHM_HARV_df , aes(x = x, y = y,
+  geom_raster(data = CHM_TUD_df , aes(x = x, y = y,
                                        fill = canopy_discrete)) + 
      scale_fill_manual(values = terrain.colors(4)) + 
      coord_quickmap()
@@ -583,18 +621,18 @@ ggplot() +
 ## Efficient raster calculations: overlay function
 
 ```{r}
-CHM_ov_HARV <- overlay(DSM_HARV,
-                       DTM_HARV,
+CHM_ov_TUD <- overlay(DSM_TUD,
+                       DTM_TUD,
                        fun = function(r1, r2) { return( r1 - r2) })
 ```
 
 ```{r}
-CHM_ov_HARV_df <- as.data.frame(CHM_ov_HARV, xy = TRUE)
+CHM_ov_TUD_df <- as.data.frame(CHM_ov_TUD, xy = TRUE)
 ```
 
 ```{r}
  ggplot() +
-   geom_raster(data = CHM_ov_HARV_df, 
+   geom_raster(data = CHM_ov_TUD_df, 
                aes(x = x, y = y, fill = layer)) + 
    scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
    coord_quickmap()
@@ -603,7 +641,7 @@ CHM_ov_HARV_df <- as.data.frame(CHM_ov_HARV, xy = TRUE)
 ## Export a GeoTIFF
 
 ```{r}
-writeRaster(CHM_ov_HARV, here("fig_output","CHM_HARV.tiff"),
+writeRaster(CHM_ov_TUD, here("fig_output","CHM_TUD.tiff"),
             format="GTiff",
             overwrite=TRUE,
             NAflag=-9999)
@@ -612,44 +650,44 @@ writeRaster(CHM_ov_HARV, here("fig_output","CHM_HARV.tiff"),
 ### Challenge
 
 ```{r}
-CHM_ov_SJER <- overlay(DSM_SJER,
-                       DTM_SJER,
-                       fun = function(r1, r2){ return(r1 - r2) })
+# CHM_ov_SJER <- overlay(DSM_SJER,
+#                        DTM_SJER,
+#                        fun = function(r1, r2){ return(r1 - r2) })
 ```
 
 ```{r}
-CHM_ov_SJER_df <- as.data.frame(CHM_ov_SJER, xy = TRUE)
+# CHM_ov_SJER_df <- as.data.frame(CHM_ov_SJER, xy = TRUE)
 ```
 
 ```{r}
-ggplot(CHM_ov_SJER_df) +
+# ggplot(CHM_ov_SJER_df) +
+#     geom_histogram(aes(layer))
+```
+
+```{r}
+# ggplot() +
+#   geom_raster(data = CHM_ov_SJER_df,
+#               aes(x = x, y = y,
+#                   fill = layer)) +
+#   scale_fill_gradientn(name = "Canopy Height",
+#                        colors = terrain.colors(10)) +
+#   coord_quickmap()
+```
+
+```{r}
+# writeRaster(CHM_ov_SJER, here("fig_output", "chm_ov_SJER.tiff"),
+#             format = "GTiff",
+#             overwrite = TRUE,
+#             NAflag = -9999)
+```
+
+```{r}
+ggplot(CHM_TUD_df) +
     geom_histogram(aes(layer))
 ```
 
 ```{r}
-ggplot() +
-  geom_raster(data = CHM_ov_SJER_df,
-              aes(x = x, y = y,
-                  fill = layer)) +
-  scale_fill_gradientn(name = "Canopy Height",
-                       colors = terrain.colors(10)) +
-  coord_quickmap()
-```
-
-```{r}
-writeRaster(CHM_ov_SJER, here("fig_output", "chm_ov_SJER.tiff"),
-            format = "GTiff",
-            overwrite = TRUE,
-            NAflag = -9999)
-```
-
-```{r}
-ggplot(CHM_HARV_df) +
-    geom_histogram(aes(layer))
-```
-
-```{r}
-ggplot(CHM_ov_SJER_df) +
+ggplot(CHM_ov_TUD_df) +
     geom_histogram(aes(layer))
 ```
 
@@ -658,41 +696,42 @@ ggplot(CHM_ov_SJER_df) +
 
 The `raster()` function only reads in the first band, in this case the red band of an RGB raster
 ```{r}
-RGB_band1_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
+# RGB_band1_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
+RGB_band1_TUD <- raster(here("data","tudlib-rgb.tif"))
 ```
 
 ```{r}
-RGB_band1_HARV_df  <- as.data.frame(RGB_band1_HARV, xy = TRUE)
+RGB_band1_TUD_df  <- as.data.frame(RGB_band1_TUD, xy = TRUE)
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = RGB_band1_HARV_df,
-              aes(x = x, y = y, alpha = layer)) + 
+  geom_raster(data = RGB_band1_TUD_df,
+              aes(x = x, y = y, alpha = tudlib.rgb)) + 
   coord_quickmap()
 ```
 
 ```{r}
-RGB_band1_HARV
+RGB_band1_TUD
 ```
 
 ```{r}
-nbands(RGB_band1_HARV)
+nbands(RGB_band1_TUD)
 ```
 
 To import the green band:
 ```{r}
-RGB_band2_HARV <-  raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"), band = 2)
+RGB_band2_TUD <-  raster(here("data","tudlib-rgb.tif"), band = 2)
 ```
 
 ```{r}
-RGB_band2_HARV_df <- as.data.frame(RGB_band2_HARV, xy = TRUE)
+RGB_band2_TUD_df <- as.data.frame(RGB_band2_TUD, xy = TRUE)
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = RGB_band2_HARV_df,
-              aes(x = x, y = y, alpha = layer)) + 
+  geom_raster(data = RGB_band2_TUD_df,
+              aes(x = x, y = y, alpha = tudlib.rgb)) + 
   coord_equal()
 ```
 
@@ -700,63 +739,63 @@ ggplot() +
 
 The `stack()` function brings in all bands
 ```{r}
-RGB_stack_HARV <- stack(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
+RGB_stack_TUD <- stack(here("data","tudlib-rgb.tif"))
 ```
 
 ```{r}
-RGB_stack_HARV
+RGB_stack_TUD
 ```
 
 ```{r}
-RGB_stack_HARV@layers
+RGB_stack_TUD@layers
 ```
 
 ```{r}
-RGB_stack_HARV[[2]]
+RGB_stack_TUD[[2]]
 ```
 
 ```{r}
-RGB_stack_HARV_df  <- as.data.frame(RGB_stack_HARV, xy = TRUE)
+RGB_stack_TUD_df  <- as.data.frame(RGB_stack_TUD, xy = TRUE)
 ```
 
 ```{r}
-str(RGB_stack_HARV_df)
-```
-
-```{r}
-ggplot() +
-  geom_histogram(data = RGB_stack_HARV_df, aes(HARV_RGB_Ortho_1))
+str(RGB_stack_TUD_df)
 ```
 
 ```{r}
 ggplot() +
-  geom_raster(data = RGB_stack_HARV_df,
-              aes(x = x, y = y, alpha = HARV_RGB_Ortho_2)) + 
+  geom_histogram(data = RGB_stack_TUD_df, aes(tudlib.rgb.1))
+```
+
+```{r}
+ggplot() +
+  geom_raster(data = RGB_stack_TUD_df,
+              aes(x = x, y = y, alpha = tudlib.rgb.2)) + 
   coord_quickmap()
 ```
 
 ## Create a three-band image
 
 ```{r}
-plotRGB(RGB_stack_HARV,
+plotRGB(RGB_stack_TUD,
         r = 1, g = 2, b = 3)
 ```
 
 Which is the same with `terra`
 ```{r}
-terra::plotRGB(RGB_stack_HARV,
+terra::plotRGB(RGB_stack_TUD,
         r = 1, g = 2, b = 3)
 ```
 
 ```{r}
-plotRGB(RGB_stack_HARV,
+plotRGB(RGB_stack_TUD,
         r = 1, g = 2, b = 3,
         scale = 800,
         stretch = "lin")
 ```
 
 ```{r}
-plotRGB(RGB_stack_HARV,
+plotRGB(RGB_stack_TUD,
         r = 1, g = 2, b = 3,
         scale = 800,
         stretch = "hist")
@@ -764,12 +803,14 @@ plotRGB(RGB_stack_HARV,
 
 ### Challenge
 
+<!-- Skip or change challenge -->
+
 ```{r}
-GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_Ortho_wNA.tif"))
+GDALinfo(here("data","HARV_Ortho_wNA.tif"))
 ```
 
 ```{r}
-HARV_NA <- stack(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_Ortho_wNA.tif"))
+HARV_NA <- stack(here("data","HARV_Ortho_wNA.tif"))
 ```
 
 ```{r}
@@ -778,31 +819,31 @@ plotRGB(HARV_NA,
 ```
 
 ```{r}
-GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
+GDALinfo(here("data","HARV_RGB_Ortho.tif"))
 ```
 
 ## RasterStack vs. RasterBrick
 
 ```{r}
-object.size(RGB_stack_HARV)
+object.size(RGB_stack_TUD)
 ```
 
 ```{r}
-RGB_brick_HARV <- brick(RGB_stack_HARV)
+RGB_brick_TUD <- brick(RGB_stack_TUD)
 
-object.size(RGB_brick_HARV)
+object.size(RGB_brick_TUD)
 ```
 
 ```{r}
-plotRGB(RGB_brick_HARV)
+plotRGB(RGB_brick_TUD)
 ```
 
 ```{r}
-methods(class=class(RGB_stack_HARV))
+methods(class=class(RGB_stack_TUD))
 ```
 
 ```{r}
-methods(class=class(RGB_stack_HARV[1]))
+methods(class=class(RGB_stack_TUD[1]))
 ```
 
 # ---
@@ -813,23 +854,34 @@ methods(class=class(RGB_stack_HARV[1]))
 
 ```{r}
 ggplot() +
-  geom_raster(data = CHM_HARV_df, aes(x = x, y = y, fill = layer)) + 
+  geom_raster(data = CHM_TUD_df, aes(x = x, y = y, fill = layer)) + 
   scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) +
-  geom_sf(data = aoi_boundary_HARV, color = "blue", fill = NA) +
+  geom_sf(data = boundary_Delft, color = "blue", fill = NA) +  # notice that boundary_Delft is in WGS84
+  coord_sf()
+
+boundary_Delft <- st_transform(boundary_Delft, 28992)
+
+ggplot() +
+  geom_raster(data = CHM_TUD_df, aes(x = x, y = y, fill = layer)) + 
+  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) +
+  geom_sf(data = boundary_Delft, color = "blue", fill = NA) +
   coord_sf()
 ```
 
 ```{r}
-CHM_HARV_Cropped <- crop(x = CHM_HARV, y = aoi_boundary_HARV)
+boundary_Delft_28992 <- st_transform(boundary_Delft, 28992)
+
+CHM_TUD_Cropped <- crop(x = CHM_TUD, y = boundary_Delft_28992)
+CHM_TUD_Masked <- mask(CHM_TUD_Cropped, boundary_Delft_28992)
 ```
 
 ```{r}
-CHM_HARV_Cropped_df <- as.data.frame(CHM_HARV_Cropped, xy = TRUE)
+CHM_TUD_Masked_df <- as.data.frame(CHM_TUD_Masked, xy = TRUE)
 
 ggplot() +
-  geom_sf(data = st_as_sfc(st_bbox(CHM_HARV)), fill = "green",
-          color = "green", alpha = .2) +  
-  geom_raster(data = CHM_HARV_Cropped_df,
+  # geom_sf(data = st_as_sfc(st_bbox(CHM_TUD)), fill = "green",
+  #         color = "green", alpha = .2) +
+  geom_raster(data = CHM_TUD_Masked_df,
               aes(x = x, y = y, fill = layer)) + 
   scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
   coord_sf()
@@ -837,517 +889,102 @@ ggplot() +
 
 ```{r}
 ggplot() +
-  geom_raster(data = CHM_HARV_Cropped_df,
+  geom_raster(data = CHM_TUD_Cropped_df,
               aes(x = x, y = y, fill = layer)) + 
-  geom_sf(data = aoi_boundary_HARV, color = "blue", fill = NA) + 
+  geom_sf(data = boundary_Delft_28992, color = "blue", fill = NA) + 
   scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
   coord_sf()
 ```
 
 ```{r}
-st_bbox(CHM_HARV)
+st_bbox(CHM_TUD)
 ```
 
 ```{r}
-st_bbox(CHM_HARV_Cropped)
+st_bbox(CHM_TUD_Cropped)
 ```
 
 ```{r}
-st_bbox(aoi_boundary_HARV)
+st_bbox(boundary_Delft_28992)
 ```
 
 ```{r}
-st_bbox(plot_locations_sp_HARV)
+# st_bbox(plot_locations_sp_HARV)
+
+leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+  filter(leisure %in% c("playground", "picnic_table"))
+
+st_bbox(leisure_locations_selection)
 ```
 
 ### Challenge
 
 ```{r}
-CHM_plots_HARVcrop <- crop(x = CHM_HARV, y = plot_locations_sp_HARV)
+CHM_plots_TUDcrop <- crop(x = CHM_TUD, y = leisure_locations_selection)
 
-CHM_plots_HARVcrop_df <- as.data.frame(CHM_plots_HARVcrop, xy = TRUE)
+CHM_plots_TUDcrop_df <- as.data.frame(CHM_plots_TUDcrop, xy = TRUE)
 
 ggplot() + 
-  geom_raster(data = CHM_plots_HARVcrop_df, aes(x = x, y = y, fill = layer)) + 
+  geom_raster(data = CHM_plots_TUDcrop_df, aes(x = x, y = y, fill = layer)) + 
   scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  geom_sf(data = plot_locations_sp_HARV) + 
+  geom_sf(data = leisure_locations_selection) + 
   coord_sf()
 ```
 
 ```{r}
-new_extent <- extent(732161.2, 732238.7, 4713249, 4713333)
-class(new_extent)
-```
+tree_building_height <- raster::extract(x = CHM_TUD, y = boundary_Delft_28992, df = TRUE)
 
-```{r}
-CHM_HARV_manual_cropped <- crop(x = CHM_HARV, y = new_extent)
-```
-
-```{r}
-CHM_HARV_manual_cropped_df <- as.data.frame(CHM_HARV_manual_cropped, xy = TRUE)
+str(tree_building_height)
 ```
 
 ```{r}
 ggplot() + 
-  geom_sf(data = aoi_boundary_HARV, color = "blue", fill = NA) +
-  geom_raster(data = CHM_HARV_manual_cropped_df,
-              aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  coord_sf()
-```
-
-```{r}
-tree_height <- extract(x = CHM_HARV, y = aoi_boundary_HARV, df = TRUE)
-
-str(tree_height)
-```
-
-```{r}
-ggplot() + 
-  geom_histogram(data = tree_height, aes(x = layer)) +
+  geom_histogram(data = tree_building_height, aes(x = layer)) +
   ggtitle("Histogram of CHM Height Values (m)") +
-  xlab("Tree Height") + 
+  xlab("Tree or Building Height") + 
   ylab("Frequency of Pixels")
 ```
 
 ```{r}
-summary(tree_height$layer)
+summary(tree_building_height$layer)
 ```
 
 ```{r}
-mean_tree_height_AOI <- extract(x = CHM_HARV, y = aoi_boundary_HARV, fun = mean)
+mean_tree_building_height_AOI <- raster::extract(x = CHM_TUD, y = boundary_Delft_28992, fun = mean)
 
-mean_tree_height_AOI
+mean_tree_building_height_AOI
 ```
 
 ```{r}
-mean_tree_height_tower <- extract(x = CHM_HARV,
-                                  y = point_HARV,
+point_Delft <- st_read(here("data", "delft-leisure.shp"))
+
+mean_tree_height_leisure <- raster::extract(x = CHM_TUD,
+                                  y = point_Delft,
                                   buffer = 20,
                                   fun = mean)
 
-mean_tree_height_tower
+mean_tree_height_leisure
 ```
 
 ### Challenge
 
 ```{r}
 # extract data at each plot location
-mean_tree_height_plots_HARV <- extract(x = CHM_HARV,
-                                       y = plot_locations_sp_HARV,
+mean_tree_building_height_leisure_TUD <- raster::extract(x = CHM_TUD,
+                                       y = leisure_locations_selection,
                                        buffer = 20,
                                        fun = mean,
                                        df = TRUE)
 
 # view data
-mean_tree_height_plots_HARV
+mean_tree_building_height_leisure_TUD
 ```
 
 ```{r}
 # plot data
-ggplot(data = mean_tree_height_plots_HARV, aes(ID, layer)) + 
+ggplot(data = mean_tree_building_height_leisure_TUD, aes(ID, layer)) + 
   geom_col() + 
-  ggtitle("Mean Tree Height at each Plot") + 
-  xlab("Plot ID") + 
-  ylab("Tree Height (m)")
+  ggtitle("Mean Tree and Building Height at each location") + 
+  xlab("Location ID") + 
+  ylab("Tree and Building Height (m)")
 ```
-
-# Raster time-series data (40 + 20 minutes) DROP
-
-```{r}
-NDVI_HARV_path <- here("data","NEON-DS-Landsat-NDVI/HARV/2011/NDVI")
-
-all_NDVI_HARV <- list.files(NDVI_HARV_path,
-                            full.names = TRUE,
-                            pattern = ".tif$")
-```
-
-```{r}
-all_NDVI_HARV
-```
-
-```{r}
-NDVI_HARV_stack <- stack(all_NDVI_HARV)
-```
-
-```{r}
-crs(NDVI_HARV_stack)
-```
-
-```{r}
-extent(NDVI_HARV_stack)
-```
-
-```{r}
-yres(NDVI_HARV_stack)
-```
-
-```{r}
-xres(NDVI_HARV_stack)
-```
-
-```{r}
-NDVI_HARV_stack_df <- as.data.frame(NDVI_HARV_stack, xy = TRUE) %>%
-    gather(key = "variable", value = "value", -x,-y) #reshape2::melt(id.vars = c('x','y'))
-```
-
-```{r}
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~ variable)
-```
-
-```{r}
-NDVI_HARV_stack <- NDVI_HARV_stack/10000
-```
-
-```{r}
-NDVI_HARV_stack_df <- as.data.frame(NDVI_HARV_stack, xy = TRUE) %>%
-       gather(key = "variable", value = "value", -x,-y) #reshape2::melt(id.vars = c('x','y'))
-
-
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable)
-```
-
-```{r}
-ggplot(NDVI_HARV_stack_df) +
-  geom_histogram(aes(value)) +
-    facet_wrap(~variable)
-```
-
-```{r}
-har_met_daily <-
-  read.csv(here("data","NEON-DS-Met-Time-Series/HARV/FisherTower-Met/hf001-06-daily-m.csv"))
-
-str(har_met_daily)
-```
-
-```{r}
-har_met_daily$date <- as.Date(har_met_daily$date, format = "%Y-%m-%d")
-```
-
-```{r}
-yr_11_daily_avg <- subset(har_met_daily,
-                            date >= as.Date('2011-01-01') &
-                            date <= as.Date('2011-12-31'))
-```
-
-```{r}
-ggplot() +
-  geom_point(data = yr_11_daily_avg, aes(jd, airt)) +
-  ggtitle("Daily Mean Air Temperature",
-          subtitle = "NEON Harvard Forest Field Site") +
-  xlab("Julian Day 2011") +
-  ylab("Mean Air Temperature (C)")
-```
-
-```{r}
-RGB_277 <- stack(here("data","NEON-DS-Landsat-NDVI/HARV/2011/RGB/277_HARV_landRGB.tif"))
-RGB_277
-```
-
-```{r}
-RGB_277 <- RGB_277/255
-```
-
-```{r}
-RGB_277_df <- as.data.frame(RGB_277, xy = TRUE)
-```
-
-```{r}
-RGB_277_df$rgb <- with(RGB_277_df, rgb(X277_HARV_landRGB_1, X277_HARV_landRGB_2, X277_HARV_landRGB_3,1))
-```
-
-```{r}
-ggplot() +
-  geom_raster(data=RGB_277_df, aes(x, y), fill=RGB_277_df$rgb) + 
-  ggtitle("Julian day 277") 
-```
-
-```{r}
-# Julian day 293
-RGB_293 <- stack(here("data","NEON-DS-Landsat-NDVI/HARV/2011/RGB/293_HARV_landRGB.tif"))
-RGB_293 <- RGB_293/255
-RGB_293_df <- as.data.frame(RGB_293, xy = TRUE)
-RGB_293_df$rgb <- with(RGB_293_df, rgb(X293_HARV_landRGB_1, X293_HARV_landRGB_2, X293_HARV_landRGB_3,1))
-ggplot() +
-  geom_raster(data = RGB_293_df, aes(x, y), fill = RGB_293_df$rgb) +
-  ggtitle("Julian day 293")
-```
-
-# Create publication-ready graphics (40 + 20 minutes) DROP
-
-```{r}
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable) +
-  ggtitle("Landsat NDVI", subtitle = "NEON Harvard Forest") + 
-  theme_void()
-```
-
-```{r}
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable) +
-  ggtitle("Landsat NDVI", subtitle = "NEON Harvard Forest") + 
-  theme_void() + 
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
-```
-
-## Adjust the color ramp
-
-```{r}
-library(RColorBrewer)
-brewer.pal(9, "YlGn")
-```
-
-```{r}
-green_colors <- brewer.pal(9, "YlGn") %>%
-  colorRampPalette()
-```
-
-```{r}
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable) +
-  ggtitle("Landsat NDVI", subtitle = "NEON Harvard Forest") + 
-  theme_void() + 
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"), 
-    plot.subtitle = element_text(hjust = 0.5)) + 
-  scale_fill_gradientn(name = "NDVI", colours = green_colors(20))
-```
-
-## Refine plot & tile labels
-
-```{r}
-names(NDVI_HARV_stack)
-```
-
-```{r}
-raster_names <- names(NDVI_HARV_stack)
-
-raster_names <- gsub("_HARV_ndvi_crop", "", raster_names)
-raster_names
-```
-
-```{r}
-raster_names  <- gsub("X", "Day ", raster_names)
-raster_names
-```
-
-```{r}
-labels_names <- setNames(raster_names, unique(NDVI_HARV_stack_df$variable))
-```
-
-```{r}
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable, labeller = labeller(variable = labels_names)) +
-  ggtitle("Landsat NDVI", subtitle = "NEON Harvard Forest") + 
-  theme_void() + 
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"), 
-    plot.subtitle = element_text(hjust = 0.5)) + 
-  scale_fill_gradientn(name = "NDVI", colours = green_colors(20))
-```
-
-```{r}
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable, ncol = 5, labeller = labeller(variable = labels_names)) +
-  ggtitle("Landsat NDVI", subtitle = "NEON Harvard Forest") + 
-  theme_void() + 
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"), 
-    plot.subtitle = element_text(hjust = 0.5)) + 
-  scale_fill_gradientn(name = "NDVI", colours = green_colors(20))
-```
-
-### Challenge
-
-```{r}
-raster_names  <- gsub("Day","Julian Day ", raster_names)
-labels_names <- setNames(raster_names, unique(NDVI_HARV_stack_df$variable))
-
-brown_green_colors <- colorRampPalette(brewer.pal(9, "BrBG"))
-
-ggplot() +
-  geom_raster(data = NDVI_HARV_stack_df , aes(x = x, y = y, fill = value)) +
-  facet_wrap(~variable, ncol = 5, labeller = labeller(variable = labels_names)) +
-  ggtitle("Landsat NDVI - Julian Days", subtitle = "Harvard Forest 2011") +
-  theme_void() +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"), 
-  plot.subtitle = element_text(hjust = 0.5)) +
-  scale_fill_gradientn(name = "NDVI", colours = brown_green_colors(20))
-```
-
-# Derive values from raster time series (40 + 20 minutes) DROP
-
-```{r}
-avg_NDVI_HARV <- cellStats(NDVI_HARV_stack, mean)
-avg_NDVI_HARV
-```
-
-```{r}
-avg_NDVI_HARV <- as.data.frame(avg_NDVI_HARV)
-head(avg_NDVI_HARV)
-```
-
-```{r}
-names(avg_NDVI_HARV) <- "meanNDVI"
-head(avg_NDVI_HARV)
-```
-
-```{r}
-avg_NDVI_HARV$site <- "HARV"
-```
-
-```{r}
-avg_NDVI_HARV$year <- "2011"
-head(avg_NDVI_HARV)
-```
-
-## Extract Julian Day from row names
-
-```{r}
-julianDays <- gsub("X|_HARV_ndvi_crop", "", row.names(avg_NDVI_HARV))
-julianDaysjulianDays <- gsub("X|_HARV_ndvi_crop", "", row.names(avg_NDVI_HARV))
-julianDays
-```
-
-```{r}
-avg_NDVI_HARV$julianDay <- julianDays
-```
-
-```{r}
-class(avg_NDVI_HARV$julianDay)
-```
-
-## Convert Julian Day to Date Class
-
-```{r}
-origin <- as.Date("2011-01-01")
-```
-
-```{r}
-avg_NDVI_HARV$julianDay <- as.integer(avg_NDVI_HARV$julianDay)
-```
-
-```{r}
-avg_NDVI_HARV$Date<- origin + (avg_NDVI_HARV$julianDay - 1)
-head(avg_NDVI_HARV$Date)
-```
-
-```{r}
-class(avg_NDVI_HARV$Date)
-```
-
-```{r}
-NDVI_path_SJER <- here("data","NEON-DS-Landsat-NDVI/SJER/2011/NDVI")
-
-all_NDVI_SJER <- list.files(NDVI_path_SJER,
-                            full.names = TRUE,
-                            pattern = ".tif$")
-
-NDVI_stack_SJER <- stack(all_NDVI_SJER)
-
-NDVI_stack_SJER <- NDVI_stack_SJER/10000
-```
-
-```{r}
-avg_NDVI_SJER <- as.data.frame(cellStats(NDVI_stack_SJER, mean))
-```
-
-```{r}
-names(avg_NDVI_SJER) <- "meanNDVI"
-avg_NDVI_SJER$site <- "SJER"
-avg_NDVI_SJER$year <- "2011"
-```
-
-```{r}
-julianDays_SJER <- gsub("X|_SJER_ndvi_crop", "", row.names(avg_NDVI_SJER))
-origin <- as.Date("2011-01-01")
-avg_NDVI_SJER$julianDay <- as.integer(julianDays_SJER)
-
-avg_NDVI_SJER$Date <- origin + (avg_NDVI_SJER$julianDay - 1)
-
-head(avg_NDVI_SJER)
-```
-
-```{r}
-ggplot(avg_NDVI_HARV, aes(julianDay, meanNDVI)) +
-  geom_point() +
-  ggtitle("Landsat Derived NDVI - 2011", subtitle = "NEON Harvard Forest Field Site") +
-  xlab("Julian Days") + ylab("Mean NDVI")
-```
-
-### Challenge
-
-```{r}
-ggplot(avg_NDVI_SJER, aes(julianDay, meanNDVI)) +
-  geom_point(colour = "SpringGreen4") +
-  ggtitle("Landsat Derived NDVI - 2011", subtitle = "NEON SJER Field Site") +
-  xlab("Julian Day") + ylab("Mean NDVI")
-```
-
-```{r}
-NDVI_HARV_SJER <- rbind(avg_NDVI_HARV, avg_NDVI_SJER)
-```
-
-```{r}
-ggplot(NDVI_HARV_SJER, aes(x = julianDay, y = meanNDVI, colour = site)) +
-  geom_point(aes(group = site)) +
-  geom_line(aes(group = site)) +
-  ggtitle("Landsat Derived NDVI - 2011", subtitle = "Harvard Forest vs San Joaquin") +
-  xlab("Julian Day") + ylab("Mean NDVI")
-```
-
-```{r}
-ggplot(NDVI_HARV_SJER, aes(x = Date, y = meanNDVI, colour = site)) +
-  geom_point(aes(group = site)) +
-  geom_line(aes(group = site)) +
-  ggtitle("Landsat Derived NDVI - 2011", subtitle = "Harvard Forest vs San Joaquin") +
-  xlab("Date") + ylab("Mean NDVI")
-```
-
-## Remove outlier data
-
-```{r}
-avg_NDVI_HARV_clean <- subset(avg_NDVI_HARV, meanNDVI > 0.1)
-avg_NDVI_HARV_clean$meanNDVI < 0.1
-```
-
-```{r}
-ggplot(avg_NDVI_HARV_clean, aes(x = julianDay, y = meanNDVI)) +
-  geom_point() +
-  ggtitle("Landsat Derived NDVI - 2011", subtitle = "NEON Harvard Forest Field Site") +
-  xlab("Julian Days") + ylab("Mean NDVI")
-```
-
-## Write NDVI data to a .csv file
-
-```{r}
-head(avg_NDVI_HARV_clean)
-```
-
-```{r}
-row.names(avg_NDVI_HARV_clean) <- NULL
-head(avg_NDVI_HARV_clean)
-```
-```{r}
-write.csv(avg_NDVI_HARV_clean, file=here("data_output","meanNDVI_HARV_2011.csv"))
-```
-
-### Challenge
-
-```{r}
-avg_NDVI_SJER_clean <- subset(avg_NDVI_SJER, meanNDVI > 0.1)
-row.names(avg_NDVI_SJER_clean) <- NULL
-head(avg_NDVI_SJER_clean)
-```
-
-```{r}
-write.csv(avg_NDVI_SJER_clean, file = here("data_output","meanNDVI_SJER_2011.csv"))
-```
-
