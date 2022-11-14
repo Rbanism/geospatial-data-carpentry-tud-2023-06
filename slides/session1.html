@@ -413,27 +413,36 @@ Aleksandra Wilczynska
 <p>…which is a good thing 😎</p>
 </div>
 </section>
-<section id="tips-for-project-organisation" class="slide level2">
-<h2>Tips for project organisation</h2>
-<ul>
-<li class="fragment">All files related to a project in <strong>one location</strong></li>
-<li class="fragment"><strong>Raw data</strong> is read only</li>
-<li class="fragment"><strong>Cleaned data</strong> as read only</li>
-<li class="fragment"><strong>Generated output</strong> is disposable</li>
-<li class="fragment"><strong>Related data together</strong> (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g.&nbsp;shapefiles)</li>
-<li class="fragment">Keep consistent <strong>naming schema</strong></li>
-</ul>
-</section>
 <section id="organising-working-directory" class="slide level2">
 <h2>Organising working directory</h2>
 
-<img data-src="../assets/img/rstudio_project_files.jpeg" class="r-stretch quarto-figure-center"></section>
+<img data-src="../assets/img/rstudio_project_files.jpeg" class="r-stretch quarto-figure-center"><aside class="notes">
+<ul>
+<li>All files related to a project in <strong>one location</strong></li>
+<li><strong>Raw data</strong> is read only</li>
+<li><strong>Cleaned data</strong> as read only</li>
+<li><strong>Generated output</strong> is disposable</li>
+<li><strong>Related data together</strong> (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g.&nbsp;shapefiles)</li>
+<li>Keep consistent <strong>naming schema</strong></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="handling-paths" class="slide level2">
 <h2>Handling paths</h2>
 
 <img data-src="../assets/img/relative_root.png" style="width:65.0%" class="r-stretch quarto-figure-center"><p class="caption"><em>Credit</em>: <a href="https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook">kaggle.com</a></p></section>
-<section class="slide level2">
-
+<section id="here-package" class="slide level2">
+<h2><code>here</code> package</h2>
 
 <img data-src="../assets/img/here.png" style="width:65.0%" class="r-stretch quarto-figure-center"><p class="caption"><em>Credit</em>: <a href="https://github.com/allisonhorst">Allison horst</a></p></section>
 <section id="exploring-data-frames" class="slide level2">
@@ -442,7 +451,7 @@ Aleksandra Wilczynska
 
 <img data-src="../assets/img/data-frame.svg" class="r-stretch quarto-figure-center"></section>
 <section id="challenge-1-3-mins" class="slide level2">
-<h2>Challenge 1: 🕘 <strong>3 mins</strong></h2>
+<h2>Challenge 1: 🕝 <strong>3 mins</strong></h2>
 <p>Write a single command (you can use pipes) that will produce a <strong>data frame</strong> that has only the <strong>African</strong> values for:</p>
 <div>
 <ul>
@@ -452,26 +461,37 @@ Aleksandra Wilczynska
 </ul>
 </div>
 <p>How many rows does your data frame have and why?</p>
+<p>3</p>
 <div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>year_country_lifeExp_Africa <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>                           <span class="fu">filter</span>(continent<span class="sc">==</span><span class="st">"Africa"</span>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>                           <span class="fu">select</span>(year,country,lifeExp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3"></a>                           <span class="fu">select</span>(year,country,lifeExp)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">nrow</span>(year_country_lifeExp_Africa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 624</code></pre>
+</div>
 </div>
 </div>
 </section>
 <section id="challenge-2-3-mins" class="slide level2">
 <h2>Challenge 2:🕧 **3 mins*</h2>
 <p>Calculate the <strong>average life expectancy per country</strong>. Which country has the <strong>longest</strong> average life expectancy and which has the <strong>shortest</strong> average life expectancy?</p>
-<p><strong>Hint:</strong> Use <code>arrange()</code> to sort data frame or find minimum and maximum using <code>max()</code> and <code>min()</code> functions.</p>
+<p><strong>Hint:</strong> Use <code>max()</code> and <code>min()</code> functions to find minimum and maximum.</p>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">group_by</span>(country) <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">summarize</span>(<span class="at">mean_lifeExp =</span> <span class="fu">mean</span>(lifeExp) ) <span class="sc">%&gt;%</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">filter</span>(</span>
-<span id="cb2-5"><a href="#cb2-5"></a>    mean_lifeExp <span class="sc">==</span> <span class="fu">min</span>(mean_lifeExp) <span class="sc">|</span> mean_lifeExp <span class="sc">==</span> <span class="fu">max</span>(mean_lifeExp)</span>
-<span id="cb2-6"><a href="#cb2-6"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>gapminder <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">group_by</span>(country) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">summarize</span>(<span class="at">avg_lifeExp =</span> <span class="fu">mean</span>(lifeExp) ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">filter</span>(avg_lifeExp <span class="sc">==</span> <span class="fu">min</span>(avg_lifeExp) <span class="sc">|</span> avg_lifeExp <span class="sc">==</span> <span class="fu">max</span>(avg_lifeExp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  country      avg_lifeExp
+  &lt;chr&gt;              &lt;dbl&gt;
+1 Iceland             76.5
+2 Sierra Leone        36.8</code></pre>
+</div>
 </div>
 </div>
 </section>
