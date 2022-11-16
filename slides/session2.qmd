@@ -56,8 +56,6 @@ Answer the following questions:
 3. Do the files contain points, lines, or polygons?
 4. How many spatial objects are in each file?
 
-`r countdown::countdown()`
-
 . . .
 
 ```{r}
@@ -93,6 +91,7 @@ Explore the attributes associated with the `point_Delft` and `boundary_Delft` sp
 
 ```{r}
 #| label: ch-2
+#| eval: false
 
 ncol(point_Delft)
 ncol(boundary_Delft)

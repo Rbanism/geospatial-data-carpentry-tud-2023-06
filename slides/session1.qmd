@@ -81,7 +81,6 @@ Write a single command (you can use pipes) that will produce a **data frame** th
 
 How many rows does your data frame have and why?
 
-`r countdown::countdown()`
 
 . . .
 
