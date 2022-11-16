@@ -44,15 +44,14 @@ invisible(lapply(packages, library, character.only = TRUE))
 RStudio is an integrated development environment (IDE). It provides a (much prettier) interface for the R software. R is integrated into RStudio, so you never actually have to open R.
 
 
-R Studio gives a functionality of creating projects: self-contained working space (i.e. working directory), to which R will refer to, when looking for and saving files.
+R Studio gives a functionality of creating projects: self-contained working space (i.e. working directory), to which R will refer to, when looking for and saving files. You can create projects in existing  directories( folders) or create a directory anew. 
 
-We’re going to create a new project in RStudio:
+We’re going to create a  project in RStudio in the existing directory:
 
 - `File` 
 - `New Project` 
-- `Empty project` 
-- browse for directory where you want to keep it 
-- type **r-geospatial** as the name of the project 
+- `Existing directory` 
+- browse for directory directory you created when downloading the data:  `gdc`
 -`Create project`
 
 
@@ -68,7 +67,7 @@ We’re going to create a new project in RStudio:
 
 ### Organising project/working directory
 
-This is one suggestion of how your R project can look like. Let's go ahead and create the folders. 
+This is one suggestion of how your R project can look like. Your data folder is already there. Let's go ahead and create the other folders. 
 
 ![](assets/img/rstudio_project_files.jpeg)
 
@@ -113,7 +112,7 @@ Now, we will be using `tidyverse` package, which is actually a collection of use
 If you have have not installed this package earlier, please do so. You can check if you have it installed in the `Packages` pane in the bottom-right window.
 
 ```{r install-package, eval=FALSE}
-install.packages('tidyverse')
+# install.packages('tidyverse')
 install.packages('here')
 ```
 
@@ -150,13 +149,14 @@ here('data')
 ```
 
 
-<!-- ### Download files  - Should be send via email in the zipped file? Then this part can be skipped -->
+### Download files  
 
-<!-- #### Part 1:  -->
-<!-- ```{r download-files} -->
-<!-- download.file('https://raw.githubusercontent.com/datacarpentry/r-intro-geospatial/master/_episodes_rmd/data/gapminder_data.csv', here('data','gapminder_data.csv'), mode = 'wb') -->
+We still need to download data for the first part of the workshop. You can do with with the function `download.file()`. We will save it in the `data` folder, where the **raw** data should go. 
 
-<!-- ``` -->
+```{r download-files}
+download.file('bit.ly/GeospatialGapminder', here('data','gapminder_data.csv'), mode = 'wb')
+
+```
 
 <!-- #### Part 2:  -->
 <!-- + Download zip file by clicking on [this link](https://ndownloader.figshare.com/articles/2009586/versions/10) -->
@@ -181,7 +181,7 @@ We can store values in variables using the assignment operator `<-`, like this:
 x <- 1/40
 ```
 
-Notice that assignment does not print a value. Instead, we stored it for later in something called a variable. x now contains the value 0.025:
+Notice that assignment does not print a value. Instead, we stored it for later in something called a variable. `x` now contains the value `0.025`:
 ```{r asignment-operator2}
 x
 ```
@@ -447,6 +447,9 @@ head(year_country_gdp_eurasia)
 <div class="alert alert-info">
 <strong>Challenge</strong> 
 Write a single command (which can span multiple lines and includes pipes) that will produce a dataframe that has the African values for life expectancy, country and year, but not for other Continents. How many rows does your dataframe have and why?
+
+`countdown::countdown_fullscreen(minutes = 3)`
+
 </div>
 ```{r ex5, class.source="bg-info", include = F}
 year_country_lifeExp_Africa <- gapminder %>%
@@ -471,6 +474,8 @@ gapminder %>% # select the dataset
 Calculate the average life expectancy per country. Which country has the longest average life expectancy and which has the shortest average life expectancy?
 
 <strong>Hint</strong> Use `max()`  and `min()` functions to find minimum and maximum.
+
+`countdown::countdown_fullscreen(minutes = 3)`
 
 </div>
 ```{r ex6 , class.source="bg-info", include=F}
@@ -629,7 +634,7 @@ plot_d <-  # this time let's save the plot in the object.
   ggplot(aes(x = country_reordered, y = gdpPercap, fill = lifeExpCat   )) + 
   geom_col()+ 
   coord_flip()+
-  scale_fill_viridis_d() # _c stands for continous scale ; _d for discrete
+  scale_fill_manual(values = c('light blue', 'orange')) 
 
 ```
 
