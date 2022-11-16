@@ -49,13 +49,11 @@ The `st_crs()` function gives us the coordinate reference system used by the sha
 
 ```{r}
 st_crs(boundary_Delft)
+st_bbox(boundary_Delft)
 ```
 ```{r}
 boundary_Delft <- st_transform(boundary_Delft, 28992)
 st_crs(boundary_Delft)
-```
-
-```{r}
 st_bbox(boundary_Delft)
 ```
 
@@ -71,7 +69,7 @@ Now, let's plot this shapefile. You are already familiar with the `ggplot2` pack
 ggplot(data = boundary_Delft) +
   geom_sf(size = 3, color = "black", fill = "cyan1") +
   ggtitle("Delft Administrative Boundary") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))  # this is needed to display the axes in meters
 ```
 
 ### Challenge
@@ -136,7 +134,7 @@ st_bbox(point_Delft)
 Let's have a look at the content of the loaded data, starting with `lines_Delft`. In essence, an `"sf"` object is a data.frame with a "sticky" geometry column and some extra metadata, like CRS and geometry type we examined earlier.
 
 ```{r}
-point_Delft
+lines_Delft
 ```
 
 This means that we can manipulate them as data frames. For instance, we can look at the number of variables (columns in a data frame) with `ncol()`. 
@@ -221,21 +219,32 @@ nrow(lines_Delft)
 nrow(cycleway_Delft)
 ```
 
+We can also calculate the total length of cycleways.
+
+```{r}
+cycleway_Delft <- cycleway_Delft %>% 
+  mutate(length = st_length(.))
+
+cycleway_Delft %>%
+  summarise(total_length = sum(length))
+```
+
 Now we can plot only the cycleways.
 
 ```{r}
 ggplot(data = cycleway_Delft) +
   geom_sf() +
   ggtitle("Slow mobility network in Delft", subtitle = "Cycleways") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ### Challenge
 
 1. Create a new object that only contains the motorways in Delft. 
-2. How many features does the new object have? 
-3. Plot the motorways.
-4. Extra: follow the same steps with pedestrian streets. 
+2. How many features does the new object have?
+3. What is the total length of motorways?
+4. Plot the motorways.
+5. Extra: follow the same steps with pedestrian streets. 
 
 ```{r}
 levels(factor(lines_Delft$highway))
@@ -244,6 +253,11 @@ levels(factor(lines_Delft$highway))
 ```{r}
 motorway_Delft <- lines_Delft %>% 
   filter(highway == "motorway")
+
+motorway_Delft %>% 
+  mutate(length = st_length(.)) %>% 
+  select(everything(), geometry) %>%
+  summarise(total_length = sum(length))
 ```
 
 ```{r}
@@ -260,6 +274,12 @@ ggplot(data = motorway_Delft) +
 ```{r}
 pedestrian_Delft <- lines_Delft %>% 
   filter(highway == "pedestrian")
+
+pedestrian_Delft %>% 
+  mutate(length = st_length(.)) %>% 
+  select(everything(), geometry) %>%
+  summarise(total_length = sum(length))
+
 nrow(pedestrian_Delft)
 ```
 
@@ -267,7 +287,7 @@ nrow(pedestrian_Delft)
 ggplot() +
   geom_sf(data = pedestrian_Delft) +
   ggtitle("Slow mobility network", subtitle = "Pedestrian") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 <!-- End of challenge -->
@@ -394,19 +414,13 @@ ggplot(data = lines_Delft_selection) +
 
 ### Challenge 
 
-Create a plot that emphasizes only roads where bicycles are allowed. To emphasize this, make the lines where bicycles are not allowed THINNER than the roads where bicycles are allowed.
-
-Be sure to add a title and legend to your map. You might consider a color palette that has all bike-friendly roads displayed in a bright color. All other lines can be black.
+Create a plot that emphasizes only roads where bicycles are allowed. To emphasize this, make the lines where bicycles are not allowed THINNER than the roads where bicycles are allowed. Be sure to add a title and legend to your map. You might consider a color palette that has all bike-friendly roads displayed in a bright color. All other lines can be black.
 ```{r}
 class(lines_Delft_selection$highway)
 ```
 
 ```{r}
 levels(factor(lines_Delft$highway))
-```
-
-```{r}
-# lines_removeNA <- lines_HARV[!is.na(lines_HARV$BicyclesHo),] 
 ```
 
 ```{r}
@@ -430,6 +444,7 @@ municipal_boundaries_NL <- st_read(here("data", "nl-gemeenten.shp"))
 ```
 
 ```{r}
+str(municipal_boundaries_NL)
 levels(factor(municipal_boundaries_NL$ligtInPr_1))
 ```
 
