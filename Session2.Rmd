@@ -73,6 +73,7 @@ ggplot(data = boundary_Delft) +
   ggtitle("Delft Administrative Boundary") +
   coord_sf()
 ```
+
 ### Challenge
 
 Read in `delft-streets.shp` and `delft-leisure.shp` and call them `lines_Delft` and `point_Delft` respectively.
@@ -174,7 +175,7 @@ ncol(point_Delft)
 ncol(boundary_Delft)
 ```
 
-Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can [either] increase the number of rows we want to see, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways.] Printing the object will also give us the first 10 rows.
+Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can [either] increase the number of rows we want to see[, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways.] Printing the object will also give us the first 10 rows.
 
 ```{r}
 head(point_Delft$leisure)
@@ -195,7 +196,7 @@ names(point_Delft)
 Using the `$` operator, we can examine the content of a single field of our lines feature. 
 
 ```{r}
-lines_Delft$highway
+head(lines_Delft$highway, 10)
 ```
 
 To see only unique values of a categorical variable stored as a factor, we can use the `levels()` function. Remember, factors were introduced in the morning.
@@ -460,28 +461,29 @@ Now let's create a custom legend.
 
 ```{r}
 leisure_colors <- rainbow(15)
+point_Delft$leisure <- factor(point_Delft$leisure)
 ggplot() + 
   geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
-  geom_sf(data = point_Delft, aes(fill = leisure)) +
-  geom_sf(data = lines_Delft_selection, aes(color = highway), 
-          show.legend = "line", size = 1) + 
-  scale_color_manual(values = road_colors, name = "Line Type") + 
-  scale_fill_manual(values = rep("blue", 15), name = "Tower Location") + 
-  ggtitle("Mobility network of Delft") + 
+  geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) + 
+  geom_sf(data = point_Delft, aes(fill = leisure), shape = 21) +
+  scale_color_manual(values = road_colors, name = "Road Type") + 
+  scale_fill_manual(values = leisure_colors, name = "Lesiure Location") + 
+  ggtitle("Mobility network and leisure in Delft") + 
   coord_sf()
 ```
 
 ```{r}
 ggplot() +
   geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
-  geom_sf(data = point_Delft, aes(fill = leisure), shape = 15) +
-  geom_sf(data = lines_Delft_selection, aes(color = highway),
-          show.legend = "line", size = 1) +
+  geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) +
+  geom_sf(data = point_Delft, aes(fill = leisure), shape = 22) +
   scale_color_manual(values = road_colors, name = "Line Type") +
-  scale_fill_manual(values = rep("blue", 15), name = "Tower Location") +
-  ggtitle("Mobility network of Delft") + 
+  scale_fill_manual(values = leisure_colors, name = "Leisure Location") +
+  ggtitle("Mobility network and leisure in Delft") + 
   coord_sf()
 ```
+
+We notice that there are quite some playgrounds in the residential parts of Delft, whereas on campus there is a concentration of picnic tables. So that is what our next challenge is about.
 
 ### Challenge
 
@@ -621,7 +623,7 @@ ggplot() +
 
 To save a file, use the `st_write()` function from the `sf` package.
 
-```{r}
+```{r, eval=FALSE}
 st_write(leisure_locations_selection,
          here("data_output","leisure_locations_selection.shp"), driver = "ESRI Shapefile")
 ```
