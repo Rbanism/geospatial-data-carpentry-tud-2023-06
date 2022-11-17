@@ -21,20 +21,20 @@ knitr::opts_chunk$set(
 # remotes::install_github('ropensci/osmdata')
 
 # Data manipulation
-# library(tibble)
-# library(dplyr)
-# library(reshape)
+ library(tibble)
+ library(dplyr)
+ library(reshape)
 
 # Data visualisation
 library(ggplot2)
 
 # Working with spatial data
 library(sf)
-# library(leaflet)
-# library(raster)
-# library(rgdal)
-# library(proj4)
-# library(scales)
+ library(leaflet)
+ library(raster)
+ library(rgdal)
+ library(proj4)
+ library(scales)
 
 # Working with OSM data
 # library(osmdata)
