@@ -3,7 +3,7 @@ title: "Intro to Geospatial Vector Data with R"
 author: "Claudiu Forgaci"
 format: 
   revealjs:
-    logo: ../assets/img/TUDelft_logo_rgb.png
+    logo: assets/img/TUDelft_logo_rgb.png
     css: logo.css
     footer: "Data Carpentry for Geospatial Data"
     chalkboard: true
@@ -20,8 +20,19 @@ library(tidyverse)
 library(here)
 library(sf)
 
+boundary_Delft <- st_read(here("data", "delft-boundary.shp"))
 lines_Delft <- st_read(here("data", "delft-streets.shp"))
 point_Delft <- st_read(here("data", "delft-leisure.shp"))
+
+road_types <- c("motorway", "primary", "secondary", "cycleway")
+road_colors <- c("blue", "green", "navy", "purple")
+
+municipal_boundary_NL <- st_read(here("data","nl-gemeenten.shp"))
+country_boundary_NL <- st_read(here("data", "nl-boundary.shp"))
+
+lines_Delft_selection <- lines_Delft %>% 
+  filter(highway %in% road_types) %>% 
+  mutate(highway = factor(highway, levels = road_types))
 
 knitr::opts_chunk$set(
   cache = FALSE,
@@ -56,12 +67,18 @@ Answer the following questions:
 3. Do the files contain points, lines, or polygons?
 4. How many spatial objects are in each file?
 
-`r countdown::countdown()`
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 
 . . .
 
 ```{r}
 #| label: ch-1
+#| eval: false
+#| include: false
 
 lines_Delft <- st_read(here("data", "delft-streets.shp"))
 point_Delft <- st_read(here("data", "delft-leisure.shp"))
@@ -85,14 +102,23 @@ Explore the attributes associated with the `point_Delft` and `boundary_Delft` sp
 2. What types of leisure points do the points represent? Give three examples.
 3. Which of the following is NOT an attribute of the point_Delft data object?
 
-  A) location B) leisure C) osm_id
+. . . 
 
+&#8291;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A) location B) leisure C) osm_id
+
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 <!-- **Hint:**  -->
 
 . . .
 
 ```{r}
 #| label: ch-2
+#| eval: false
+#| include: false
 
 ncol(point_Delft)
 ncol(boundary_Delft)
@@ -113,10 +139,17 @@ names(point_Delft)
 4. Plot the motorways.
 5. Extra: follow the same steps with pedestrian streets. 
 
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 . . . 
 
 ```{r}
 #| label: ch-3
+#| eval: false
+#| include: false
 
 levels(factor(lines_Delft$highway))
 
@@ -148,7 +181,7 @@ ggplot(data = pedestrian_Delft) +
 
 ## Challenge 4: `r emo::ji("clock")` **3 mins**
 
-In the example above, we set the line widths to be 1, 0.75, 0.5, and 0.25. In our case line thicknesses are consistent with the hierarchy of the selected road types, but in some cases we might want to show a different hierarchy.
+In the previous example, we set the line widths to be 1, 0.75, 0.5, and 0.25. In our case line thicknesses are consistent with the hierarchy of the selected road types, but in some cases we might want to show a different hierarchy.
 
 Let’s create another plot where we show the different line types with the following thicknesses:
 
@@ -157,10 +190,17 @@ Let’s create another plot where we show the different line types with the foll
 - secondary size =  0.5
 - cycleway size = 1
 
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 . . . 
 
 ```{r}
 #| label: ch-4
+#| eval: false
+#| include: false
 
 levels(factor(lines_Delft$highway))
 
@@ -176,12 +216,23 @@ ggplot(data = lines_Delft_selection) +
 
 ## Challenge 5: `r emo::ji("clock")` **3 mins**
 
-Create a plot that emphasizes only roads where bicycles are allowed. To emphasize this, make the lines where bicycles are not allowed THINNER than the roads where bicycles are allowed. Be sure to add a title and legend to your map. You might consider a color palette that has all bike-friendly roads displayed in a bright color. All other lines can be black.
+Create a plot that emphasizes only roads where bicycles are allowed, as follows: 
 
+- make the lines where bicycles are not allowed THINNER than the roads where bicycles are allowed. 
+- Be sure to add a title and legend to your map. 
+- You might consider a color palette that has all bike-friendly roads displayed in a bright color. All other lines can be black.
+
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 . . . 
 
 ```{r}
 #| label: ch-5
+#| eval: false
+#| include: false
 
 class(lines_Delft_selection$highway)
 
@@ -199,12 +250,23 @@ ggplot() +
 
 ## Challenge 6: `r emo::ji("clock")` **3 mins**
 
-Create a map of the municipal boundaries in the Netherlands using the data located in your data folder: `nl-gemeenten.shp`. Apply a line color to each state using its region value. Add a legend.
+Create a map of the municipal boundaries in the Netherlands, as follows:
 
+- Use the data located in your data folder: `nl-gemeenten.shp`. 
+- Apply a line color to each state using its region value. 
+- Add a legend.
+
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 . . . 
 
 ```{r}
 #| label: ch-6
+#| eval: false
+#| include: false
 
 municipal_boundaries_NL <- st_read(here("data", "nl-gemeenten.shp"))
 str(municipal_boundaries_NL)
@@ -218,14 +280,25 @@ ggplot(data = municipal_boundaries_NL) +
 
 ## Challenge 7: `r emo::ji("clock")` **3 mins**
 
-Create a map of leisure locations only including `playground` and `picnic_table`, with each point colored by the leisure type. Overlay this layer on top of the `lines_Delft` layer (the streets). Create a custom legend that applies line symbols to lines and point symbols to the points.
+Create a map of leisure locations only including `playground` and `picnic_table`:
 
-Modify the plot above. Tell R to plot each point, using a different symbol of shape value.
+- color each point by the leisure type. 
+- Overlay this layer on top of the `lines_Delft` layer (the streets). 
+- Create a custom legend that applies line symbols to lines and point symbols to the points.
 
+- Extra: Modify the previous plot. Tell R to plot each point, using a different symbol of shape value.
+
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 . . . 
 
 ```{r}
 #| label: ch-7
+#| eval: false
+#| include: false
 
 leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
   filter(leisure %in% c("playground", "picnic_table"))
@@ -259,17 +332,24 @@ ggplot() +
 
 ## Challenge 8: `r emo::ji("clock")` **3 mins**
 
-Create a map of the South Holland as follows:
+Create a map of the South Holland, as follows:
 
 1. Import and plot `nl-gemeenten.shp`. Adjust line width as necessary.
 2. Layer the boundary of Delft onto the plot.
 3. Add a title.
 4. Add a legend that shows both the privince boundaries (as a line) and the boundary of Delft (as a filled polygon).
 
+``` {r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+``` 
 . . . 
 
 ```{r}
 #| label: ch-8
+#| eval: false
+#| include: false
 
 boundary_ZH <- municipal_boundary_NL %>% 
   filter(ligtInPr_1 == "Zuid-Holland")
