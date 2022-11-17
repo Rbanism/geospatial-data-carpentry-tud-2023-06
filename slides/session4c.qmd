@@ -1,0 +1,233 @@
+---
+title: "Session 4c: Manipulate rater and vector data"
+author: "Clémentine Cottineau"
+format: 
+  revealjs:
+    logo: BKTUD.png
+    css: logo.css
+    footer: "Data Carpentry for Geospatial Data"
+    chalkboard: true
+    incremental: true   
+    theme: [default, custom.scss]
+---
+
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+
+
+knitr::opts_chunk$set(
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE
+  )
+```
+
+## How can I crop raster objects to vector objects, and extract the summary of raster pixels?
+
+Objectives:
+
+- Crop a raster to the extent of a vector layer.
+- Extract values from a raster that correspond to a vector file overlay.
+
+Keypoints:
+
+- Use the `crop()` function to crop a raster object.
+- Use the `extract()` function to extract pixels from a raster object that fall within a particular extent boundary.
+- Use the `extent()` function to define an extent.
+
+
+## Introduction
+
+We often work with spatial layers that have different spatial extents. The spatial extent of a shapefile or R spatial object represents the geographic “edge” or location that is the furthest north, south east and west. Thus is represents the overall geographic coverage of the spatial object.
+
+![Image Source: National Ecological Observatory Network (NEON)](fig/spatial_extent.png)
+
+
+## Introduction
+
+The graphic below illustrates the extent of several of the spatial layers that we have worked with in this workshop:
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![Image Source: DCC](fig/rmd-11-compare-data-extents-1.png)
+
+:::
+
+::: {.column width="50%"}
+- Area of interest (AOI) – blue
+- Roads and trails – purple
+- Vegetation plot locations (marked with white dots)– black
+- A canopy height model (CHM) in GeoTIFF format – green
+
+:::
+
+::::
+
+
+
+
+## Introduction
+
+Frequent use cases of cropping a raster file include 
+
+- reducing file size 
+- creating maps. 
+
+Sometimes we have a raster file that is much larger than our study area or area of interest. It is often more efficient to crop the raster to the extent of our study area to reduce file sizes as we process our data. 
+
+Cropping a raster can also be useful when creating pretty maps so that the raster layer matches the extent of the desired vector layers.
+
+
+## Import the raster 
+
+```{r}
+#| eval: false
+DSM_TUD <- raster(here("data","tud-dsm.tif"))
+DTM_TUD <- raster(here("data","tud-dtm.tif"))
+CHM_TUD <- DSM_TUD - DTM_TUD
+
+CHM_TUD_df <- as.data.frame(CHM_TUD, xy = TRUE)
+
+oai_boundary_tudlib <- st_as_sfc(st_bbox(raster(here("data","tudlib-rgb.tif"))))
+```
+
+
+## Crop a Raster Using Vector Extent
+
+We can use the `crop()` function to crop a raster to the extent of another spatial object. To do this, we need to specify the raster to be cropped and the spatial object that will be used to crop the raster. R will use the extent of the spatial object as the cropping boundary.
+
+To illustrate this, we will crop the Canopy Height Model (CHM) to only include the **area of interest (AOI)**. Let’s start by plotting the full extent of the CHM data and overlay where the AOI falls within it. The boundaries of the AOI will be colored blue, and we use `fill = NA` to make the area transparent.
+
+
+
+```{r from-ep2}
+#| eval: false
+
+ggplot() +
+  geom_raster(data = CHM_TUD_df, aes(x = x, y = y, fill = layer)) + 
+  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) +
+  geom_sf(data = oai_boundary_tudlib, color = "blue", fill = NA) +
+  coord_sf()
+
+```
+
+## Crop a Raster Using Vector Extent
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](fig/rmd-04c-from-ep2-1.png)
+
+:::
+
+::: {.column width="50%"}
+
+Now that we have visualized the area of the CHM we want to subset, we can perform the cropping operation. We are going to use the `crop()` function from the `raster` package to create a new object with only the portion of the CHM data that falls within the boundaries of the AOI.
+
+
+```{r}
+#| eval: false
+CHM_TUD_Cropped <- crop(
+  x = CHM_TUD,
+  y = st_as_sf(oai_boundary_tudlib)
+  )
+```
+
+
+:::
+
+::::
+
+## Crop a Raster Using Vector Extent
+:::: {.columns}
+
+::: {.column width="50%"}
+![](fig/rmd-04c-unnamed-chunk-4-1.png)
+:::
+
+::: {.column width="50%"}
+Now we can plot:
+- the cropped CHM data 
+- a boundary box showing the full CHM extent. 
+
+However, remember, since this is raster data, we need to convert to a data frame in order to plot using ggplot. 
+
+:::
+
+::::
+
+## Crop a Raster Using Vector Extent
+
+To get the boundary box from CHM, the `st_bbox()` will extract the 4 corners of the rectangle that encompass all the features contained in this object. The `st_as_sfc()` converts these 4 coordinates into a polygon that we can plot:
+
+
+```{r}
+#| eval: false
+CHM_TUD_Cropped_df <- as.data.frame(CHM_TUD_Cropped, xy = TRUE)
+```
+
+## Crop a Raster Using Vector Extent
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](fig/rmd-04c-unnamed-chunk-5-1.png)
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| eval: false
+ggplot() +
+  geom_sf(data = st_as_sfc(
+    st_bbox(CHM_TUD)), 
+          fill = "green",
+          color = "green", 
+          alpha = .2) +  
+  geom_raster(data = CHM_TUD_Cropped_df,
+              aes(x = x, 
+                  y = y, 
+                  fill = layer)) + 
+  scale_fill_gradientn(
+    name = "Canopy Height", 
+    colors = terrain.colors(10)) + 
+  coord_sf()
+```
+
+This plot shows that the full CHM extent (plotted in green) is much larger than the resulting cropped raster. 
+:::
+
+::::
+
+
+## Challenge
+
+```{r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+```
+
+
+## Solution
+
+
+
+## Summary and keypoints
+
+We have seen how to crop a raster to the extent of a vector layer and how to extract values from a raster that correspond to a vector file overlay.
+
+In short:
+
+- Use the `crop()` function to crop a raster object.
+- Use the `extract()` function to extract pixels from a raster object that fall within a particular extent boundary.
+- Use the `extent()` function to define an extent.

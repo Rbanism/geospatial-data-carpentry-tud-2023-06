@@ -174,27 +174,6 @@ ggplot() +
 ---
 
 ## Solution
-
-```{r}
-old <- 1939 # year prior to which you consider a building old
-  distance <- 100 # in meters
- old_buildings <- filter(buildings, start_date <= old)
- buffer_old_buildings <- st_buffer(old_buildings, dist = distance)
-  single_old_buffer <- st_union(buffer_old_buildings) %>% 
-   st_cast(to = "POLYGON") %>% st_as_sf()  %>% 
-   add_column("ID"=1:nrow(.))  %>% st_transform(.,crs=4326) 
- centroids_old <- st_centroid(old_buildings) %>% st_transform(.,crs=4326) 
- centroids_buffers <- st_intersection(centroids_old,single_old_buffer) %>%
- add_column(n=1)
- centroid_by_buffer <- centroids_buffers %>% group_by(ID) %>% summarise(n = sum(n))
- single_buffer <- single_old_buffer %>% add_column(n_buildings = centroid_by_buffer$n)
-  ggplot() + 
-   geom_sf(data = buildings) +
-   geom_sf(data = single_buffer, aes(fill=n_buildings), colour = NA) +
-   scale_fill_viridis_c(alpha = 0.6,begin = 0.6,
-                        end = 1,direction = -1, option = "B") 
-```
-
  
 ```{r prewar-replication}
  old <- 1939 
