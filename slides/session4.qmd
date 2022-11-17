@@ -1,6 +1,6 @@
 ---
-title: "Intro to R"
-author: "Aleksandra Wilczynska"
+title: ""
+author: "Clementine Cottinea"
 format: 
   revealjs:
     logo: ../assets/img/TUDelft_logo_rgb.png
@@ -19,8 +19,6 @@ format:
 library(tidyverse)
 library(here)
 
-gapminder <- read.csv(here('data','gapminder_data.csv') )
-
 knitr::opts_chunk$set(
   cache = FALSE,
   echo = TRUE,
@@ -30,110 +28,16 @@ knitr::opts_chunk$set(
 ```
 
 
-## RStudio
+## intro
 
-- RStudio is an integrated development environment (IDE)
-- It provides a (much prettier) interface for the R software
-- R is integrated into RStudio, so you never actually have to open R...
-
-. . . 
- 
- 
-...which is a good thing `r emo::ji("sunglasses")`
+## rest
 
 
-## Organising working directory
 
-![](../assets/img/rstudio_project_files.jpeg){fig-align="center"}
-
-::: {.notes}
-
-- All files related to a project in **one location**
-- **Raw data** is read only
-- **Cleaned data** as read only
-- **Generated output** is disposable
-- **Related data together** (Some GIS file formats are really 3-6 files that need to be kept together and have the same name, e.g. shapefiles)
-- Keep consistent **naming schema**
-::: 
-
-## Handling paths
- ![*Credit*: [kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)](../assets/img/relative_root.png){fig-align="center" width="65%"}
-
-## `here` package
-![*Credit*: [Allison horst](https://github.com/allisonhorst)](../assets/img/here.png){fig-align="center" width="65%"}
-
-
-## Exploring data frames
-
-A data frame is the representation of data in the format of a **table** where the columns are **vectors** that all have the **same length**.
-
-![](../assets/img/data-frame.svg){fig-align="center"}
-
-## Challenge 1: `r emo::ji("clock")` **3 mins**
-
-Write a single command (you can use pipes) that will produce a **data frame** that has only the **African** values for:
-
-::: {.nonincremental}
-- **life expectancy**
-- **country**
-- **year**
-:::
-
-How many rows does your data frame have and why?
+## Challenge 1:  **10 mins**
 
 ```{r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 10)
 ```
-
-. . .
-
-```{r}
-year_country_lifeExp_Africa <- gapminder %>%
-                           filter(continent=="Africa"  ) %>%
-                           select(year,country,lifeExp)
-
-nrow(year_country_lifeExp_Africa)
-
-```
-
-
-## Challenge 2:`r emo::ji("clock")` **3 mins*
-
-Calculate the **average life expectancy per country**. Which country has the **longest** average life expectancy and which has the **shortest** average life expectancy?
-
-
-**Hint:** Use `max()`  and `min()` functions to find minimum and maximum.
-
-```{r}
-#| echo: false
-#| cache: false
-countdown::countdown(minutes = 3)
-```
-
-. . .
-
-```{r}
-
-gapminder %>%
-  group_by(country) %>%
-  summarize(avg_lifeExp = mean(lifeExp) ) %>%
-  filter(avg_lifeExp == min(avg_lifeExp) | avg_lifeExp == max(avg_lifeExp))
-
-```
-
-
-
-## Introduction to visualisation
-
-![*Credit*: [Allison horst](https://github.com/allisonhorst)](../assets/img/ggplot2_masterpiece.png){width="65%"}
-
-
-## `ggplot2` package
-
-`gg` stands for *grammar of graphics*, the idea that three components needed to create a graph are:
-
-- **data**
-- **aesthetics** - coordinate system on which we map the data ( what is represented on x axis, what on y axis)
-- **geometries** - visual representation of the data (points, bars, etc.)
