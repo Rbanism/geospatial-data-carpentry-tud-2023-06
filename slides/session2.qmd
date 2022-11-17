@@ -3,8 +3,8 @@ title: "Intro to Geospatial Vector Data with R"
 author: "Claudiu Forgaci"
 format: 
   revealjs:
-    logo: assets/img/TUDelft_logo_rgb.png
-    css: logo.css
+    # logo: assets/img/TUDelft_logo_rgb.png
+    # css: logo.css
     footer: "Data Carpentry for Geospatial Data"
     chalkboard: true
     incremental: true   
@@ -54,7 +54,7 @@ knitr::opts_chunk$set(
 - represents simple features as records in a `data.frame` or `tibble` with a `geometry` column
 - function names start with a prefix `st_` ("st" stands for spatial type), which is also handy for auto-completion in RStudio
 
-## Open and Plot Shapefiles
+# Open and Plot Shapefiles
 
 ## Challenge 1: `r emo::ji("clock")` **3 mins**
 
@@ -93,6 +93,7 @@ st_bbox(lines_Delft)
 st_bbox(point_Delft)
 ```
 
+# Explore and plot by vector layer attributes
 
 ## Challenge 2: `r emo::ji("clock")` **3 mins**
 
@@ -131,7 +132,7 @@ point_Delft
 names(point_Delft)
 ```
 
-## Challenge 3: `r emo::ji("clock")` **3 mins**
+## Challenge 3: `r emo::ji("clock")` **5 mins**
 
 1. Create a new object that only contains the motorways in Delft. 
 2. How many features does the new object have?
@@ -142,7 +143,7 @@ names(point_Delft)
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 5)
 ``` 
 . . . 
 
@@ -214,7 +215,7 @@ ggplot(data = lines_Delft_selection) +
   coord_sf()
 ```
 
-## Challenge 5: `r emo::ji("clock")` **3 mins**
+## Challenge 5: `r emo::ji("clock")` **5 mins**
 
 Create a plot that emphasizes only roads where bicycles are allowed, as follows: 
 
@@ -225,7 +226,7 @@ Create a plot that emphasizes only roads where bicycles are allowed, as follows:
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 5)
 ``` 
 . . . 
 
@@ -278,7 +279,9 @@ ggplot(data = municipal_boundaries_NL) +
   coord_sf()
 ```
 
-## Challenge 7: `r emo::ji("clock")` **3 mins**
+# Plot multiple shapefiles
+
+## Challenge 7: `r emo::ji("clock")` **5 mins**
 
 Create a map of leisure locations only including `playground` and `picnic_table`:
 
@@ -291,7 +294,7 @@ Create a map of leisure locations only including `playground` and `picnic_table`
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 5)
 ``` 
 . . . 
 
@@ -330,14 +333,17 @@ ggplot() +
   coord_sf()
 ```
 
+# Handle spatial projections
+
 ## Challenge 8: `r emo::ji("clock")` **3 mins**
 
 Create a map of the South Holland, as follows:
 
-1. Import and plot `nl-gemeenten.shp`. Adjust line width as necessary.
-2. Layer the boundary of Delft onto the plot.
-3. Add a title.
-4. Add a legend that shows both the privince boundaries (as a line) and the boundary of Delft (as a filled polygon).
+1. Import `nl-gemeenten.shp` and filter only the municipalities in South Holland. 
+2. Plot it and adjust line width as necessary.
+3. Layer the boundary of Delft onto the plot.
+4. Add a title.
+5. Add a legend that shows both the province boundaries (as a line) and the boundary of Delft (as a filled polygon).
 
 ``` {r}
 #| echo: false
@@ -359,9 +365,8 @@ ggplot() +
   scale_color_manual(name = "", labels = "Municipal Boundaries", values = c("color" = "gray18")) +
   geom_sf(data = boundary_Delft, aes(shape = "shape"), color = "purple", fill = "purple") +
   scale_shape_manual(name = "", labels = "Municipality of Delft", values = c("shape" = 19)) +
-  ggtitle("Delft location") +
+  ggtitle("Delft location in South Holland") +
   theme(legend.background = element_rect(color = NA)) +
   coord_sf()
 ```
-
 
