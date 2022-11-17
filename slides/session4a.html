@@ -392,6 +392,13 @@
   <p class="author">Clémentine Cottineau</p>
 </section>
 
+<section id="objectives" class="slide level2">
+<h2>Objectives:</h2>
+<ul>
+<li class="fragment">Explain how <strong>OpenStreetMap</strong> (OSM) geodata works</li>
+<li class="fragment">Demonstrate how to <strong>import, select, and visualise OSM vector data</strong></li>
+</ul>
+</section>
 <section id="open-street-map-osm" class="slide level2">
 <h2>Open Street Map (OSM)</h2>
 <p>is a collaborative project which aims at mapping the world and sharing geospatial data in an open way.</p>
@@ -443,6 +450,10 @@ Geodetic CRS:  WGS 84
 3 POLYGON ((79.65064 9.541313...</code></pre>
 </div>
 </div>
+<p>A Problem with download? Try:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">assign</span>(<span class="st">"has_internet_via_proxy"</span>, <span class="cn">TRUE</span>, <span class="fu">environment</span>(curl<span class="sc">::</span>has_internet))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="why-multiple-polygons" class="slide level2">
 <h2>Why multiple polygons?</h2>
@@ -457,16 +468,16 @@ Geodetic CRS:  WGS 84
 <section id="extracting-osm-features-1" class="slide level2">
 <h2>Extracting OSM features</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>x <span class="ot">&lt;-</span> <span class="fu">opq</span>(<span class="at">bbox =</span> bb) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="#cb3-2"></a>   <span class="fu">add_osm_feature</span>(<span class="at">key =</span> <span class="st">'building'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>    <span class="fu">osmdata_sf</span> ()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>x <span class="ot">&lt;-</span> <span class="fu">opq</span>(<span class="at">bbox =</span> bb) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2"></a>   <span class="fu">add_osm_feature</span>(<span class="at">key =</span> <span class="st">'building'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="fu">osmdata_sf</span> ()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>What is this x object made of?</p>
 </section>
 <section id="extracting-osm-features-2" class="slide level2">
 <h2>Extracting OSM features</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">head</span>(x<span class="sc">$</span>osm_polygons)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">head</span>(x<span class="sc">$</span>osm_polygons)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li class="fragment">It is a <strong>table</strong> of all the buildings contained in the bounding box, which gives us their <strong>OSM id</strong>, their <strong>geometry</strong> and a range of <strong>attributes</strong>, such as their name, building material, building date, etc.</li>
@@ -486,7 +497,7 @@ Geodetic CRS:  WGS 84
 <h2>Projections</h2>
 <p>First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centered on the Netherlands.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>buildings <span class="ot">&lt;-</span> x<span class="sc">$</span>osm_polygons <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(.,<span class="at">crs=</span><span class="dv">28992</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>buildings <span class="ot">&lt;-</span> x<span class="sc">$</span>osm_polygons <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(.,<span class="at">crs=</span><span class="dv">28992</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="mapping-urbanisation-in-delft" class="slide level2">
@@ -497,12 +508,12 @@ Geodetic CRS:  WGS 84
 <section id="mapping-urbanisation-in-delft-1" class="slide level2">
 <h2>Mapping urbanisation in Delft</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>buildings<span class="sc">$</span>build_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ifelse</span>(buildings<span class="sc">$</span>start_date <span class="sc">&lt;</span><span class="dv">1900</span>, <span class="dv">1900</span>,buildings<span class="sc">$</span>start_date))</span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a> <span class="fu">ggplot</span>(<span class="at">data =</span> buildings) <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>   <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> build_date, <span class="at">colour=</span>build_date))  <span class="sc">+</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>   <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)<span class="sc">+</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>   <span class="fu">scale_colour_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>buildings<span class="sc">$</span>build_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ifelse</span>(buildings<span class="sc">$</span>start_date <span class="sc">&lt;</span><span class="dv">1900</span>, <span class="dv">1900</span>,buildings<span class="sc">$</span>start_date))</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a> <span class="fu">ggplot</span>(<span class="at">data =</span> buildings) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>   <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> build_date, <span class="at">colour=</span>build_date))  <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>   <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)<span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>   <span class="fu">scale_colour_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="mapping-urbanisation-in-delft-2" class="slide level2">
@@ -534,30 +545,34 @@ Geodetic CRS:  WGS 84
 <h2>Challenge: post-war buildings, R’dam</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_385c1939" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_45a93d1b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>
 
-<img data-src="fig/rmd-04a-unnamed-chunk-2-1.png" class="r-stretch quarto-figure-center"></section>
+<img data-src="fig/rmd-04a-unnamed-chunk-2-1.png" class="r-stretch quarto-figure-center"><p>A Problem with download? Try:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">assign</span>(<span class="st">"has_internet_via_proxy"</span>, <span class="cn">TRUE</span>, <span class="fu">environment</span>(curl<span class="sc">::</span>has_internet))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="solution" class="slide level2">
 <h2>Solution</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>bb <span class="ot">&lt;-</span> <span class="fu">getbb</span>(<span class="st">'Rotterdam'</span>, <span class="at">format_out =</span> <span class="st">'sf_polygon'</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a>x <span class="ot">&lt;-</span> <span class="fu">opq</span>(<span class="at">bbox =</span> bb) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="fu">add_osm_feature</span>(<span class="at">key =</span> <span class="st">'building'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="fu">osmdata_sf</span> ()</span>
-<span id="cb7-5"><a href="#cb7-5"></a>buildings <span class="ot">&lt;-</span> x<span class="sc">$</span>osm_polygons <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(.,<span class="at">crs=</span><span class="dv">28992</span>)</span>
-<span id="cb7-6"><a href="#cb7-6"></a>buildings<span class="sc">$</span>build_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(</span>
-<span id="cb7-7"><a href="#cb7-7"></a>  <span class="fu">ifelse</span>(buildings<span class="sc">$</span>start_date <span class="sc">&lt;</span><span class="dv">1945</span>,</span>
-<span id="cb7-8"><a href="#cb7-8"></a>         <span class="dv">1945</span>,</span>
-<span id="cb7-9"><a href="#cb7-9"></a>         buildings<span class="sc">$</span>start_date))</span>
-<span id="cb7-10"><a href="#cb7-10"></a><span class="fu">ggplot</span>(<span class="at">data =</span> buildings) <span class="sc">+</span></span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> build_date, <span class="at">colour=</span>build_date))  <span class="sc">+</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a><span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)<span class="sc">+</span></span>
-<span id="cb7-13"><a href="#cb7-13"></a><span class="fu">scale_colour_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>bb <span class="ot">&lt;-</span> <span class="fu">getbb</span>(<span class="st">'Rotterdam'</span>, <span class="at">format_out =</span> <span class="st">'sf_polygon'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2"></a>x <span class="ot">&lt;-</span> <span class="fu">opq</span>(<span class="at">bbox =</span> bb) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="fu">add_osm_feature</span>(<span class="at">key =</span> <span class="st">'building'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="fu">osmdata_sf</span> ()</span>
+<span id="cb9-5"><a href="#cb9-5"></a>buildings <span class="ot">&lt;-</span> x<span class="sc">$</span>osm_polygons <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(.,<span class="at">crs=</span><span class="dv">28992</span>)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>buildings<span class="sc">$</span>build_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(</span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="fu">ifelse</span>(buildings<span class="sc">$</span>start_date <span class="sc">&lt;</span><span class="dv">1945</span>,</span>
+<span id="cb9-8"><a href="#cb9-8"></a>         <span class="dv">1945</span>,</span>
+<span id="cb9-9"><a href="#cb9-9"></a>         buildings<span class="sc">$</span>start_date))</span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="fu">ggplot</span>(<span class="at">data =</span> buildings) <span class="sc">+</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> build_date, <span class="at">colour=</span>build_date))  <span class="sc">+</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)<span class="sc">+</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="fu">scale_colour_viridis_c</span>(<span class="at">option =</span> <span class="st">"viridis"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="summary-and-keypoints" class="slide level2">

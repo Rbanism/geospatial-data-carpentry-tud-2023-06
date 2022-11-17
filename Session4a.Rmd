@@ -59,6 +59,8 @@ The first thing to do is to define the area within which you want to retrieve da
 > "This function uses the free Nominatim API provided by OpenStreetMap to find the bounding box (bb) associated with place names."
 
 ```{r osm-bounding-box}
+assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+
 bb <- getbb('Delft', format_out = 'sf_polygon')
 
 bb
@@ -88,7 +90,7 @@ head(x$osm_polygons)
 
 # Mapping attributes
 
-For instance: the building age focusing on post-war buildings.
+For instance: the building age focusing on post-1900 buildings.
 
 ## Projections
 
@@ -100,7 +102,7 @@ buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
 
 ## Mapping
 
-Then we create a variable which a threshold at 1945. Every date prior to 1945 will be recoded 1945, so that buildings older than 1945 will be represented with the same shade.
+Then we create a variable which a threshold at 1900. Every date prior to 1900 will be recoded 1900, so that buildings older than 1900 will be represented with the same shade.
 
 Then we use the `ggplot` function to visualise the buildings by age. The specific function to represent information as a map is `geom_sf()`. The rest works like other graphs and visualisation, with `aes()` for the aesthetics.
 
@@ -117,7 +119,7 @@ So this reveals the historical centre of Delft and the various extensions, the f
 This centre-periphery and sectoral urban development is quite common. Now for a less typical example, can you reproduce this map for the city of Rotterdam. But instead of pre-XXth century building, we want to look at pre-war buildings. It will take some time to extract all buildings, so we will check the result after the coffee break.
 
 
-## Challenge: Map building age in Rotterdam, with World War II as a threshold
+## Challenge: Map building age in Rotterdam, with 1945 as a threshold
 
 ---
 

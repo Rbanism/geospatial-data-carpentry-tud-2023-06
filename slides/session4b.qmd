@@ -1,0 +1,111 @@
+---
+title: "Session 4b: Basic GIS operations with the `sf` package"
+author: "Clémentine Cottineau"
+format: 
+  revealjs:
+    logo: BKTUD.png
+    css: logo.css
+    footer: "Data Carpentry for Geospatial Data"
+    chalkboard: true
+    incremental: true   
+    theme: [default, custom.scss]
+---
+
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+
+
+knitr::opts_chunk$set(
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE
+  )
+```
+
+## Objectives:
+
+- Show how to create spatial **buffers and centroids**
+- Demonstrate how to **intersect** vector data
+- Present the function to retrieve the **area** of polygons
+
+
+
+## Where were we?
+
+![](fig/rmd-04a-unnamed-chunk-2-1.png){fig-align="center"}
+
+A Problem with download? Try:
+
+```{r proxy_again}
+assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+```
+
+## the 'sf' package
+
+- `sf` is a package which supports simple features (sf), ["a standardized way to
+encode spatial vector data."](https://cran.r-project.org/web/packages/sf/sf.pdf).
+
+- It contains a large set of functions to achieve all the operations on vector spatial data for which you might use traditional GIS software: change the coordinate system, join layers, intersect or unit polygons, create buffers and centroids, etc. cf. the `sf` [cheatsheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/sf.pdf).
+
+- We are going to go through some of these basics with the case study of Rotterdam buildings.
+
+
+## Conservation in Rotterdam
+
+Let's focus on really old building and imagine we're in charge of their conservation. We want to know how much of the city would be affected by a non-construction zone of 500m around pre-1800 buildings.
+
+Let's select them and see where they are.
+
+
+## Conservation in Rotterdam
+
+```{r old-buildings}
+#| eval: false
+old <- 1800 # year prior to which you consider a building old
+ 
+old_buildings <- filter(buildings, start_date <= old)
+ ggplot(data = old_buildings) + geom_sf()
+```
+
+
+![](fig/rmd-04b-old-buildings-1.png){fig-align="center"}
+
+## Challenge: make it more visible!
+
+```{r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+```
+
+Make the buildings show in red on the "map"
+
+## (A) Solution
+
+
+```{r old-buildings_red}
+#| eval: false
+old_buildings <- filter(buildings, start_date <= old)
+ ggplot(data = old_buildings) + geom_sf(colour="red")
+```
+Basically, you can play with the aesthetics (colour, shape, background) to make the "map" more readable.
+
+
+![](fig/rmd-04b-old-buildings-1-red.png){fig-align="center"}
+## Basic GIS operations
+
+As conservationists, we want to create a zone around historical buildings where building regulation will have special restrictions to preserve historical buildings. 
+
+## Buffer
+
+Let's say this zone should be 500 meters. In GIS terms, we want to create a buffer around polygons. The corresponding function `sf` is `st_buffer`, with 2 arguments: the polygons around which to create buffers, and the radius of the buffer.
+
+
+
+
+## Summary and keypoints

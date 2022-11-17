@@ -11,6 +11,10 @@ format:
     theme: [default, custom.scss]
 ---
 
+## Objectives:
+- Explain how **OpenStreetMap** (OSM) geodata works
+- Demonstrate how to **import, select, and visualise OSM vector data**
+
 
 ```{r}
 #| label: setup
@@ -73,6 +77,13 @@ The first thing to do is to define the area within which you want to retrieve da
 bb <- getbb('Delft', format_out = 'sf_polygon')
 bb
 ```
+
+A Problem with download? Try:
+
+```{r proxy}
+assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+```
+
 
 ## Why multiple polygons?
 
@@ -186,6 +197,12 @@ countdown::countdown(minutes = 20)
 ```
 
 ![](fig/rmd-04a-unnamed-chunk-2-1.png){fig-align="center"}
+
+A Problem with download? Try:
+
+```{r proxy_b}
+assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+```
 
 ## Solution
 

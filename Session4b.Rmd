@@ -10,6 +10,7 @@ exercises: 20
 ```{r, include=FALSE}
 source("bin/chunk-options.R")
 knitr_fig_path("04b-")
+
 ```
 
 # Question: "How can I use the `sf` package to handle spatial data?"
@@ -46,6 +47,9 @@ library(osmextract)
 
 Let's start from where we left off:
 ```{r from-ep1}
+
+assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+
 bb <- getbb('Rotterdam', format_out = 'sf_polygon')
 x <- opq(bbox = bb) %>% 
    add_osm_feature(key = 'building') %>%
@@ -81,8 +85,7 @@ Let's select them and see where they are.
 old <- 1800 # year prior to which you consider a building old
  
 old_buildings <- filter(buildings, start_date <= old)
- ggplot(data = old_buildings) + geom_sf()
- 
+ ggplot(data = old_buildings) + geom_sf(colour="red")
 ```
 
 # Basic GIS operations
@@ -94,7 +97,7 @@ As conservationists, we want to create a zone around historical buildings where 
 Let's say this zone should be 500 meters. In GIS terms, we want to create a buffer around polygons. The corresponding function `sf` is `st_buffer`, with 2 arguments: the polygons around which to create buffers, and the radius of the buffer.
 
 ```{r buffers}
- distance <- 500 # in meters
+ distance <- 500 # in meters 
 
  buffer_old_buildings <- st_buffer(old_buildings, dist = distance)
 
