@@ -1,5 +1,5 @@
 ---
-title: "Geospatial Carpentry | Session 2: Working with vector data"
+title: "Geospatial Data Carpentry | Session 2: Working with vector data"
 author: "Claudiu Forgaci"
 date: "2022-11-18"
 output: html_document
@@ -15,11 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r lib}
-# Install packages
-# library(remotes)
-# remotes::install_github('ropensci/osmdata')
+First we need to load the packages we will use in this lesson. We will use `tidyverse` and `here` with which you are already familiar from the previous lesson. In addition, we need to load the `sf` package. `sf` stands for Simple Features which is a standard defined by the Open Geospatial Consortium for storing and accessing geospatial vector data. PostGIS uses the same standard; so those of you who used PostGIS, might find some resemblances with the functionality of the `sf` package. If you have not installed it yet, run `install.packages("sf")` first to install the `sf` package.
 
+```{r lib}
+library(tidyverse)  # tools for wrangling, reshaping and visualizing data
+library(here)       # managing paths
+
+<<<<<<< HEAD
 # Data manipulation
  library(tibble)
  library(dplyr)
@@ -39,376 +41,500 @@ library(sf)
 # Working with OSM data
 # library(osmdata)
 # library(osmextract)
+=======
+if (!"sf" %in% installed.packages()) install.packages("sf")
+library(sf)         # work with spatial vector data
+>>>>>>> cb2bc1b2b4038ec5800d60e3d3fa2f0335f45589
 ```
 
 # Open and plot shapefiles (20 + 10 minutes)
 
 ## Import shapefiles
 
+Let's start by opening a shapefile. Most of you must be already familiar with shapefiles, a common file format to store spatial vector data used in GIS software. We will read a shapefile with the administrative boundary of Delft with the function `st_read()` from the `sf` package. Note that all functions from the `sf` package start with the standard prefix `st_` which stands for Spatial Type. This is helpful in at least two ways: (1) it  makes the interaction with or translation to/from software using the simple features standard like PostGIS easy, and (2) it allows for easy autocompletion of function names in RStudio.
+
 ```{r}
-aoi_boundary_HARV <- st_read(
-  "data/NEON-DS-Site-Layout-Files/HARV/HarClip_UTMZ18.shp")
+boundary_Delft <- st_read(here("data", "delft-boundary.shp"))
 ```
+
+The `st_read()` function gives us a message with information about the file that was read in. Additionally, we can use other functions to examine the metadata of the file in more detail.
 
 ## Shapefile Metadata & Attributes
 
+The `st_geometry_type()` function gives us information about the geometry type, which in this case is `POLYGON`.
+
 ```{r}
-st_geometry_type(aoi_boundary_HARV)
+st_geometry_type(boundary_Delft)
+```
+
+The `st_crs()` function gives us the coordinate reference system used by the shapefile, which in this case is `WGS84`. This is not what we want, so we will use the `st_transform()` function to reproject the file to the right CRS. For the `crs` argument we can use the EPSG code of the CRS we want to use. For the Netherlands, we want to use the Amersfort / RD New projection, which has the EPSG code 28992.
+
+```{r}
+st_crs(boundary_Delft)
+st_bbox(boundary_Delft)
+```
+```{r}
+boundary_Delft <- st_transform(boundary_Delft, 28992)
+st_crs(boundary_Delft)
+st_bbox(boundary_Delft)
 ```
 
 ```{r}
-st_crs(aoi_boundary_HARV)
-```
-
-```{r}
-st_bbox(aoi_boundary_HARV)
-```
-
-```{r}
-aoi_boundary_HARV
+boundary_Delft
 ```
 
 ## Plot a shapefile
 
-```{r}
-# ggplot already introduced in the morning
-ggplot() + 
-  geom_sf(data = aoi_boundary_HARV, size = 3, color = "black", fill = "cyan1") + 
-  ggtitle("AOI Boundary Plot") + 
-  coord_sf()
-```
+Now, let's plot this shapefile. You are already familiar with the `ggplot2` package from this morning. `ggplot2` has special `geom_` functions for spatial data. We will use the `geom_sf()` function for `sf` data.
 
 ```{r}
-lines_HARV <- st_read("data/NEON-DS-Site-Layout-Files/HARV/HARV_roads.shp")
-```
-
-```{r}
-point_HARV <- st_read("data/NEON-DS-Site-Layout-Files/HARV/HARVtower_UTM18N.shp")
-```
-
-```{r}
-class(lines_HARV)
-```
-
-```{r}
-class(point_HARV)
-```
-
-```{r}
-st_crs(lines_HARV)
-```
-
-```{r}
-st_bbox(lines_HARV)
-```
-
-```{r}
-st_crs(point_HARV)
-```
-
-```{r}
-st_bbox(point_HARV)
-```
-
-# Explore and plot by vector layer attributes (40 + 20 minutes)
-
-```{r}
-# data frames introduced in the morning; sf objects have additional metadata and a 'sticky' geometry column
-point_HARV
-```
-
-```{r}
-ncol(lines_HARV)
-```
-
-```{r}
-names(lines_HARV)
-```
-
-```{r}
-head(lines_HARV)
+ggplot(data = boundary_Delft) +
+  geom_sf(size = 3, color = "black", fill = "cyan1") +
+  ggtitle("Delft Administrative Boundary") +
+  coord_sf(datum = st_crs(28992))  # this is needed to display the axes in meters
 ```
 
 ### Challenge
 
+Read in `delft-streets.shp` and `delft-leisure.shp` and call them `lines_Delft` and `point_Delft` respectively.
+
+Answer the following questions:
+
+1. What type of R spatial object is created when you import each layer?
+2. What is the CRS and extent for each object?
+3. Do the files contain points, lines, or polygons?
+4. How many spatial objects are in each file?
+
 ```{r}
-ncol(point_HARV)
+lines_Delft <- st_read(here("data", "delft-streets.shp"))
+```
+
+For points data we use leisure data from OSM.
+
+```{r}
+point_Delft <- st_read(here("data", "delft-leisure.shp"))
+```
+
+We can check the type of data with the `class()` function from base R. `lines_Delft`, for instance, is an object of class `"sf"`, which extends the `"data.frame"` class.
+
+```{r}
+class(lines_Delft)
+```
+
+We see that `point_Delft` has the same class and structure.
+
+```{r}
+class(point_Delft)
+```
+
+`lines_Delft` is in the correct projection.
+
+```{r}
+st_crs(lines_Delft)
+```
+
+And so is `point_Delft`.
+
+```{r}
+st_crs(point_Delft)
+```
+
+When looking at the bounding boxes with the `st_bbox()` function, we see the spatial extent of the two objects in a projected CRS using meters as units. `lines_Delft()` and `pont_Delft` have similar extents.
+
+```{r}
+st_bbox(lines_Delft)
 ```
 
 ```{r}
-ncol(aoi_boundary_HARV)
+st_bbox(point_Delft)
+```
+
+<!-- End of challenge -->
+
+# Explore and plot by vector layer attributes (40 + 20 minutes)
+
+Let's have a look at the content of the loaded data, starting with `lines_Delft`. In essence, an `"sf"` object is a data.frame with a "sticky" geometry column and some extra metadata, like CRS and geometry type we examined earlier.
+
+```{r}
+lines_Delft
+```
+
+This means that we can manipulate them as data frames. For instance, we can look at the number of variables (columns in a data frame) with `ncol()`. 
+
+```{r}
+ncol(lines_Delft)
+```
+
+In the case of `point_Delft` those columns are `"osm_id"`, `"highway"` and `"geometry"`. We can check the names of the columns with the base R function `names()`.
+
+```{r}
+names(lines_Delft)
+```
+
+We can also preview the content of the object with the `head()` function.
+
+```{r}
+head(lines_Delft)
+```
+
+### Challenge
+
+Explore the attributes associated with the `point_Delft` and `boundary_Delft` spatial objects.
+
+1. How many attributes does each have?
+2. What types of leisure points do the points represent? Give three examples.
+3. Which of the following is NOT an attribute of the point_Delft data object?
+
+  A) location B) leisure C) osm_id
+
+```{r}
+ncol(point_Delft)
 ```
 
 ```{r}
-# $ operator already introduced in the morning
-point_HARV$Ownership
+ncol(boundary_Delft)
+```
+
+Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can [either] increase the number of rows we want to see[, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways.] Printing the object will also give us the first 10 rows.
+
+```{r}
+head(point_Delft$leisure)
+head(point_Delft$leisure, 10)
+# head(na.omit(point_Delft$leisure))  # this is extra
+# head(unique(point_Delft$leisure))   # this is extra
+point_Delft
 ```
 
 ```{r}
-names(point_HARV)
+names(point_Delft)
 ```
+
+<!-- End of challenge -->
 
 ## Explore values within one attribute
 
-```{r}
-lines_HARV$TYPE
-```
+Using the `$` operator, we can examine the content of a single field of our lines feature. 
 
 ```{r}
-levels(factor(lines_HARV$TYPE))
+head(lines_Delft$highway, 10)
+```
+
+To see only unique values of a categorical variable stored as a factor, we can use the `levels()` function. Remember, factors were introduced in the morning.
+
+```{r}
+levels(factor(lines_Delft$highway))
 ```
 
 ## Subset features
 
-```{r}
-# data wragling with dplyr introduced in the morning
-footpath_HARV <- lines_HARV %>% 
-  filter(TYPE == "footpath")
-nrow(footpath_HARV)
-```
+We can use the `filter()` function to select a subset of features from a spatial object, just like with data frames. Let's select only cycleways from our street data. 
 
 ```{r}
-ggplot() + 
-  geom_sf(data = footpath_HARV) +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Footpaths") + 
-  coord_sf()
+cycleway_Delft <- lines_Delft %>% 
+  filter(highway == "cycleway")
 ```
 
+Our subsetting operation reduces the number of features from `r nrow(lines_Delft)` to `r nrow(cycleway_Delft)`.
+
 ```{r}
-ggplot() + 
-  geom_sf(data = footpath_HARV, aes(color = factor(OBJECTID)), size = 1.5) +
-  labs(color = 'Footpath ID') +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Footpaths") + 
-  coord_sf()
+nrow(lines_Delft)
+nrow(cycleway_Delft)
+```
+
+We can also calculate the total length of cycleways.
+
+```{r}
+cycleway_Delft <- cycleway_Delft %>% 
+  mutate(length = st_length(.))
+
+cycleway_Delft %>%
+  summarise(total_length = sum(length))
+```
+
+Now we can plot only the cycleways.
+
+```{r}
+ggplot(data = cycleway_Delft) +
+  geom_sf() +
+  ggtitle("Slow mobility network in Delft", subtitle = "Cycleways") +
+  coord_sf(datum = st_crs(28992))
 ```
 
 ### Challenge
 
+1. Create a new object that only contains the motorways in Delft. 
+2. How many features does the new object have?
+3. What is the total length of motorways?
+4. Plot the motorways.
+5. Extra: follow the same steps with pedestrian streets. 
+
 ```{r}
-boardwalk_HARV <- lines_HARV %>% 
-  filter(TYPE == "boardwalk")
+levels(factor(lines_Delft$highway))
 ```
 
 ```{r}
-nrow(boardwalk_HARV)
+motorway_Delft <- lines_Delft %>% 
+  filter(highway == "motorway")
+
+motorway_Delft %>% 
+  mutate(length = st_length(.)) %>% 
+  select(everything(), geometry) %>%
+  summarise(total_length = sum(length))
 ```
 
 ```{r}
-ggplot() + 
-  geom_sf(data = boardwalk_HARV, size = 1.5) +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Boardwalks") + 
+nrow(motorway_Delft)
+```
+
+```{r}
+ggplot(data = motorway_Delft) + 
+  geom_sf(size = 1.5) +
+  ggtitle("Fast mobility network", subtitle = "Motorways") + 
   coord_sf()
 ```
 
 ```{r}
-stoneWall_HARV <- lines_HARV %>% 
-  filter(TYPE == "stone wall")
-nrow(stoneWall_HARV)
+pedestrian_Delft <- lines_Delft %>% 
+  filter(highway == "pedestrian")
+
+pedestrian_Delft %>% 
+  mutate(length = st_length(.)) %>% 
+  select(everything(), geometry) %>%
+  summarise(total_length = sum(length))
+
+nrow(pedestrian_Delft)
 ```
 
 ```{r}
 ggplot() +
-  geom_sf(data = stoneWall_HARV, aes(color = factor(OBJECTID)), size = 1.5) +
-  labs(color = 'Wall ID') +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Stonewalls") + 
-  coord_sf()
+  geom_sf(data = pedestrian_Delft) +
+  ggtitle("Slow mobility network", subtitle = "Pedestrian") + 
+  coord_sf(datum = st_crs(28992))
 ```
+
+<!-- End of challenge -->
 
 ## Customize plots
 
+Let's say that we want to color different road types with different colors and that we want to determine those colors.
+
 ```{r}
-levels(factor(lines_HARV$TYPE))
+levels(factor(lines_Delft$highway))
 ```
+
+If we look at all the unique values of the higway field of our street network we see more than 20 values. I will focus on a subset of four values to illustrate the use of distinct colours. We use a piped expression in which we only filter the rows of our data frame that have one of the four given values `"motorway"`, `"primary"`, `"secondary"`, and `"cycleway"`. We also make sure that the highway column is a factor column.
+
+```{r}
+road_types <- c("motorway", "primary", "secondary", "cycleway")
+
+lines_Delft_selection <- lines_Delft %>% 
+  filter(highway %in% road_types) %>% 
+  mutate(highway = factor(highway, levels = road_types))
+```
+
+Next we define the four colors we want to use, one for each type of road in our vector object. Note that in R you can use named colors like `"blue"`, `"green"`, `"navy"`, and `"purple"`. A full list of named colors can be listed with the `colors()` function.
 
 ```{r}
 road_colors <- c("blue", "green", "navy", "purple")
 ```
 
+We can use the defined color palette in ggplot.
+
 ```{r}
-ggplot() +
-  geom_sf(data = lines_HARV, aes(color = TYPE)) + 
+ggplot(data = lines_Delft_selection) +
+  geom_sf(aes(color = highway)) + 
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads & Trails") + 
+  ggtitle("Road network of Delft", subtitle = "Roads & Cycleways") + 
   coord_sf()
 ```
 
 ## Adjust line width
 
+Earlier we adjusted the line width universally. We can also adjust line widths for every factor level. Note that in this case the `size` argument, like the `color` argument, are within the `aes()` mapping function. This means that the values of that visual property will be mapped from a variable of the object that is being plotted.
+
 ```{r}
-line_widths <- c(1, 2, 3, 4)
+line_widths <- c(1, 0.75, 0.5, 0.25)
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = lines_HARV, aes(color = TYPE, size = TYPE)) + 
+ggplot(data = lines_Delft_selection) +
+  geom_sf(aes(color = highway, size = highway)) +
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') +
   scale_size_manual(values = line_widths) +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads & Trails - Line width varies") + 
+  ggtitle("Mobility network of Delft", subtitle = "Roads & Cycleways") + 
   coord_sf()
 ```
 
 ### Challenge
 
+In the example above, we set the line widths to be 1, 0.75, 0.5, and 0.25. In our case line thicknesses are consistent with the hierarchy of the selected road types, but in some cases we might want to show a different hierarchy.
+
+Let’s create another plot where we show the different line types with the following thicknesses:
+
+- motorways size = 0.25
+- primary size = 0.75
+- secondary size =  0.5
+- cycleway size = 1
+
 ```{r}
-levels(factor(lines_HARV$TYPE))
+levels(factor(lines_Delft_selection$highway))
 ```
 
-
 ```{r}
-line_width <- c(1, 3, 2, 6)
+line_width <- c(0.25, 0.75, 0.5, 1)
 ```
 
 ```{r}
-ggplot() +
-  geom_sf(data = lines_HARV, aes(size = TYPE)) +
+ggplot(data = lines_Delft_selection) +
+  geom_sf(aes(size = highway)) +
   scale_size_manual(values = line_width) +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads & Trails - Line width varies") + 
+  ggtitle("Mobility network of Delft", subtitle = "Roads & Cycleways - Line width varies") + 
   coord_sf()
 ```
 
 ## Add plot legend
 
+Let’s add a legend to our plot. We will use the `road_colors` object that we created above to color the legend. We can customize the appearance of our legend by manually setting different parameters.
+
 ```{r}
-ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1.5) +
+ggplot(data = lines_Delft_selection) + 
+  geom_sf(aes(color = highway), size = 1.5) +
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') + 
-  ggtitle("NEON Harvard Forest Field Site", 
-          subtitle = "Roads & Trails - Default Legend") + 
+  ggtitle("Mobility network of Delft", 
+          subtitle = "Roads & Cycleways - Default Legend") + 
   coord_sf()
 ```
 
 ```{r}
-ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1.5) +
+ggplot(data = lines_Delft_selection) + 
+  geom_sf(aes(color = highway), size = 1.5) +
   scale_color_manual(values = road_colors) + 
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
         legend.box.background = element_rect(size = 1)) + 
-  ggtitle("NEON Harvard Forest Field Site", 
-          subtitle = "Roads & Trails - Modified Legend") +
+  ggtitle("Mobility network of Delft", 
+          subtitle = "Roads & Cycleways - Modified Legend") +
   coord_sf()
 ```
 
 ```{r}
 new_colors <- c("springgreen", "blue", "magenta", "orange")
 
-ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1.5) + 
+ggplot(data = lines_Delft_selection) + 
+  geom_sf(aes(color = highway), size = 1.5) + 
   scale_color_manual(values = new_colors) +
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
         legend.box.background = element_rect(size = 1)) + 
-  ggtitle("NEON Harvard Forest Field Site", 
-          subtitle = "Roads & Trails - Pretty Colors") +
+  ggtitle("Mobility network of Delft", 
+          subtitle = "Roads & Cycleways - Modified Legend") +
   coord_sf()
 ```
 
 ### Challenge 
 
+Create a plot that emphasizes only roads where bicycles are allowed. To emphasize this, make the lines where bicycles are not allowed THINNER than the roads where bicycles are allowed. Be sure to add a title and legend to your map. You might consider a color palette that has all bike-friendly roads displayed in a bright color. All other lines can be black.
 ```{r}
-class(lines_HARV$BicyclesHo)
+class(lines_Delft_selection$highway)
 ```
 
 ```{r}
-levels(lines_HARV$BicyclesHo)
+levels(factor(lines_Delft$highway))
 ```
 
 ```{r}
-lines_removeNA <- lines_HARV[!is.na(lines_HARV$BicyclesHo),] 
-```
-
-```{r}
-# First, create a data frame with only those roads where bicycles and horses are allowed
-lines_showHarv <- lines_removeNA %>% filter(BicyclesHo == "Bicycles and Horses Allowed")
+# First, create a data frame with only those roads where bicycles are allowed
+lines_Delft_bicycle <- lines_Delft %>% 
+  filter(highway == "cycleway")
 
 # Next, visualise using ggplot
-ggplot() + 
-  geom_sf(data = lines_HARV) + 
-  geom_sf(data = lines_showHarv, aes(color = BicyclesHo), size = 2) + 
+ggplot(data = lines_Delft) +
+  geom_sf() +
+  geom_sf(data = lines_Delft_bicycle, aes(color = highway), size = 2) +
   scale_color_manual(values = "magenta") +
-  ggtitle("NEON Harvard Forest Field Site", subtitle = "Roads Where Bikes and Horses Are Allowed") + 
+  ggtitle("Mobility network in Delft", subtitle = "Roads dedicated to Bikes") +
   coord_sf()
 ```
 
+Create a map of the municipal boundaries in the Netherlands using the data located in your data folder: `nl-gemeenten.shp`. Apply a line color to each state using its region value. Add a legend.
+
 ```{r}
-state_boundary_US <- 
-st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-State-Boundaries-Census-2014.shp")
+municipal_boundaries_NL <- st_read(here("data", "nl-gemeenten.shp"))
 ```
 
 ```{r}
-levels(factor(state_boundary_US$region))
+str(municipal_boundaries_NL)
+levels(factor(municipal_boundaries_NL$ligtInPr_1))
 ```
 
 ```{r}
-colors <- c("purple", "springgreen", "yellow", "brown", "navy")
-```
-
-```{r}
-ggplot() +
-  geom_sf(data = state_boundary_US, aes(color = region), size = 1) +
-  scale_color_manual(values = colors) +
-  ggtitle("Contiguous U.S. State Boundaries") + 
+ggplot(data = municipal_boundaries_NL) +
+  geom_sf(aes(color = ligtInPr_1), size = 1) +
+  ggtitle("Contiguous NL Municipal Boundaries") + 
   coord_sf()
 ```
 
 # Plot multiple shapefiles (40 + 20 minutes - 15 minutes from plot costomisation)
 
-```{r}
-ggplot() + 
-  geom_sf(data = aoi_boundary_HARV, fill = "grey", color = "grey") +
-  geom_sf(data = lines_HARV, aes(color = TYPE), size = 1) +
-  geom_sf(data = point_HARV) +
-  ggtitle("NEON Harvard Forest Field Site") + 
-  coord_sf()
-```
+So far we learned how to plot information from a single shapefile and do some plot customization. What if we want to create a more complex plot with many shapefiles and unique symbols that need to be represented clearly in a legend?
+
+Now, let’s create a plot that combines our leisure locations (`point_Delft`), municipal boundary (`boundary_Delft`) and streets (`lines_Delft`) spatial objects. We will need to build a custom legend as well.
+
+To begin, we will create a plot with the site boundary as the first layer. Then layer the leisure locations and street data on top using `+`.
 
 ```{r}
 ggplot() + 
-  geom_sf(data = aoi_boundary_HARV, fill = "grey", color = "grey") +
-  geom_sf(data = lines_HARV, aes(color = TYPE),
-          show.legend = "line", size = 1) +
-  geom_sf(data = point_HARV, aes(fill = Sub_Type), color = "black") +
-  scale_color_manual(values = road_colors) +
-  scale_fill_manual(values = "black") +
-  ggtitle("NEON Harvard Forest Field Site") + 
+  geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
+  geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) +
+  geom_sf(data = point_Delft) +
+  ggtitle("Mobility network of Delft") + 
   coord_sf()
 ```
 
+Now let's create a custom legend.
+
 ```{r}
+leisure_colors <- rainbow(15)
+point_Delft$leisure <- factor(point_Delft$leisure)
 ggplot() + 
-  geom_sf(data = aoi_boundary_HARV, fill = "grey", color = "grey") +
-  geom_sf(data = point_HARV, aes(fill = Sub_Type)) +
-  geom_sf(data = lines_HARV, aes(color = TYPE), show.legend = "line",
-          size = 1) + 
-  scale_color_manual(values = road_colors, name = "Line Type") + 
-  scale_fill_manual(values = "black", name = "Tower Location") + 
-  ggtitle("NEON Harvard Forest Field Site") + 
+  geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
+  geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) + 
+  geom_sf(data = point_Delft, aes(fill = leisure), shape = 21) +
+  scale_color_manual(values = road_colors, name = "Road Type") + 
+  scale_fill_manual(values = leisure_colors, name = "Lesiure Location") + 
+  ggtitle("Mobility network and leisure in Delft") + 
   coord_sf()
 ```
 
 ```{r}
 ggplot() +
-  geom_sf(data = aoi_boundary_HARV, fill = "grey", color = "grey") +
-  geom_sf(data = point_HARV, aes(fill = Sub_Type), shape = 15) +
-  geom_sf(data = lines_HARV, aes(color = TYPE),
-          show.legend = "line", size = 1) +
+  geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
+  geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) +
+  geom_sf(data = point_Delft, aes(fill = leisure), shape = 22) +
   scale_color_manual(values = road_colors, name = "Line Type") +
-  scale_fill_manual(values = "black", name = "Tower Location") +
-  ggtitle("NEON Harvard Forest Field Site") + 
+  scale_fill_manual(values = leisure_colors, name = "Leisure Location") +
+  ggtitle("Mobility network and leisure in Delft") + 
   coord_sf()
 ```
 
+We notice that there are quite some playgrounds in the residential parts of Delft, whereas on campus there is a concentration of picnic tables. So that is what our next challenge is about.
+
 ### Challenge
 
+Create a map of leisure locations only including `playground` and `picnic_table`, with each point colored by the leisure type. Overlay this layer on top of the `lines_Delft` layer (the streets). Create a custom legend that applies line symbols to lines and point symbols to the points.
+
+Modify the plot above. Tell R to plot each point, using a different symbol of shape value.
+
 ```{r}
-plot_locations <- st_read("data/NEON-DS-Site-Layout-Files/HARV/PlotLocations_HARV.shp")
+leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+  filter(leisure %in% c("playground", "picnic_table"))
 ```
 
 ```{r}
-levels(factor(plot_locations$soilTypeOr))
+levels(factor(leisure_locations_selection$leisure))
 ```
 
 ```{r}
@@ -417,209 +543,124 @@ blue_orange <- c("cornflowerblue", "darkorange")
 
 ```{r}
 ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), show.legend = "line") + 
-  geom_sf(data = plot_locations, aes(fill = soilTypeOr), 
+  geom_sf(data = lines_Delft_selection, aes(color = highway)) + 
+  geom_sf(data = leisure_locations_selection, aes(fill = leisure), 
           shape = 21, show.legend = 'point') + 
   scale_color_manual(name = "Line Type", values = road_colors,
      guide = guide_legend(override.aes = list(linetype = "solid", shape = NA))) + 
   scale_fill_manual(name = "Soil Type", values = blue_orange,
      guide = guide_legend(override.aes = list(linetype = "blank", shape = 21, colour = NA))) + 
-  ggtitle("NEON Harvard Forest Field Site") + 
+  ggtitle("Traffic and leisure") + 
   coord_sf()
 ```
 
 ```{r}
 ggplot() + 
-  geom_sf(data = lines_HARV, aes(color = TYPE), show.legend = "line", size = 1) + 
-  geom_sf(data = plot_locations, aes(fill = soilTypeOr, shape = soilTypeOr),
-          show.legend = 'point', size = 3) + 
-  scale_shape_manual(name = "Soil Type", values = c(21, 22)) +
-  scale_color_manual(name = "Line Type", values = road_colors,
-     guide = guide_legend(override.aes = list(linetype = "solid", shape = NA))) + 
-  scale_fill_manual(name = "Soil Type", values = blue_orange,
+  geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) + 
+  geom_sf(data = leisure_locations_selection, aes(fill = leisure, shape = leisure), size = 3) + 
+  scale_shape_manual(name = "Leisure Type", values = c(21, 22)) +
+  scale_color_manual(name = "Line Type", values = road_colors) + 
+  scale_fill_manual(name = "Leisure Type", values = rainbow(15),
      guide = guide_legend(override.aes = list(linetype = "blank", shape = c(21, 22),
-     color = blue_orange))) + 
-  ggtitle("NEON Harvard Forest Field Site") + 
+     color = "black"))) + 
+  ggtitle("Road network and leisure") + 
   coord_sf()
 ```
 
-```{r}
-# we will come back to raster data on day 2
-# DROP THIS CHALLENGE
-ggplot() +
-  geom_raster(data = CHM_HARV_df, aes(x = x, y = y, fill = layer)) +
-  geom_sf(data = lines_HARV, color = "black") +
-  geom_sf(data = aoi_boundary_HARV, color = "grey20", size = 1) +
-  geom_sf(data = point_HARV, pch = 8) +
-  ggtitle("NEON Harvard Forest Field Site w/ Canopy Height Model") + 
-  coord_sf()
-```
+<!-- End of challenge -->
 
 # Handling Spatial Projections and CRS (40 + 20 minutes)
 
 ## Working with spatial data from different sources
 
 ```{r}
-state_boundary_US <- st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-State-Boundaries-Census-2014.shp")
+municipal_boundary_NL <- st_read(here("data","nl-gemeenten.shp"))
 ```
 
 ```{r}
 ggplot() +
-  geom_sf(data = state_boundary_US) +
-  ggtitle("Map of Contiguous US State Boundaries") +
+  geom_sf(data = municipal_boundary_NL) +
+  ggtitle("Map of Contiguous NL Municipal Boundaries") +
+  coord_sf()
+```
+
+We can add a country boundary layer to make it look nicer. If we specify a thicker line width using size = 2 for the country boundary layer, it will make our map pop!
+
+```{r}
+country_boundary_NL <- st_read(here("data", "nl-boundary.shp"))
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = country_boundary_NL, color = "gray18", size = 2) +
+  geom_sf(data = municipal_boundary_NL, color = "gray40") +
+  ggtitle("Map of Contiguous NL Municipal Boundaries") +
   coord_sf()
 ```
 
 ```{r}
-country_boundary_US <- st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/US-Boundary-Dissolved-States.shp")
+st_crs(point_Delft)
+```
+
+```{r}
+st_crs(municipal_boundary_NL)
+```
+
+```{r}
+st_crs(country_boundary_NL)
+```
+
+Next let's look at the extent of the layers.
+
+```{r}
+st_bbox(point_Delft)
+```
+
+```{r}
+st_bbox(municipal_boundary_NL)
 ```
 
 ```{r}
 ggplot() +
-  geom_sf(data = country_boundary_US, color = "gray18", size = 2) +
-  geom_sf(data = state_boundary_US, color = "gray40") +
-  ggtitle("Map of Contiguous US State Boundaries") +
+  geom_sf(data = country_boundary_NL, size = 2, color = "gray18") +
+  geom_sf(data = municipal_boundary_NL, color = "gray40") +
+  geom_sf(data = boundary_Delft, color = "purple", fill = "purple") +
+  ggtitle("Map of Contiguous NL Municipal Boundaries") +
   coord_sf()
-```
-
-```{r}
-st_crs(point_HARV)
-```
-
-```{r}
-st_crs(state_boundary_US)
-```
-
-```{r}
-st_crs(country_boundary_US)
-```
-
-```{r}
-st_bbox(point_HARV)
-```
-
-```{r}
-st_bbox(state_boundary_US)
-```
-
-```{r}
-ggplot() +
-  geom_sf(data = country_boundary_US, size = 2, color = "gray18") +
-  geom_sf(data = state_boundary_US, color = "gray40") +
-  geom_sf(data = point_HARV, shape = 19, color = "purple") +
-  ggtitle("Map of Contiguous US State Boundaries") +
-  coord_sf()
-```
-
-```{r}
-NE.States.Boundary.US <- st_read("data/NEON-DS-Site-Layout-Files/US-Boundary-Layers/Boundary-US-State-NEast.shp")
-```
-
-```{r}
-ggplot() +
-    geom_sf(data = NE.States.Boundary.US, aes(color ="color"), show.legend = "line") +
-    scale_color_manual(name = "", labels = "State Boundary", values = c("color" = "gray18")) +
-    geom_sf(data = point_HARV, aes(shape = "shape"), color = "purple") +
-    scale_shape_manual(name = "", labels = "Fisher Tower", values = c("shape" = 19)) +
-    ggtitle("Fisher Tower location") +
-    theme(legend.background = element_rect(color = NA)) +
-    coord_sf()
-```
-
-# Convert from .csv to a Shapefile (40 + 20 minutes)
-
-## Import .csv
-```{r}
-plot_locations_HARV <-
-  read.csv("data/NEON-DS-Site-Layout-Files/HARV/HARV_PlotLocations.csv")
-
-str(plot_locations_HARV)
-```
-
-```{r}
-names(plot_locations_HARV)
-```
-
-```{r}
-head(plot_locations_HARV$easting)
-```
-
-```{r}
-head(plot_locations_HARV$northing)
-```
-
-```{r}
-head(plot_locations_HARV$geodeticDa)
-```
-
-```{r}
-head(plot_locations_HARV$utmZone)
-```
-
-```{r}
-st_crs(point_HARV)
-```
-
-```{r}
-utm18nCRS <- st_crs(point_HARV)
-utm18nCRS
-```
-
-```{r}
-class(utm18nCRS)
-```
-
-```{r}
-plot_locations_sp_HARV <- st_as_sf(plot_locations_HARV, coords = c("easting", "northing"), crs = utm18nCRS)
-```
-
-```{r}
-st_crs(plot_locations_sp_HARV)
-```
-
-```{r}
-ggplot() +
-  geom_sf(data = plot_locations_sp_HARV) +
-  ggtitle("Map of Plot Locations")
-```
-
-```{r}
-ggplot() +
-  geom_sf(data = aoi_boundary_HARV) +
-  geom_sf(data = plot_locations_sp_HARV) +
-  ggtitle("AOI Boundary Plot")
 ```
 
 ### Challenge
 
-```{r}
-newplot_locations_HARV <-
-  read.csv("data/NEON-DS-Site-Layout-Files/HARV/HARV_2NewPhenPlots.csv")
-str(newplot_locations_HARV)
-```
+Create a map of the South Holland as follows:
+
+1. Import and plot `nl-gemeenten.shp`. Adjust line width as necessary.
+2. Layer the boundary of Delft onto the plot.
+3. Add a title.
+4. Add a legend that shows both the privince boundaries (as a line) and the boundary of Delft (as a filled polygon).
 
 ```{r}
-geogCRS <- st_crs(country_boundary_US)
-geogCRS
-```
-
-```{r}
-newPlot.Sp.HARV <- st_as_sf(newplot_locations_HARV, coords = c("decimalLon", "decimalLat"), crs = geogCRS)
-```
-
-```{r}
-st_crs(newPlot.Sp.HARV)
+boundary_ZH <- municipal_boundary_NL %>% 
+  filter(ligtInPr_1 == "Zuid-Holland")
 ```
 
 ```{r}
 ggplot() +
-  geom_sf(data = plot_locations_sp_HARV, color = "orange") +
-  geom_sf(data = newPlot.Sp.HARV, color = "lightblue") +
-  ggtitle("Map of All Plot Locations")
+    geom_sf(data = boundary_ZH, aes(color ="color"), show.legend = "line") +
+    scale_color_manual(name = "", labels = "Municipal Boundaries", values = c("color" = "gray18")) +
+    geom_sf(data = boundary_Delft, aes(shape = "shape"), color = "purple", fill = "purple") +
+    scale_shape_manual(name = "", labels = "Municipality of Delft", values = c("shape" = 19)) +
+    ggtitle("Delft location") +
+    theme(legend.background = element_rect(color = NA)) +
+    coord_sf()
 ```
 
+<!-- End of challange -->
+
 ## Export a shapefile
-```{r}
-st_write(plot_locations_sp_HARV,
-         "data/PlotLocations_HARV.shp", driver = "ESRI Shapefile")
+
+To save a file, use the `st_write()` function from the `sf` package.
+
+```{r, eval=FALSE}
+st_write(leisure_locations_selection,
+         here("data_output","leisure_locations_selection.shp"), driver = "ESRI Shapefile")
 ```
