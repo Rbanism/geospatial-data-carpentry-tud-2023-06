@@ -25,7 +25,7 @@ ggplot(data = boundary_Delft) +
   ggtitle("Delft Administrative Boundary") +
   coord_sf(datum = st_crs(28992))
 
-## Challenge 1 (10 minutes)
+## Challenge 1
 lines_Delft <- st_read(here("data", "delft-streets.shp"))
 point_Delft <- st_read(here("data", "delft-leisure.shp"))
 
@@ -45,7 +45,7 @@ ncol(lines_Delft)
 names(lines_Delft)
 head(lines_Delft)
 
-## Challenge 2 (5 minutes)
+## Challenge 2
 ncol(point_Delft)
 ncol(boundary_Delft)
 
@@ -81,7 +81,7 @@ ggplot(data = cycleway_Delft) +
   ggtitle("Slow mobility network of Delft", subtitle = "Cycleways") +
   coord_sf()
 
-## Challenge 3 (5 minutes)
+## Challenge 3
 levels(factor(lines_Delft$highway))
 
 motorway_Delft <- lines_Delft %>% 
@@ -140,7 +140,7 @@ ggplot(data = lines_Delft_selection) +
   ggtitle("Mobility network of Delft", subtitle = "Roads & Cycleways") +
   coord_sf()
 
-## Challenge 4 (5 minutes)
+## Challenge 4
 levels(factor(lines_Delft$highway))
 
 line_widths <- c(0.25, 0.75, 0.5, 1)
@@ -180,7 +180,7 @@ ggplot(data = lines_Delft_selection) +
   ggtitle("Mobility network of Delft", subtitle = "Roads & Cycleways - Modified legend") +
   coord_sf()
 
-## Challenge 5 (5 minutes)
+## Challenge 5
 class(lines_Delft_selection$highway)
 
 levels(factor(lines_Delft_selection$highway))
@@ -194,7 +194,7 @@ ggplot() +
   ggtitle("Mobility network of Delft", subtitle = "Roads dedicated to bikes") +
   coord_sf()
 
-## Challenge 6 (5 minutes)
+## Challenge 6
 municipal_boundaries_NL <- st_read(here("data", "nl-gemeenten.shp"))
 str(municipal_boundaries_NL)
 levels(factor(municipal_boundaries_NL$ligtInPr_1))
@@ -214,7 +214,7 @@ ggplot() +
   ggtitle("Mobility network and leisure in Delft") +
   coord_sf()
 
-## Challenge 6 (15 + 5 minutes)
+## Challenge 7
 
 ### Subset of leisure locations
 leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
@@ -277,7 +277,7 @@ ggplot() +
   ggtitle("Map of Contiguous NL Municipal Boundaries") +
   coord_sf()
 
-## Challenge 7
+## Challenge 8
 boundary_ZH <- municipal_boundary_NL %>% 
   filter(ligtInPr_1 == "Zuid-Holland")
 
