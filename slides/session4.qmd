@@ -1,9 +1,9 @@
 ---
-title: ""
-author: "Clementine Cottinea"
+title: "Session 4: Using vector and raster data for GIS in R"
+author: "Clementine Cottineau"
 format: 
   revealjs:
-    logo: ../assets/img/TUDelft_logo_rgb.png
+    logo: BKTUD.png
     css: logo.css
     footer: "Data Carpentry for Geospatial Data"
     chalkboard: true
@@ -17,7 +17,13 @@ format:
 #| include: false
 
 library(tidyverse)
-library(here)
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(remotes)
+library(osmdata)
+library(osmextract)
+
 
 knitr::opts_chunk$set(
   cache = FALSE,
@@ -28,16 +34,176 @@ knitr::opts_chunk$set(
 ```
 
 
-## intro
+## Open Street Map (OSM)
 
-## rest
+is a collaborative project which aims at mapping the world and sharing geospatial data in an open way.
+
+![](fig/OSM1.png){fig-align="center"}
+
+## OSM
+
+Anyone can contribute, by mapping geographical objects their encounter by
+
+- **mapping spatial features** (e.g. buildings or roads), from located device or satellite imagery.
+- adding **topical information** on existing map objects (their name, function, capacity, etc.)
+
+
+## OSM
+
+- This information is then **validated** by other users and eventually added to the common "map" or information system. 
+- This ensures that the information is **accessible, open, verified, accurate** and **up-to-date**. cf. HOT: Humanitarian OpenStreetMap Team
+
+
+## OSM
+
+The geospatial data underlying this interface is made of geometrical objects (i.e. points, lines, polygons) and their associated tags (#building #height, #road #secondary #90kph, etc.).
+
+
+## How to extract geospatial data from Open Street Map with R?
+
+## The Bounding Box
+
+The first thing to do is to define the area within which you want to retrieve data, aka the *bounding box*. This can be defined easily using a place name and the function `getbb()` from the package `osmdata`. 
+
+> "This function uses the free Nominatim API provided by OpenStreetMap to find the bounding box (bb) associated with place names."
+
+## The Bounding Box
+
+```{r osm-bounding-box}
+bb <- getbb('Delft', format_out = 'sf_polygon')
+bb
+```
+
+## Why multiple polygons?
+
+- Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.
+
+## Extracting OSM features
+
+A [feature](https://wiki.openstreetmap.org/wiki/Map_features) in the OSM language is a category or tag of a geospatial object. Features are described by general keys (e.g. "building", "boundary", "landuse", "highway"), themselves decomposed into sub-categories (values) such as "farm", "hotel" or "house" for `buildings`, "motorway", "secondary" and "residential" for `highway`. This determines how they are represented on the map.
+
+## Extracting OSM features
+
+
+```{r osm-feature}
+#| eval: false
+x <- opq(bbox = bb) %>% 
+   add_osm_feature(key = 'building') %>%
+    osmdata_sf ()
+```
 
 
 
-## Challenge 1:  **10 mins**
+What is this x object made of?
+
+## Extracting OSM features
+
+```{r osm-feature-preview}
+#| eval: false
+head(x$osm_polygons)
+```
+
+- It is a **table** of all the buildings contained in the bounding box, which gives us their **OSM id**, their **geometry** and a range of **attributes**, such as their name, building material, building date, etc. 
+- The **completion** level of this table depends on user contributions and open resources (here for instance: BAG, different in other countries).
+
+
+# Mapping attributes
+
+Case Study: we are interested in mapping urbanisation in Delft in the 20th and 21st centuries.
+We need to look into specific attributes:
+
+- the **building age** of buildings
+- with a **subset** of buildings from after 1900
+- within the **Delft** bounding box
+
+## Projections
+
+First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centered on the Netherlands.
+
+```{r reproject}
+#| eval: false
+buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+```
+
+
+## Mapping urbanisation in Delft
+
+Then we create a variable which a threshold at 1900. Every date prior to 1900 will be recoded 1900, so that buildings older than 1900 will be represented with the same shade.
+
+Then we use the `ggplot` function to visualise the buildings by age. The specific function to represent information as a map is `geom_sf()`. The rest works like other graphs and visualisation, with `aes()` for the aesthetics.
+
+## Mapping urbanisation in Delft
+
+```{r map-age}
+#| eval: false
+buildings$build_date <- as.numeric(ifelse(buildings$start_date <1900, 1900,buildings$start_date))
+
+ ggplot(data = buildings) +
+   geom_sf(aes(fill = build_date, colour=build_date))  +
+   scale_fill_viridis_c(option = "viridis")+
+   scale_colour_viridis_c(option = "viridis")
+```
+
+
+## Mapping urbanisation in Delft
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![](fig/rmd-04a-map-age-1.png){fig-align="centre"}
+:::
+
+::: {.column width="40%"}
+- the historical centre of Delft 
+- the first ring in the 1920s
+- the South-West extension (1970s-1990s)
+- East (2000s)
+- North-West (2010s).
+
+:::
+
+::::
+
+
+## Mapping urbanisation in Delft
+
+This centre-periphery and sectoral urban development is quite common. 
+Now for a less typical example, can you reproduce this map for the city of **Rotterdam**. But instead of pre-1900 building, we want to look at **post-war buildings**. 
+
+/!\ It will take some time to extract all buildings, so we will check the result after the coffee break.
+
+
+## Challenge: post-war buildings, R'dam
 
 ```{r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 10)
+countdown::countdown(minutes = 20)
 ```
+
+![](fig/rmd-04a-unnamed-chunk-2-1.png){fig-align="centre"}
+
+## Solution
+
+```{r, echo=FALSE}
+#| eval: false
+bb <- getbb('Rotterdam', format_out = 'sf_polygon')
+x <- opq(bbox = bb) %>% 
+add_osm_feature(key = 'building') %>%
+osmdata_sf ()
+buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+buildings$build_date <- as.numeric(ifelse(buildings$start_date <1945, 1945,buildings$start_date))
+ggplot(data = buildings) +
+geom_sf(aes(fill = build_date, colour=build_date))  +
+scale_fill_viridis_c(option = "viridis")+
+scale_colour_viridis_c(option = "viridis")
+```
+
+## Summary and keypoints
+We have seen how OpenStreetMap (OSM) geodata works and how to import, select, and visualise OSM vector data.
+
+In short:
+
+- Use the `osmextract` package
+- Select features and attributes among osm tags
+- Use the `ggplot` package to map OSM data

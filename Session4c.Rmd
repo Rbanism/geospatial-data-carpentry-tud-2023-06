@@ -40,6 +40,7 @@ library(raster)
 library(rgdal)
 library(ggplot2)
 library(dplyr)
+library(here)
 ```
 
 ---
@@ -324,7 +325,7 @@ ggplot(data = mean_tree_height_plots_TUD, aes(ID, layer)) +
 
 ---
 
-#Summary and keypoints.
+# Summary and keypoints.
 We have seen how to crop a raster to the extent of a vector layer and how to extract values from a raster that correspond to a vector file overlay.
 In short:
 - Use the `crop()` function to crop a raster object.
