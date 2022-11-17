@@ -81,6 +81,12 @@ Write a single command (you can use pipes) that will produce a **data frame** th
 
 How many rows does your data frame have and why?
 
+```{r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+```
+
 . . .
 
 ```{r}
@@ -99,6 +105,12 @@ Calculate the **average life expectancy per country**. Which country has the **l
 
 
 **Hint:** Use `max()`  and `min()` functions to find minimum and maximum.
+
+```{r}
+#| echo: false
+#| cache: false
+countdown::countdown(minutes = 3)
+```
 
 . . .
 
