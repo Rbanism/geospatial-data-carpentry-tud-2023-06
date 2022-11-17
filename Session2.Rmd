@@ -20,31 +20,8 @@ First we need to load the packages we will use in this lesson. We will use `tidy
 ```{r lib}
 library(tidyverse)  # tools for wrangling, reshaping and visualizing data
 library(here)       # managing paths
-
-<<<<<<< HEAD
-# Data manipulation
- library(tibble)
- library(dplyr)
- library(reshape)
-
-# Data visualisation
-library(ggplot2)
-
-# Working with spatial data
-library(sf)
- library(leaflet)
- library(raster)
- library(rgdal)
- library(proj4)
- library(scales)
-
-# Working with OSM data
-# library(osmdata)
-# library(osmextract)
-=======
 if (!"sf" %in% installed.packages()) install.packages("sf")
 library(sf)         # work with spatial vector data
->>>>>>> cb2bc1b2b4038ec5800d60e3d3fa2f0335f45589
 ```
 
 # Open and plot shapefiles (20 + 10 minutes)
@@ -198,8 +175,8 @@ ncol(boundary_Delft)
 Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can [either] increase the number of rows we want to see[, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways.] Printing the object will also give us the first 10 rows.
 
 ```{r}
-head(point_Delft$leisure)
-head(point_Delft$leisure, 10)
+head(point_Delft)
+head(point_Delft, 10)
 # head(na.omit(point_Delft$leisure))  # this is extra
 # head(unique(point_Delft$leisure))   # this is extra
 point_Delft
@@ -599,7 +576,7 @@ ggplot() +
 ```
 
 ```{r}
-st_crs(point_Delft)
+# st_crs(point_Delft)
 ```
 
 ```{r}
@@ -610,14 +587,10 @@ st_crs(municipal_boundary_NL)
 st_crs(country_boundary_NL)
 ```
 
-Next let's look at the extent of the layers.
-
 ```{r}
-st_bbox(point_Delft)
-```
-
-```{r}
-st_bbox(municipal_boundary_NL)
+boundary_Delft <- st_read(here("data", "delft-boundary.shp"))
+st_crs(boundary_Delft)
+boundary_Delft <- st_transform(boundary_Delft, 28992)
 ```
 
 ```{r}
