@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="session4_files/libs/clipboard/clipboard.min.js"></script>
-<script src="session4_files/libs/quarto-html/tabby.min.js"></script>
-<script src="session4_files/libs/quarto-html/popper.min.js"></script>
-<script src="session4_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="session4_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="session4_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="session4_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="session4a_files/libs/clipboard/clipboard.min.js"></script>
+<script src="session4a_files/libs/quarto-html/tabby.min.js"></script>
+<script src="session4a_files/libs/quarto-html/popper.min.js"></script>
+<script src="session4a_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="session4a_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="session4a_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="session4a_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.0.36">
 
   <meta name="author" content="Clémentine Cottineau">
@@ -14,8 +14,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="session4_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="session4_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="session4a_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="session4a_files/libs/revealjs/dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -88,14 +88,14 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="session4_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link rel="stylesheet" href="session4a_files/libs/revealjs/dist/theme/quarto.css" id="theme">
   <link rel="stylesheet" href="logo.css">
-  <link href="session4_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="session4_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="session4_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="session4_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
-  <link href="session4_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
-  <link href="session4_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link href="session4a_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="session4a_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="session4a_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="session4a_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="session4a_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="session4a_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
   .callout {
@@ -380,8 +380,8 @@
       margin-right: 0; 
     }
   </style>
-  <link href="session4_files/libs/countdown-0.4.0/countdown.css" rel="stylesheet">
-  <script src="session4_files/libs/countdown-0.4.0/countdown.js"></script>
+  <link href="session4a_files/libs/countdown-0.4.0/countdown.css" rel="stylesheet">
+  <script src="session4a_files/libs/countdown-0.4.0/countdown.js"></script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -452,7 +452,7 @@ Geodetic CRS:  WGS 84
 </section>
 <section id="extracting-osm-features" class="slide level2">
 <h2>Extracting OSM features</h2>
-<p>A <a href="https://wiki.openstreetmap.org/wiki/Map_features">feature</a> in the OSM language is a category or tag of a geospatial object. Features are described by general keys (e.g.&nbsp;“building”, “boundary”, “landuse”, “highway”), themselves decomposed into sub-categories (values) such as “farm”, “hotel” or “house” for <code>buildings</code>, “motorway”, “secondary” and “residential” for <code>highway</code>. This determines how they are represented on the map.</p>
+<p>A <a href="https://wiki.openstreetmap.org/wiki/Map_features">feature</a> in the OSM language is a category or tag of a geospatial object. Features are described by general keys (e.g.&nbsp;“building”, “boundary”, “landuse”, “highway”) Features are decomposed into sub-categories (values) such as “farm”, “hotel” or “house” for <code>buildings</code>, “motorway”, “secondary” and “residential” for <code>highway</code>. This determines how they are represented on the map.</p>
 </section>
 <section id="extracting-osm-features-1" class="slide level2">
 <h2>Extracting OSM features</h2>
@@ -473,9 +473,8 @@ Geodetic CRS:  WGS 84
 <li class="fragment">The <strong>completion</strong> level of this table depends on user contributions and open resources (here for instance: BAG, different in other countries).</li>
 </ul>
 </section>
-<section>
-<section id="mapping-attributes" class="title-slide slide level1 center">
-<h1>Mapping attributes</h1>
+<section id="mapping-attributes" class="slide level2">
+<h2>Mapping attributes</h2>
 <p>Case Study: we are interested in mapping urbanisation in Delft in the 20th and 21st centuries. We need to look into specific attributes:</p>
 <ul>
 <li class="fragment">the <strong>building age</strong> of buildings</li>
@@ -535,7 +534,7 @@ Geodetic CRS:  WGS 84
 <h2>Challenge: post-war buildings, R’dam</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_035c2721" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_385c1939" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -574,25 +573,25 @@ Geodetic CRS:  WGS 84
 <img src="BKTUD.png" class="slide-logo r-stretch"><div class="footer footer-default">
 <p>Data Carpentry for Geospatial Data</p>
 </div>
-</section></section>
+</section>
     </div>
   </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="session4_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="session4a_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="session4_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="session4_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="session4_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="session4a_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>

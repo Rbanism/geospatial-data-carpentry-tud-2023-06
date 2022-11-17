@@ -1,6 +1,6 @@
 ---
-title: "Session 4: Using vector and raster data for GIS in R"
-author: "Clementine Cottineau"
+title: "Session 4a: Vector data from OpenStreetMap"
+author: "Clémentine Cottineau"
 format: 
   revealjs:
     logo: BKTUD.png
@@ -80,7 +80,10 @@ bb
 
 ## Extracting OSM features
 
-A [feature](https://wiki.openstreetmap.org/wiki/Map_features) in the OSM language is a category or tag of a geospatial object. Features are described by general keys (e.g. "building", "boundary", "landuse", "highway"), themselves decomposed into sub-categories (values) such as "farm", "hotel" or "house" for `buildings`, "motorway", "secondary" and "residential" for `highway`. This determines how they are represented on the map.
+A [feature](https://wiki.openstreetmap.org/wiki/Map_features) in the OSM language is a category or tag of a geospatial object. 
+Features are described by general keys (e.g. "building", "boundary", "landuse", "highway")
+Features are decomposed into sub-categories (values) such as "farm", "hotel" or "house" for `buildings`, "motorway", "secondary" and "residential" for `highway`. 
+This determines how they are represented on the map.
 
 ## Extracting OSM features
 
@@ -107,7 +110,7 @@ head(x$osm_polygons)
 - The **completion** level of this table depends on user contributions and open resources (here for instance: BAG, different in other countries).
 
 
-# Mapping attributes
+## Mapping attributes
 
 Case Study: we are interested in mapping urbanisation in Delft in the 20th and 21st centuries.
 We need to look into specific attributes:
@@ -150,7 +153,7 @@ buildings$build_date <- as.numeric(ifelse(buildings$start_date <1900, 1900,build
 :::: {.columns}
 
 ::: {.column width="60%"}
-![](fig/rmd-04a-map-age-1.png){fig-align="centre"}
+![](fig/rmd-04a-map-age-1.png){fig-align="center"}
 :::
 
 ::: {.column width="40%"}
@@ -168,9 +171,10 @@ buildings$build_date <- as.numeric(ifelse(buildings$start_date <1900, 1900,build
 ## Mapping urbanisation in Delft
 
 This centre-periphery and sectoral urban development is quite common. 
-Now for a less typical example, can you reproduce this map for the city of **Rotterdam**. But instead of pre-1900 building, we want to look at **post-war buildings**. 
+Now for a less typical example, can you reproduce this map for the city of **Rotterdam**. 
+But instead of pre-1900 building, we want to look at **post-war buildings**. 
 
-/!\ It will take some time to extract all buildings, so we will check the result after the coffee break.
+*It will take some time to extract all buildings, so we will check the result after the coffee break.*
 
 
 ## Challenge: post-war buildings, R'dam
@@ -181,18 +185,21 @@ Now for a less typical example, can you reproduce this map for the city of **Rot
 countdown::countdown(minutes = 20)
 ```
 
-![](fig/rmd-04a-unnamed-chunk-2-1.png){fig-align="centre"}
+![](fig/rmd-04a-unnamed-chunk-2-1.png){fig-align="center"}
 
 ## Solution
 
-```{r, echo=FALSE}
+```{r}
 #| eval: false
 bb <- getbb('Rotterdam', format_out = 'sf_polygon')
 x <- opq(bbox = bb) %>% 
 add_osm_feature(key = 'building') %>%
 osmdata_sf ()
 buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
-buildings$build_date <- as.numeric(ifelse(buildings$start_date <1945, 1945,buildings$start_date))
+buildings$build_date <- as.numeric(
+  ifelse(buildings$start_date <1945,
+         1945,
+         buildings$start_date))
 ggplot(data = buildings) +
 geom_sf(aes(fill = build_date, colour=build_date))  +
 scale_fill_viridis_c(option = "viridis")+
