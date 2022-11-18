@@ -38,13 +38,13 @@ knitr::opts_chunk$set(
 ```
 
 
-## Open Street Map (OSM)
+## Open Street Map (OSM) 
 
 is a collaborative project which aims at mapping the world and sharing geospatial data in an open way.
 
 ![](fig/OSM1.png){fig-align="center"}
 
-## OSM
+## OSM  `r emo::ji("map")`
 
 Anyone can contribute, by mapping geographical objects their encounter by
 
@@ -52,26 +52,24 @@ Anyone can contribute, by mapping geographical objects their encounter by
 - adding **topical information** on existing map objects (their name, function, capacity, etc.)
 
 
-## OSM
+## OSM  `r emo::ji("map")`
 
 - This information is then **validated** by other users and eventually added to the common "map" or information system. 
 - This ensures that the information is **accessible, open, verified, accurate** and **up-to-date**. cf. HOT: Humanitarian OpenStreetMap Team
 
 
-## OSM
+## OSM  `r emo::ji("map")`
 
 The geospatial data underlying this interface is made of geometrical objects (i.e. points, lines, polygons) and their associated tags (#building #height, #road #secondary #90kph, etc.).
 
 
 ## How to extract geospatial data from Open Street Map with R?
 
-## The Bounding Box
-
 The first thing to do is to define the area within which you want to retrieve data, aka the *bounding box*. This can be defined easily using a place name and the function `getbb()` from the package `osmdata`. 
 
 > "This function uses the free Nominatim API provided by OpenStreetMap to find the bounding box (bb) associated with place names."
 
-## The Bounding Box
+## The Bounding Box `r emo::ji("square")` 
 
 ```{r osm-bounding-box}
 bb <- getbb('Delft', format_out = 'sf_polygon')
@@ -84,15 +82,14 @@ A Problem with download? Try:
 assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
 ```
 
+Why multiple polygons?
 
-## Why multiple polygons?
-
-- Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.
+Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.
 
 ## Extracting OSM features
 
 A [feature](https://wiki.openstreetmap.org/wiki/Map_features) in the OSM language is a category or tag of a geospatial object. 
-Features are described by general keys (e.g. "building", "boundary", "landuse", "highway")
+**Features** are described by general keys (e.g. "building", "boundary", "landuse", "highway")
 Features are decomposed into sub-categories (values) such as "farm", "hotel" or "house" for `buildings`, "motorway", "secondary" and "residential" for `highway`. 
 This determines how they are represented on the map.
 
@@ -188,7 +185,7 @@ But instead of pre-1900 building, we want to look at **post-war buildings**.
 *It will take some time to extract all buildings, so we will check the result after the coffee break.*
 
 
-## Challenge: post-war buildings, R'dam
+## `r emo::ji("alarm")` Challenge: post-war buildings, R'dam
 
 ```{r}
 #| echo: false

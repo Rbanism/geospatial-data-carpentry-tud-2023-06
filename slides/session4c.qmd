@@ -256,7 +256,7 @@ st_bbox(leisure_locations_selection)
 
 Our plot location extent is not the largest but is larger than the AOI Boundary. It would be nice to see our vegetation plot locations plotted on top of the Canopy Height Model information.
 
-## Challenge
+## `r emo::ji("alarm")` Challenge
 
 ```{r}
 #| echo: false
@@ -517,7 +517,7 @@ head(mean_tree_height_tower)
 
 
 
-## Challenge: Extract Raster Height Values For Plot Locations
+## `r emo::ji("alarm")` Challenge: Extract Raster Height Values For Plot Locations
 
 ```{r}
 #| echo: false
