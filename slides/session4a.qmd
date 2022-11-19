@@ -95,7 +95,7 @@ This determines how they are represented on the map.
 
 ## Extracting OSM features
 
-
+We use the function `opq()` that stands for "overpass query".
 ```{r osm-feature}
 #| eval: false
 x <- opq(bbox = bb) %>% 
