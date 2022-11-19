@@ -102,8 +102,8 @@ This determines how they are represented on the map.
 We use the function `opq()` that stands for "overpass query".
 ```{r osm-feature}
 #| eval: false
-x <- opq(bbox = bb) %>% 
-   add_osm_feature(key = 'building') %>%
+x <- opq(bbox = bb) |> 
+   add_osm_feature(key = 'building') |>
     osmdata_sf ()
 ```
 
@@ -137,7 +137,8 @@ First, we are going to select the polygons and reproject them with the Amersfoor
 
 ```{r reproject}
 #| eval: false
-buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+buildings <- x$osm_polygons |> 
+  st_transform(.,crs=28992)
 ```
 
 
@@ -213,18 +214,21 @@ assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
 ```{r}
 #| eval: false
 bb <- getbb('Rotterdam', format_out = 'sf_polygon')
-x <- opq(bbox = bb) %>% 
-add_osm_feature(key = 'building') %>%
+x <- opq(bbox = bb) |> 
+add_osm_feature(key = 'building') |>
 osmdata_sf ()
-buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+
+buildings <- x$osm_polygons |> 
+  st_transform(.,crs=28992)
+
 buildings$build_date <- as.numeric(
   ifelse(buildings$start_date <1945,
          1945,
          buildings$start_date))
 ggplot(data = buildings) +
-geom_sf(aes(fill = build_date, colour=build_date))  +
-scale_fill_viridis_c(option = "viridis")+
-scale_colour_viridis_c(option = "viridis")
+  geom_sf(aes(fill = build_date, colour=build_date))  +
+  scale_fill_viridis_c(option = "viridis")+
+  scale_colour_viridis_c(option = "viridis")
 ```
 
 ## Summary and keypoints
@@ -270,7 +274,8 @@ Let's select them and see where they are.
 #| eval: false
 old <- 1800 # year prior to which you consider a building old
  
-old_buildings <- filter(buildings, start_date <= old)
+old_buildings <- buildings |>
+  filter(start_date <= old)
  ggplot(data = old_buildings) + geom_sf()
 ```
 
@@ -296,9 +301,6 @@ Make the buildings show in red on the "map"
 
 ```{r old-buildings_red}
 #| eval: false
-old_buildings <- buildings |>
-  filter(start_date <= old)
-
 ggplot(data=old_buildings) + 
   geom_sf(colour="red")
 ```
@@ -353,10 +355,11 @@ So we have to fuse (or dissolve) the overlapping buffers into one polygon. This 
 
 ```{r union}
 #| eval: false
- single_old_buffer <- st_union(buffer_old_buildings) %>%
-  st_cast(to = "POLYGON") %>% 
-  st_as_sf()  %>% 
-  add_column("ID"=as.factor(1:nrow(.)))  %>%
+ single_old_buffer <- st_union(buffer_old_buildings) |>
+  st_cast(to = "POLYGON") |> 
+  st_as_sf()  
+single_old_buffer <- single_old_buffer |>
+  add_column("ID"=as.factor(1:nrow(single_old_buffer)))  |>
   st_transform(.,crs=28992) 
 ```
 
@@ -372,7 +375,7 @@ This operation means defining their centroid and the corresponding function is `
 ```{r centroids}
 #| eval: false
 sf::sf_use_s2(FALSE)
-centroids_old <- st_centroid(old_buildings) %>% st_transform(.,crs=28992)  
+centroids_old <- st_centroid(old_buildings) |> st_transform(.,crs=28992)  
 ggplot() + 
     geom_sf(data = single_old_buffer, aes(fill=ID)) +
     geom_sf(data = centroids_old)
@@ -389,14 +392,15 @@ Now what we would like to distinguish conservation areas based on the number of 
 
 ```{r intersection}
 #| eval: false
- centroids_buffers <- st_intersection(centroids_old,single_old_buffer) %>% 
+ centroids_buffers <- st_intersection(centroids_old,single_old_buffer) |> 
    add_column(n=1)
- centroid_by_buffer <- centroids_buffers %>% 
-   group_by(ID) %>%
-   summarise(
-   n = sum(n)
-   )
- single_buffer <- single_old_buffer %>% add_column(n_buildings = centroid_by_buffer$n)
+
+ centroid_by_buffer <- centroids_buffers |> 
+   group_by(ID) |>
+   summarise(n = sum(n))
+ 
+ single_buffer <- single_old_buffer |> 
+   add_column(n_buildings = centroid_by_buffer$n)
 ```
 
 
@@ -457,7 +461,7 @@ ggplot() +
 ```{r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 10)
+countdown::countdown(minutes = 15)
 ```
 
 Conservation rules have changed! 
@@ -479,20 +483,20 @@ Can you map the number of all buildings per 100m fused buffer?
  #buffer
  buffer_old_buildings <- st_buffer(old_buildings, dist = distance)
   #union
- single_old_buffer <- st_union(buffer_old_buildings) %>% 
-   st_cast(to = "POLYGON") %>% st_as_sf()  %>% 
-   add_column("ID"=1:nrow(.))  %>% st_transform(.,crs=4326) 
+ single_old_buffer <- st_union(buffer_old_buildings) |> 
+   st_cast(to = "POLYGON") |> st_as_sf()  |> 
+   add_column("ID"=1:nrow(.))  |> st_transform(.,crs=4326) 
  #centroids
- centroids_old <- st_centroid(old_buildings) %>% st_transform(.,crs=4326)  
+ centroids_old <- st_centroid(old_buildings) |> st_transform(.,crs=4326)  
   #intersection
-  centroids_buffers <- st_intersection(centroids_old,single_old_buffer) %>% 
+  centroids_buffers <- st_intersection(centroids_old,single_old_buffer) |> 
    add_column(n=1)
- centroid_by_buffer <- centroids_buffers %>% 
-   group_by(ID) %>%
+ centroid_by_buffer <- centroids_buffers |> 
+   group_by(ID) |>
    summarise(
    n = sum(n)
    )
- single_buffer <- single_old_buffer %>% add_column(n_buildings = centroid_by_buffer$n)
+ single_buffer <- single_old_buffer |> add_column(n_buildings = centroid_by_buffer$n)
   ggplot() + 
    geom_sf(data = buildings) +
    geom_sf(data = single_buffer, aes(fill=n_buildings), colour = NA) +
@@ -523,7 +527,8 @@ Let's compute the **density** of old buildings per buffer zone (= number of buil
 
 ```{r area}
 #| eval: false
-single_buffer$area <- st_area(single_buffer, ) %>% units::set_units(., km^2)
+single_buffer$area <- st_area(single_buffer) %>%
+  units::set_units(., km^2)
 
 single_buffer$old_buildings_per_km2 <- as.numeric(single_buffer$n_buildings / single_buffer$area)
 
@@ -611,6 +616,10 @@ Cropping a raster can also be useful when creating pretty maps so that the raste
 
 ## Import the raster 
 
+We import a *DSM* (Digital Surface Model) and a *DTM* (Digital Terrain Model) of TU-Delft.
+
+The difference between the two altitudes gives us a *CHM*, a Canopy Height Model.
+
 ```{r}
 #| eval: false
 DSM_TUD <- raster(here("data","tud-dsm.tif"))
@@ -622,6 +631,7 @@ CHM_TUD_df <- as.data.frame(CHM_TUD, xy = TRUE)
 oai_boundary_tudlib <- st_as_sfc(st_bbox(raster(here("data","tudlib-rgb.tif"))))
 ```
 
+`st_as_sfc()` is a useful function to convert files to an `sf` format.
 
 ## Crop a Raster Using Vector Extent
 
@@ -768,18 +778,7 @@ The area of interest:
 st_bbox(oai_boundary_tudlib)
 ```
 
-Leisure locations:
-
-```{r}
-#| eval: false
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
-  filter(leisure %in% c("playground", "picnic_table"))
-
-st_bbox(leisure_locations_selection)
-```
-
-Our plot location extent is not the largest but is larger than the AOI Boundary. It would be nice to see our vegetation plot locations plotted on top of the Canopy Height Model information.
-
+Our plot location extent is not the largest but is larger than the AOI Boundary. 
 
 
 ## Extract Raster Pixels Values Using Vector Polygons
@@ -810,7 +809,7 @@ To do this in R, we use the `extract()` function. The `extract()` function requi
 
 We can tell it to store the output values in a data frame using `df = TRUE`. (This is optional, the default is to return a list, NOT a data frame.)
 
-We will begin by extracting all canopy height pixel values located within our `aoi_boundary_HARV` polygon which surrounds the tower located at the NEON Harvard Forest field site.
+We will begin by extracting all canopy height pixel values located within our `oai_boundary_tudlib` polygon which surrounds the TU Delft Library.
 
 ```{r}
 #| eval: false
@@ -958,7 +957,7 @@ countdown::countdown(minutes = 10)
 ## Solution
 ```{r}
 #| eval: false
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+leisure_locations_selection <- point_Delft |> 
   filter(leisure %in% c("playground", "picnic_table"))
 
 # extract data at each plot location
