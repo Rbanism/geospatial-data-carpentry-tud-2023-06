@@ -32,14 +32,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r lib}
-library(dplyr)
+library(tidyverse)
 library(sf)
-library(tibble)
-library(ggplot2)
-library(raster)
 library(rgdal)
-library(ggplot2)
-library(dplyr)
+library(raster)
 library(here)
 ```
 
@@ -65,7 +61,11 @@ Frequent use cases of cropping a raster file include reducing file size and crea
 
 ## Import the raster 
 
-Data available [here](https://ndownloader.figshare.com/articles/2009586/versions/10).
+
+We import a *DSM* (Digital Surface Model) and a *DTM* (Digital Terrain Model) of TU-Delft.
+
+The difference between the two altitudes gives us a *CHM*, a Canopy Height Model.
+
 
 ```{r}
 DSM_TUD <- raster(here("data","tud-dsm.tif"))
@@ -120,7 +120,7 @@ ggplot() +
   coord_sf()
 ```
 
-The plot above shows that the full CHM extent (plotted in green) is much larger than the resulting cropped raster. Our new cropped CHM now has the same extent as the aoi_boundary_HARV object that was used as a crop extent (blue border below).
+The plot above shows that the full CHM extent (plotted in green) is much larger than the resulting cropped raster. Our new cropped CHM now has the same extent as the oai_boundary_tudlib object that was used as a crop extent (blue border below).
 
 ```{r}
 ggplot() +
@@ -146,7 +146,7 @@ st_bbox(oai_boundary_tudlib)
 ```
 
 ```{r}
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) |> 
   filter(leisure %in% c("playground", "picnic_table"))
 
 st_bbox(leisure_locations_selection)
@@ -166,7 +166,7 @@ To do this in R, we use the `extract()` function. The `extract()` function requi
 The raster that we wish to extract values from,
 The vector layer containing the polygons that we wish to use as a boundary or boundaries,
 we can tell it to store the output values in a data frame using `df = TRUE`. (This is optional, the default is to return a list, NOT a data frame.) .
-We will begin by extracting all canopy height pixel values located within our `aoi_boundary_HARV` polygon which surrounds the tower located at the NEON Harvard Forest field site.
+We will begin by extracting all canopy height pixel values located within our `oai_boundary_tudlib` polygon.
 
 ```{r}
 tree_height <- extract(x = CHM_TUD, y = st_as_sf(oai_boundary_tudlib), df = TRUE)
@@ -211,7 +211,7 @@ We can also extract pixel values from a raster by defining a buffer or area surr
 ![Image Source:National Ecological Observatory Network (NEON)](BufferCircular.png)
 
 
-Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (`point_HARV`). Because we are extracting only a single number, we will not use the `df = TRUE` argument.
+Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (`point_Delft`). Because we are extracting only a single number, we will not use the `df = TRUE` argument.
 
 ```{r}
 point_Delft <- st_read(here("data", "delft-leisure.shp"))
@@ -226,7 +226,7 @@ mean_tree_height_tower
 
 # Challenge: Extract Raster Height Values For Plot Locations
 
-- Use the plot locations object (`plot_locations_sp_HARV`) to extract an average tree height for the area within 20m of each vegetation plot location in the study area. Because there are multiple plot locations, there will be multiple averages returned, so the `df = TRUE` argument should be used.
+- Use the leisure locations object (`point_Delft`) to extract an average tree height for the area within 20m of each playground and picnic table in the study area. Because there are multiple playgrounds and picnic tables, there will be multiple averages returned, so the `df = TRUE` argument should be used.
 
 - Create a plot showing the mean tree height of each area.
 
@@ -235,7 +235,7 @@ mean_tree_height_tower
 
 ## Solution
 ```{r}
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) |> 
   filter(leisure %in% c("playground", "picnic_table"))
 
 # extract data at each plot location
