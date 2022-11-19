@@ -76,9 +76,9 @@ A [feature](https://wiki.openstreetmap.org/wiki/Map_features) in the OSM languag
 
 
 ```{r osm-feature}
-x <- opq(bbox = bb) %>% 
-   add_osm_feature(key = 'building') %>%
-    osmdata_sf ()
+x <- opq(bbox = bb) |> 
+   add_osm_feature(key = 'building') |>
+    osmdata_sf()
 ```
 
 What is this x object made of? It is a table of all the buildings contained in the bounding box, which gives us their OSM id, their geometry and a range of attributes, such as their name, building material, building date, etc. The completion level of this table depends on user contributions and open resources (here for instance: BAG, different in other countries).
@@ -97,7 +97,8 @@ For instance: the building age focusing on post-1900 buildings.
 First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centred on the Netherlands.
 
 ```{r reproject}
-buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+buildings <- x$osm_polygons |> 
+  st_transform(.,crs=28992)
 ```
 
 ## Mapping
@@ -127,10 +128,11 @@ This centre-periphery and sectoral urban development is quite common. Now for a 
 
 ```{r, echo=FALSE}
 bb <- getbb('Rotterdam', format_out = 'sf_polygon')
-x <- opq(bbox = bb) %>% 
-add_osm_feature(key = 'building') %>%
+x <- opq(bbox = bb) |> 
+add_osm_feature(key = 'building') |>
 osmdata_sf ()
-buildings <- x$osm_polygons %>% st_transform(.,crs=28992)
+buildings <- x$osm_polygons |> 
+  st_transform(.,crs=28992)
 buildings$build_date <- as.numeric(ifelse(buildings$start_date <1945, 1945,buildings$start_date))
 ggplot(data = buildings) +
 geom_sf(aes(fill = build_date, colour=build_date))  +
