@@ -28,8 +28,7 @@ knitr::opts_chunk$set(
 
 ## `raster` package for spatial raster data
 
-![]("../data/fig/tudlib-green.png"){fig-align="center"}
-
+![](fig/tudlib-green.png){fig-align="center"}
 
 
 ## Challenge 1: `r emo::ji("clock")` **2 mins**

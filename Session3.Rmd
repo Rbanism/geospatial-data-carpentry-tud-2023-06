@@ -1,11 +1,9 @@
 ---
-title: "Geospatial Carpentry | Session 3: Working with raster data"
+title: "Geospatial Data Carpentry | Session 3: Working with raster data"
 author: "Claudiu Forgaci"
 date: "2022-11-21"
 output: html_document
 ---
-
-# Setup
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -13,79 +11,84 @@ knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE
 )
+
+library(tidyverse)  # Meta package for data science
+library(here)       # Working with paths
+library(raster)     # Accessing and manipulating raster data
+library(rgdal)      # Interface to the GDAL utility
 ```
 
-```{r lib}
-library(tidyverse)
-library(here)
-library(raster)
-library(rgdal)
-```
+# Intro to raster data
+<!-- (30 + 20 minutes) -->
 
-# Intro to raster data (30 + 20 minutes)
-## View Raster File Attirbutes
-```{r}
-# GDALinfo(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
+In this part of the workshop we will talk about raster data. We will start with an introduction of the fundamental principles, packages, and metadata needed to work with raster data in R. We will discuss some of the most important metadata elements, including CRS and resolution. We continue to work with the `tidyverse` and `here` packages and we will use two additional packages to work with raster data: `raster` and `rgdal`.
+
+The dataset we chose is a set of GeoTIFF files on Delft or subdivisions of it. The files were included in the archive you downloaded before the workshop.
+
+## View Raster File Attributes
+The GeoTIFF format contains a set of embedded tags with metadata about the raster data. We can use the function GDALinfo() from the `rgdal` package to get information about our raster data before we read that data into R. It is recommended to do this before importing your data.
+```{r attr}
 GDALinfo(here("data","tud-dsm.tif"))
-```
-
-```{r}
-TUD_dsm_info <- capture.output(
-  GDALinfo(here("data","tud-dsm.tif"))
-)
 ```
 
 ## Open a Raster in R
 
-We are going to work with a Digital Surface Model (DSM) which is in the GeoTIFF format.
+Now that we've previewed the metadata for our GeoTIFF, let's import this raster dataset. We are going to work with a Digital Surface Model (DSM) which is in the GeoTIFF format. We can use the `raster()` function to import a raster file.
+
 ```{r}
-# DSM_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_dsmCrop.tif"))
 DSM_TUD <- raster(here("data","tud-dsm.tif"))
 DSM_TUD
 ```
+Similar to other data structures in R like vectors and data frame columns, descriptive statistics for raster data can be retreived with the `summary()` function.
 
 ```{r}
 summary(DSM_TUD)
 ```
-
+But note the warning. Unless you force R to calculate these statistics using every cell, it will take a random sample of 100,000 cells and calculate from them instead. Now, raster objects are not data frames so you cannot count the cells with `nrow()`, but with the `ncell()` function of the `raster` package.
 ```{r}
 summary(DSM_TUD, maxsamp = ncell(DSM_TUD))
 ```
-
+To visualise raster data in `ggplot2`, we will need to convert it to a data frame. The `raster` package has a `as.data.frame` function for that purpose.
 ```{r}
-# DSM_HARV_df <- as.data.frame(DSM_HARV, xy = TRUE)
 DSM_TUD_df <- as.data.frame(DSM_TUD, xy = TRUE)
 ```
 
+Now when we view the structure of our data, we will see a standard dataframe format.
 ```{r}
 str(DSM_TUD_df)
 ```
-
+We can use `ggplot()` to plot this data with another `geom_` function called `geom_raster()`. The `coord_quickmap()` gives a quick approximation that preserves straight lines. This approximation is suitable for small areas that are not too close to the poles.
 ```{r}
-# This might throw a memory error if the raster is too large
 ggplot() +
     geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = tud.dsm)) +
-    scale_fill_viridis_c() +
-    coord_quickmap()
+    scale_fill_viridis_c() +  # remember, the this color palette was introduced in the first lesson
+    coord_quickmap() 
 ```
 
+These map, a so-called Digital Surface Model, shows the elevation of our study site, including buildings and vegetation.
+
+For faster previews, you can use the `plot()` function.
 ```{r}
 plot(DSM_TUD)
 ```
 
+But what units are these? This information is specified in the CRS, so let's have a closer look at the CRS of our raster.
+
 ## View Raster Coordinate Reference System (CRS) in R
 
-But what units are these?
+With raster objects we use the `crs()` function from the `raster` package.
+
 ```{r}
-# CRS have been explained on Day 1
 crs(DSM_TUD)
 ```
 
-<!-- Skip the explanation of CRS -->
+We see that the units are in meters in the Proj4 string: `+units=m`.
 
 ## Calculate the Min and Max value
+
+It is useful to know the minimum and maximum values of a raster dataset. In the case of a DSM, those values represent the min/max elevation range of our site.
+
 ```{r}
-# minValue(DSM_HARV)
 minValue(DSM_TUD)
 ```
 
@@ -95,7 +98,6 @@ maxValue(DSM_TUD)
 
 If Min and Max values haven't been calculated, you can set them with the `raster::setMinMax()` function.
 ```{r}
-# Maybe skip this
 DSM_TUD <- raster::setMinMax(DSM_TUD)
 ```
 
@@ -107,56 +109,42 @@ nlayers(DSM_TUD)
 ```
 This dataset has only 1 band. We will discuss multi-band raster data in a later episode.
 
-## Dealing with missing data
-
-In raster data, pixels with no value are represented with `NoDataValue`. That is usually the case with edge values where data is missing from the rectangular region of the raster. Use `rgdal::GDALinfo()` to check the metadata for missing data values.
-```{r}
-GDALinfo(here("data", "tud-dsm.tif"))
-GDALinfo(here("data", "HARV_dsmCrop.tif"))
-```
-
-
-## Bad data values
-
-Bad values are usually miscalculations that result in values out of a predefined range.
-```{r}
-# This code chunk is hidden in the lesson material
-```
-
 ## Creating a histogram of raster values
 
 A histogram can be used to inspect the distribution of raster values visually. It can show if there are values above the max or below the min of the expected range. We can create a histogram with the ggplot2 function `geom_histogram()`.
 ```{r}
-# ggplot() +
-#     geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop))
 ggplot() +
   geom_histogram(data = DSM_TUD_df, aes(tud.dsm))
 ```
 
 Adjust the level of desired detail by setting the number of bins.
+
 ```{r}
-# ggplot() +
-#     geom_histogram(data = DSM_HARV_df, aes(HARV_dsmCrop), bins = 40)
 ggplot() +
   geom_histogram(data = DSM_TUD_df, aes(tud.dsm), bins = 40)
 ```
 
-### Challenge
+Looking at the distribution can help us identify bad data values, that is, values that are out of the min/max range.
+
+### Challenge 1 (2 minutes)
+
+Use `GDALinfo()` to determine the following about the `tud-dsm-hill.tif` file:
+
+1. Does this file have the same CRS as `DSM_TUD`?
+2. What is resolution of the raster data?
+3. How large would a 5x5 pixel area be on the Earth’s surface?
+4. Is the file a multi- or single-band raster?
 
 ```{r}
-GDALinfo(here("data","HARV_DSMhill.tif"))
+GDALinfo(here("data","tud-dsm-hill.tif"))
 ```
 
+# Plot raster data 
+<!-- (40 + 30 minutes - 10 minutes about plot formatting - 15 minutes details = 45 minutes) -->
 
-# Plotting raster data (40 + 30 minutes - 10 minutes about plot formatting - 15 minutes details = 45 minutes)
+In this part we will plot our raster object using `ggplot2` with customized coloring schemes. In the previous plot, our DSM was colored with a continuous colour range. For clarity and visibility, we may prefer to view the data “symbolized” or colored according to ranges of values. This is comparable to a “classified” map. For that, we need to tell `ggplot` how many groups to break our data into and where those breaks should be. To make these decisions, it is useful to first explore the distribution of the data using a bar plot. To begin with, we will use dplyr’s `mutate()` function combined with `cut()` to split the data into 3 bins.
 
 ```{r}
-# DSM_HARV_df <- DSM_HARV_df %>%
-#   mutate(fct_elevation = cut(HARV_dsmCrop, breaks = 3))
-# 
-# ggplot() +
-#     geom_bar(data = DSM_HARV_df, aes(fct_elevation))
-
 DSM_TUD_df <- DSM_TUD_df %>%
   mutate(fct_elevation = cut(tud.dsm, breaks = 3))
 
@@ -177,17 +165,14 @@ DSM_TUD_df %>%
 
 To customize cutoff values:
 ```{r}
-# custom_bins <- c(300, 350, 400, 450)
-# 
-# DSM_HARV_df <- DSM_HARV_df %>%
-#   mutate(fct_elevation_cb = cut(HARV_dsmCrop, breaks = custom_bins))
-# 
-# unique(DSM_HARV_df$fct_elevation_cb)
-
 custom_bins <- c(-10, 0, 5, 100)
+
+DSM_TUD_df
 
 DSM_TUD_df <- DSM_TUD_df %>%
   mutate(fct_elevation_cb = cut(tud.dsm, breaks = custom_bins))
+
+DSM_TUD_df
 
 unique(DSM_TUD_df$fct_elevation_cb)
 ```
@@ -209,9 +194,8 @@ ggplot() +
   coord_quickmap()
 ```
 
-<!-- Remove the plot formatting part -->
+The plot above uses the default colors inside ggplot for raster objects. We can specify our own colors to make the plot look a little nicer. R has a built in set of colors for plotting terrain, which are built in to the `terrain.colors()` function. Since we have three bins, we want to create a 3-color palette:
 
-Customising colors:
 ```{r}
 terrain.colors(3)
 ```
@@ -234,14 +218,15 @@ ggplot() +
     coord_quickmap()
 ```
 
-### Challenge
+### Challenge 2 (5 minutes)
+
+Create a plot of the TU Delft Digital Surface Model (`DSM_TUD`) that has:
+
+1. Six classified ranges of values (break points) that are evenly divided among the range of pixel values.
+2. Axis labels.
+3. A plot title.
 
 ```{r}
-# DSM_HARV_df <- DSM_HARV_df %>%
-#   mutate(fct_elevation_6 = cut(HARV_dsmCrop, breaks = 6))
-# 
-# unique(DSM_HARV_df$fct_elevation_6)
-
 DSM_TUD_df <- DSM_TUD_df %>%
   mutate(fct_elevation_6 = cut(tud.dsm, breaks = 6))
 
@@ -258,22 +243,19 @@ ggplot() +
   coord_quickmap() +
   xlab("X") +
   ylab("Y") +
-  labs(title = "Elevation Classes of the Harvard Forest Digital Surface Model (DSM)")
+  labs(title = "Elevation Classes of the Digital Surface Model (DSM)")
 ```
 
-<!-- Remove the plot formatting part -->
 ## Layering rasters
-```{r}
-# DSM_hill_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/DSM/HARV_DSMhill.tif"))
-# DSM_hill_HARV
 
+We can layer a raster on top of a hillshade raster for the same area, and use a transparency factor to create a 3-dimensional shaded effect. A hillshade is a raster that maps the shadows and texture that you would see from above when viewing terrain. We will add a custom color, making the plot grey.
+
+```{r}
 DSM_hill_TUD <- raster(here("data","tud-dsm-hill.tif"))
 DSM_hill_TUD
 ```
 
 ```{r}
-# DSM_hill_HARV_df <- as.data.frame(DSM_hill_HARV, xy = TRUE)
-# str(DSM_hill_HARV_df)
 DSM_hill_TUD_df <- as.data.frame(DSM_hill_TUD, xy = TRUE)
 str(DSM_hill_TUD_df)
 ```
@@ -285,6 +267,8 @@ ggplot() +
   scale_alpha(range =  c(0.15, 0.65), guide = "none") + 
   coord_quickmap()
 ```
+
+We can layer another raster on top of our hillshade by adding another call to the `geom_raster()` function. Let’s overlay DSM_TUD on top of the `DSM_hill_TUD`.
 
 ```{r}
 ggplot() +
@@ -300,78 +284,18 @@ ggplot() +
   coord_quickmap()
 ```
 
-### Challenge
+### Challenge 3 (8 minutes)
 
-Repeat with DTM
+Use the `tud-dtm.tif` and `tud-dtm-hill.tif` files from the `data` directory to create a Digital Terrain Model map of the TU Delft area.
 
-```{r}
-# # CREATE DSM MAPS
-# 
-# # import DSM data
-# DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
-# # convert to a df for plotting
-# DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
-# 
-# # import DSM hillshade
-# DSM_hill_SJER <- raster(here("data", "NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmHill.tif"))
-# # convert to a df for plotting
-# DSM_hill_SJER_df <- as.data.frame(DSM_hill_SJER, xy = TRUE)
-# 
-# # Build Plot
-# ggplot() +
-#     geom_raster(data = DSM_SJER_df ,
-#                 aes(x = x, y = y,
-#                      fill = SJER_dsmCrop,
-#                      alpha = 0.8)
-#                 ) +
-#     geom_raster(data = DSM_hill_SJER_df,
-#                 aes(x = x, y = y,
-#                   alpha = SJER_dsmHill)
-#                 ) +
-#     scale_fill_viridis_c() +
-#     guides(fill = guide_colorbar()) +
-#     scale_alpha(range = c(0.4, 0.7), guide = "none") +
-#     # remove grey background and grid lines
-#     theme_bw() +
-#     theme(panel.grid.major = element_blank(),
-#           panel.grid.minor = element_blank()) +
-#     xlab("UTM Easting Coordinate (m)") +
-#     ylab("UTM Northing Coordinate (m)") +
-#     ggtitle("DSM with Hillshade") +
-#     coord_quickmap()
-```
+Make sure to:
+
+- include hillshade in the maps,
+- label axes,
+- include a title for each map,
+- experiment with various alpha values and color palettes to represent the data.
 
 ```{r}
-# CREATE DTM MAP
-# # import DTM
-# DTM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmCrop.tif"))
-# DTM_SJER_df <- as.data.frame(DTM_SJER, xy = TRUE)
-# 
-# # DTM Hillshade
-# DTM_hill_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DTM/SJER_dtmHill.tif"))
-# DTM_hill_SJER_df <- as.data.frame(DTM_hill_SJER, xy = TRUE)
-# 
-# ggplot() +
-#     geom_raster(data = DTM_SJER_df ,
-#                 aes(x = x, y = y,
-#                      fill = SJER_dtmCrop,
-#                      alpha = 2.0)
-#                 ) +
-#     geom_raster(data = DTM_hill_SJER_df,
-#                 aes(x = x, y = y,
-#                   alpha = SJER_dtmHill)
-#                 ) +
-#     scale_fill_viridis_c() +
-#     guides(fill = guide_colorbar()) +
-#     scale_alpha(range = c(0.4, 0.7), guide = "none") +
-#     theme_bw() +
-#     theme(panel.grid.major = element_blank(), 
-#           panel.grid.minor = element_blank()) +
-#     theme(axis.title.x = element_blank(),
-#           axis.title.y = element_blank()) +
-#     ggtitle("DTM with Hillshade") +
-#     coord_quickmap()
-
 # import DTM
 DTM_TUD <- raster(here("data","tud-dtm.tif"))
 DTM_TUD_df <- as.data.frame(DTM_TUD, xy = TRUE)
@@ -402,19 +326,20 @@ ggplot() +
     coord_quickmap()
 ```
 
-# Reproject raster data (40 + 20 minutes - 10 minutes instruction details - 20 minutes challenges = 30 minutes)
+# Reproject raster data 
+<!-- (40 + 20 minutes - 10 minutes instruction details - 20 minutes challenges = 30 minutes) -->
 
 What happens when maps don't line up? That is usually a sign that layers are in different coordinate reference systems (CRS).
 
+In this episode, we will be working with the digital terrain model.
+
 ```{r}
 DTM_TUD <- raster(here("data","tud-dtm.tif"))
-
 DTM_hill_TUD <- raster(here("data","tud-dtm-hill-ETRS89.tif"))
 ```
 
 ```{r}
 DTM_TUD_df <- as.data.frame(DTM_TUD, xy = TRUE)
-
 DTM_hill_TUD_df <- as.data.frame(DTM_hill_TUD, xy = TRUE)
 ```
 
@@ -430,23 +355,30 @@ ggplot() +
      coord_quickmap()
 ```
 
+Our results are curious - neither the Digital Terrain Model (`DTM_TUD_df`) nor the DTM Hillshade (`DTM_hill_TUD_df`) plotted. Let’s try to plot the DTM on its own to make sure there are data there.
+
 ```{r}
 ggplot() +
-geom_raster(data = DTM_TUD_df,
-    aes(x = x, y = y,
-    fill = tud.dtm)) +
-scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
-coord_quickmap()
+  geom_raster(data = DTM_TUD_df,
+              aes(x = x, y = y,
+                  fill = tud.dtm)) +
+  scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) +
+  coord_quickmap()
 ```
 
 ```{r}
 ggplot() +
-geom_raster(data = DTM_hill_TUD_df,
-    aes(x = x, y = y,
-    alpha = tud.dtm.hill.ETRS89)) + 
-    coord_quickmap()
+  geom_raster(data = DTM_hill_TUD_df,
+              aes(x = x, y = y,
+                  alpha = tud.dtm.hill.ETRS89)) +
+  coord_quickmap()
 ```
-### Challenge
+
+If we look at the axes, we can see that the projections of the two rasters are different. 
+
+### Challenge 4 (2 minutes)
+
+View the CRS for each of these two datasets. What projection does each use?
 
 ```{r}
 crs(DTM_TUD)
@@ -457,6 +389,8 @@ crs(DTM_hill_TUD)
 ```
 
 ## Reproject rasters
+
+We can use the `projectRaster()` function to reproject a raster into a new CRS. Keep in mind that reprojection only works when you first have a defined CRS for the raster object that you want to reproject. It cannot be used if no CRS is defined.
 
 ```{r}
 DTM_hill_EPSG28992_TUD <- projectRaster(DTM_hill_TUD,
@@ -480,7 +414,10 @@ extent(DTM_hill_TUD)
 ```
 
 
-### Challenge
+### Question
+
+Why do you think the two extents differ?
+
 
 ## Dealing with raster resolution
 
@@ -491,6 +428,9 @@ res(DTM_hill_EPSG28992_TUD)
 ```{r}
 res(DTM_TUD)
 ```
+
+These two resolutions are different, but they’re representing the same data. We can tell R to force our newly reprojected raster to be the same as `DTM_TUD` by using `res(DTM_TUD)`.
+
 
 ```{r}
 DTM_hill_EPSG28992_TUD <- projectRaster(DTM_hill_TUD,
@@ -522,43 +462,15 @@ ggplot() +
      coord_quickmap()
 ```
 
-### Challenge
 
-<!-- Skip this challenge -->
+# Raster calculations 
+<!-- (40 + 20 minutes - 15 minutes raster math - 15 minutes challenges = 30 minutes) -->
 
-```{r}
-# # import DSM
-# DSM_SJER <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_dsmCrop.tif"))
-# # import DSM hillshade
-# DSM_hill_SJER_WGS <-
-# raster(here("data","NEON-DS-Airborne-Remote-Sensing/SJER/DSM/SJER_DSMhill_WGS84.tif"))
-# 
-# # reproject raster
-# DTM_hill_UTMZ18N_SJER <- projectRaster(DSM_hill_SJER_WGS,
-#                                   crs = crs(DSM_SJER),
-#                                   res = 1)
-# 
-# # convert to data.frames
-# DSM_SJER_df <- as.data.frame(DSM_SJER, xy = TRUE)
-# 
-# DSM_hill_SJER_df <- as.data.frame(DTM_hill_UTMZ18N_SJER, xy = TRUE)
-# 
-# ggplot() +
-#      geom_raster(data = DSM_hill_SJER_df, 
-#                  aes(x = x, y = y, 
-#                    alpha = SJER_DSMhill_WGS84)
-#                  ) +
-#      geom_raster(data = DSM_SJER_df, 
-#              aes(x = x, y = y, 
-#                   fill = SJER_dsmCrop,
-#                   alpha=0.8)
-#              ) + 
-#      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
-#      coord_quickmap()
-```
+We often want to perform calculations on two or more rasters to create a new output raster. For example, if we are interested in mapping the heights of trees and buildings across an entire field site, we might want to calculate the difference between the Digital Surface Model (DSM, tops of trees and buildings) and the Digital Terrain Model (DTM, ground level). The resulting dataset is referred to as a Canopy Height Model (CHM) and represents the actual height of trees, buildings, etc. with the influence of ground elevation removed.
 
-# Raster calculations (40 + 20 minutes - 15 minutes raster math - 15 minutes challenges = 30 minutes)
 ## Raster calculations in R
+
+
 ```{r}
 GDALinfo(here("data","tud-dtm.tif"))
 ```
@@ -583,7 +495,7 @@ GDALinfo(here("data","tud-dsm.tif"))
      coord_quickmap()
 ```
 
-## Raster math and Canopy Height Models (DROP THIS PART)
+## Raster math and Canopy Height Models
 
 ```{r}
 CHM_TUD <- DSM_TUD - DTM_TUD
@@ -604,9 +516,27 @@ ggplot(CHM_TUD_df) +
     geom_histogram(aes(layer))
 ```
 
-### Challenge
+### Challenge 5 (5 minutes)
+
+It’s often a good idea to explore the range of values in a raster dataset just like we might explore a dataset that we collected in the field.
+
+1. What is the min and maximum value for the Canopy Height Model `CHM_TUD` that we just created?
+2. What are two ways you can check this range of data for `CHM_TUD`?
+3. What is the distribution of all the pixel values in the CHM?
+4. Plot a histogram with 6 bins instead of the default and change the color of the histogram.
+5. Plot the CHM_TUD raster using breaks that make sense for the data. Include an appropriate color palette for the data, plot title and no axes ticks / labels.
 
 ```{r}
+min(CHM_TUD_df$layer, na.rm = TRUE)
+max(CHM_TUD_df$layer, na.rm = TRUE)
+
+ggplot(CHM_TUD_df) +
+    geom_histogram(aes(layer))
+
+ggplot(CHM_TUD_df) +
+    geom_histogram(aes(layer), colour="black", 
+                   fill="darkgreen", bins = 6)
+
 custom_bins <- c(0, 10, 20, 30, 100)
 CHM_TUD_df <- CHM_TUD_df %>%
                   mutate(canopy_discrete = cut(layer, breaks = custom_bins))
@@ -618,85 +548,24 @@ ggplot() +
      coord_quickmap()
 ```
 
-## Efficient raster calculations: overlay function
-
-```{r}
-CHM_ov_TUD <- overlay(DSM_TUD,
-                       DTM_TUD,
-                       fun = function(r1, r2) { return( r1 - r2) })
-```
-
-```{r}
-CHM_ov_TUD_df <- as.data.frame(CHM_ov_TUD, xy = TRUE)
-```
-
-```{r}
- ggplot() +
-   geom_raster(data = CHM_ov_TUD_df, 
-               aes(x = x, y = y, fill = layer)) + 
-   scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-   coord_quickmap()
-```
-
 ## Export a GeoTIFF
 
 ```{r}
-writeRaster(CHM_ov_TUD, here("fig_output","CHM_TUD.tiff"),
+writeRaster(CHM_TUD, here("fig_output","CHM_TUD.tiff"),
             format="GTiff",
             overwrite=TRUE,
             NAflag=-9999)
 ```
 
-### Challenge
+# Work with multi-band rasters 
+<!-- (40 + 20 minutes - 15 minutes details - 15 minutes challenges = 30 minutes) -->
 
+## Getting Started with Multi-Band Data in R
+
+In this episode, the multi-band data that we are working with is high resolution imagery for the Netherlands.
+
+The `raster()` function only reads in the first band, in this case the red band of an RGB raster.
 ```{r}
-# CHM_ov_SJER <- overlay(DSM_SJER,
-#                        DTM_SJER,
-#                        fun = function(r1, r2){ return(r1 - r2) })
-```
-
-```{r}
-# CHM_ov_SJER_df <- as.data.frame(CHM_ov_SJER, xy = TRUE)
-```
-
-```{r}
-# ggplot(CHM_ov_SJER_df) +
-#     geom_histogram(aes(layer))
-```
-
-```{r}
-# ggplot() +
-#   geom_raster(data = CHM_ov_SJER_df,
-#               aes(x = x, y = y,
-#                   fill = layer)) +
-#   scale_fill_gradientn(name = "Canopy Height",
-#                        colors = terrain.colors(10)) +
-#   coord_quickmap()
-```
-
-```{r}
-# writeRaster(CHM_ov_SJER, here("fig_output", "chm_ov_SJER.tiff"),
-#             format = "GTiff",
-#             overwrite = TRUE,
-#             NAflag = -9999)
-```
-
-```{r}
-ggplot(CHM_TUD_df) +
-    geom_histogram(aes(layer))
-```
-
-```{r}
-ggplot(CHM_ov_TUD_df) +
-    geom_histogram(aes(layer))
-```
-
-# Work with multi-band rasters (40 + 20 minutes - 15 minutes details - 15 minutes challenges = 30 minutes)
-##Getting Started with Multi-Band Data in R
-
-The `raster()` function only reads in the first band, in this case the red band of an RGB raster
-```{r}
-# RGB_band1_HARV <- raster(here("data","NEON-DS-Airborne-Remote-Sensing/HARV/RGB_Imagery/HARV_RGB_Ortho.tif"))
 RGB_band1_TUD <- raster(here("data","tudlib-rgb.tif"))
 ```
 
@@ -708,7 +577,7 @@ RGB_band1_TUD_df  <- as.data.frame(RGB_band1_TUD, xy = TRUE)
 ggplot() +
   geom_raster(data = RGB_band1_TUD_df,
               aes(x = x, y = y, alpha = tudlib.rgb)) + 
-  coord_quickmap()
+  coord_quickmap()  # use `coord_equal()` instead
 ```
 
 ```{r}
@@ -721,7 +590,7 @@ nbands(RGB_band1_TUD)
 
 To import the green band:
 ```{r}
-RGB_band2_TUD <-  raster(here("data","tudlib-rgb.tif"), band = 2)
+RGB_band2_TUD <- raster(here("data","tudlib-rgb.tif"), band = 2)
 ```
 
 ```{r}
@@ -732,12 +601,12 @@ RGB_band2_TUD_df <- as.data.frame(RGB_band2_TUD, xy = TRUE)
 ggplot() +
   geom_raster(data = RGB_band2_TUD_df,
               aes(x = x, y = y, alpha = tudlib.rgb)) + 
-  coord_equal()
+  coord_equal() 
 ```
 
 ## Raster stacks
 
-The `stack()` function brings in all bands
+There is a better way of reading in all bands. The `stack()` function brings in all bands
 ```{r}
 RGB_stack_TUD <- stack(here("data","tudlib-rgb.tif"))
 ```
@@ -771,21 +640,19 @@ ggplot() +
 ggplot() +
   geom_raster(data = RGB_stack_TUD_df,
               aes(x = x, y = y, alpha = tudlib.rgb.2)) + 
-  coord_quickmap()
+  coord_equal()
 ```
 
 ## Create a three-band image
+
+To create an RGB image, we will use the ``plotRGB` function from the `raster` package.
 
 ```{r}
 plotRGB(RGB_stack_TUD,
         r = 1, g = 2, b = 3)
 ```
 
-Which is the same with `terra`
-```{r}
-terra::plotRGB(RGB_stack_TUD,
-        r = 1, g = 2, b = 3)
-```
+The image above looks pretty good. We can explore whether applying a stretch to the image might improve clarity and contrast using `stretch="lin"` or `stretch="hist"`.
 
 ```{r}
 plotRGB(RGB_stack_TUD,
@@ -801,28 +668,9 @@ plotRGB(RGB_stack_TUD,
         stretch = "hist")
 ```
 
-### Challenge
-
-<!-- Skip or change challenge -->
-
-```{r}
-GDALinfo(here("data","HARV_Ortho_wNA.tif"))
-```
-
-```{r}
-HARV_NA <- stack(here("data","HARV_Ortho_wNA.tif"))
-```
-
-```{r}
-plotRGB(HARV_NA,
-        r = 1, g = 2, b = 3)
-```
-
-```{r}
-GDALinfo(here("data","HARV_RGB_Ortho.tif"))
-```
-
 ## RasterStack vs. RasterBrick
+
+The R RasterStack and RasterBrick object types can both store multiple bands. However, how they store each band is different. The bands in a RasterStack are stored as links to raster data that is located somewhere on our computer. A RasterBrick contains all of the objects stored within the actual R object. In most cases, we can work with a RasterBrick in the same way we might work with a RasterStack. However a RasterBrick is often more efficient and faster to process - which is important when working with larger files.
 
 ```{r}
 object.size(RGB_stack_TUD)
@@ -837,157 +685,3 @@ object.size(RGB_brick_TUD)
 ```{r}
 plotRGB(RGB_brick_TUD)
 ```
-
-```{r}
-methods(class=class(RGB_stack_TUD))
-```
-
-```{r}
-methods(class=class(RGB_stack_TUD[1]))
-```
-<<<<<<< HEAD
-=======
-
-# ---
-
-# Manipulate raster data (40 + 20 minutes) INTEGRATE INTO THE LAST PART
-
-## Crop a raster to a vector extent
-
-```{r}
-ggplot() +
-  geom_raster(data = CHM_TUD_df, aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) +
-  geom_sf(data = boundary_Delft, color = "blue", fill = NA) +  # notice that boundary_Delft is in WGS84
-  coord_sf()
-
-boundary_Delft <- st_transform(boundary_Delft, 28992)
-
-ggplot() +
-  geom_raster(data = CHM_TUD_df, aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) +
-  geom_sf(data = boundary_Delft, color = "blue", fill = NA) +
-  coord_sf()
-```
-
-```{r}
-boundary_Delft_28992 <- st_transform(boundary_Delft, 28992)
-
-CHM_TUD_Cropped <- crop(x = CHM_TUD, y = boundary_Delft_28992)
-CHM_TUD_Masked <- mask(CHM_TUD_Cropped, boundary_Delft_28992)
-```
-
-```{r}
-CHM_TUD_Masked_df <- as.data.frame(CHM_TUD_Masked, xy = TRUE)
-
-ggplot() +
-  # geom_sf(data = st_as_sfc(st_bbox(CHM_TUD)), fill = "green",
-  #         color = "green", alpha = .2) +
-  geom_raster(data = CHM_TUD_Masked_df,
-              aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  coord_sf()
-```
-
-```{r}
-ggplot() +
-  geom_raster(data = CHM_TUD_Cropped_df,
-              aes(x = x, y = y, fill = layer)) + 
-  geom_sf(data = boundary_Delft_28992, color = "blue", fill = NA) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  coord_sf()
-```
-
-```{r}
-st_bbox(CHM_TUD)
-```
-
-```{r}
-st_bbox(CHM_TUD_Cropped)
-```
-
-```{r}
-st_bbox(boundary_Delft_28992)
-```
-
-```{r}
-# st_bbox(plot_locations_sp_HARV)
-
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
-  filter(leisure %in% c("playground", "picnic_table"))
-
-st_bbox(leisure_locations_selection)
-```
-
-### Challenge
-
-```{r}
-CHM_plots_TUDcrop <- crop(x = CHM_TUD, y = leisure_locations_selection)
-
-CHM_plots_TUDcrop_df <- as.data.frame(CHM_plots_TUDcrop, xy = TRUE)
-
-ggplot() + 
-  geom_raster(data = CHM_plots_TUDcrop_df, aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  geom_sf(data = leisure_locations_selection) + 
-  coord_sf()
-```
-
-```{r}
-tree_building_height <- raster::extract(x = CHM_TUD, y = boundary_Delft_28992, df = TRUE)
-
-str(tree_building_height)
-```
-
-```{r}
-ggplot() + 
-  geom_histogram(data = tree_building_height, aes(x = layer)) +
-  ggtitle("Histogram of CHM Height Values (m)") +
-  xlab("Tree or Building Height") + 
-  ylab("Frequency of Pixels")
-```
-
-```{r}
-summary(tree_building_height$layer)
-```
-
-```{r}
-mean_tree_building_height_AOI <- raster::extract(x = CHM_TUD, y = boundary_Delft_28992, fun = mean)
-
-mean_tree_building_height_AOI
-```
-
-```{r}
-point_Delft <- st_read(here("data", "delft-leisure.shp"))
-
-mean_tree_height_leisure <- raster::extract(x = CHM_TUD,
-                                  y = point_Delft,
-                                  buffer = 20,
-                                  fun = mean)
-
-mean_tree_height_leisure
-```
-
-### Challenge
-
-```{r}
-# extract data at each plot location
-mean_tree_building_height_leisure_TUD <- raster::extract(x = CHM_TUD,
-                                       y = leisure_locations_selection,
-                                       buffer = 20,
-                                       fun = mean,
-                                       df = TRUE)
-
-# view data
-mean_tree_building_height_leisure_TUD
-```
-
-```{r}
-# plot data
-ggplot(data = mean_tree_building_height_leisure_TUD, aes(ID, layer)) + 
-  geom_col() + 
-  ggtitle("Mean Tree and Building Height at each location") + 
-  xlab("Location ID") + 
-  ylab("Tree and Building Height (m)")
-```
->>>>>>> cb2bc1b2b4038ec5800d60e3d3fa2f0335f45589
