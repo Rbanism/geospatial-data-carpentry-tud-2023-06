@@ -146,14 +146,6 @@ st_bbox(oai_boundary_tudlib)
 ```
 
 ```{r}
-# plot_locations_HARV <-
-#   read.csv("data/NEON-DS-Site-Layout-Files/HARV/HARV_PlotLocations.csv")
-# point_HARV <- st_read("data/NEON-DS-Site-Layout-Files/HARV/HARVtower_UTM18N.shp")
-# utm18nCRS <- st_crs(point_HARV)
-# plot_locations_sp_HARV <- st_as_sf(plot_locations_HARV, coords = c("easting", "northing"), crs = utm18nCRS)
-# 
-# st_bbox(plot_locations_sp_HARV)
-
 leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
   filter(leisure %in% c("playground", "picnic_table"))
 
@@ -243,7 +235,7 @@ tree_height <- extract(x = CHM_TUD, y = st_as_sf(oai_boundary_tudlib), df = TRUE
 str(tree_height)
 ```
 
-When we use the `extract()` function, R extracts the value for each pixel located within the boundary of the polygon being used to perform the extraction - in this case the `aoi_boundary_HARV` object (a single polygon). Here, the function extracted values from 18,450 pixels.
+When we use the `extract()` function, R extracts the value for each pixel located within the boundary of the polygon being used to perform the extraction - in this case the `aoi_boundary_HARV` object (a single polygon). Here, the function extracted values from 621,642 pixels.
 
 We can create a histogram of tree height values within the boundary to better understand the structure or height distribution of trees at our site. We will use the column `layer` from our data frame as our x values, as this column represents the tree heights for each pixel.
 
@@ -266,12 +258,12 @@ summary(tree_height$layer)
 We often want to extract summary values from a raster. We can tell R the type of summary statistic we are interested in using the `fun = argument`. Let’s extract a mean height value for our AOI. Because we are extracting only a single number, we will not use the `df = TRUE` argument.
 
 ```{r}
-mean_tree_building_height_AOI <- extract(x = CHM_TUD, y = st_as_sf(oai_boundary_tudlib), fun = mean)
+mean_tree_height_AOI <- extract(x = CHM_TUD, y = st_as_sf(oai_boundary_tudlib), fun = mean)
 
-mean_tree_building_height_AOI
+head(mean_tree_height_AOI)
 ```
 
-It appears that the mean height value, extracted from our LiDAR data derived canopy height model is 22.43 meters.
+It appears that the mean height value, extracted from our LiDAR data derived canopy height model is 4.3 meters.
 
 # Extract Data using x,y Locations
 
@@ -294,8 +286,12 @@ mean_tree_height_tower
 ```
 
 # Challenge: Extract Raster Height Values For Plot Locations
+
 - Use the plot locations object (`plot_locations_sp_HARV`) to extract an average tree height for the area within 20m of each vegetation plot location in the study area. Because there are multiple plot locations, there will be multiple averages returned, so the `df = TRUE` argument should be used.
+
 - Create a plot showing the mean tree height of each area.
+
+
 ---
 
 ## Solution
@@ -311,7 +307,7 @@ mean_tree_height_plots_TUD <- extract(x = CHM_TUD,
                                        df = TRUE)
 
 # view data
-mean_tree_height_plots_TUD
+head(mean_tree_height_plots_TUD)
 ```
 
 ```{r}
@@ -326,8 +322,11 @@ ggplot(data = mean_tree_height_plots_TUD, aes(ID, layer)) +
 ---
 
 # Summary and keypoints.
+
 We have seen how to crop a raster to the extent of a vector layer and how to extract values from a raster that correspond to a vector file overlay.
+
 In short:
+
 - Use the `crop()` function to crop a raster object.
 - Use the `extract()` function to extract pixels from a raster object that fall within a particular extent boundary.
 - Use the `extent()` function to define an extent.
