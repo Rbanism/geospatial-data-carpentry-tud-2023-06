@@ -80,12 +80,12 @@ DSM_TUD_df %>%
 ## Customize cutoff values
 custom_bins <- c(-10, 0, 5, 100)
 
-DSM_TUD_df
+head(DSM_TUD_df)
 
 DSM_TUD_df <- DSM_TUD_df %>%
   mutate(fct_elevation_cb = cut(tud.dsm, breaks = custom_bins))
 
-DSM_TUD_df
+head(DSM_TUD_df)
 
 unique(DSM_TUD_df$fct_elevation_cb)
 
