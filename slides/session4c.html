@@ -484,23 +484,36 @@
 </section>
 <section id="crop-a-raster-using-vector-extent-2" class="slide level2">
 <h2>Crop a Raster Using Vector Extent</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="fig/rmd-04c-unnamed-chunk-4-1.png"></p>
-</div><div class="column" style="width:50%;">
 <p>Now we can plot: - the cropped CHM data - a boundary box showing the full CHM extent.</p>
 <p>However, remember, since this is raster data, we need to convert to a data frame in order to plot using ggplot.</p>
-</div>
-</div>
 </section>
 <section id="crop-a-raster-using-vector-extent-3" class="slide level2">
 <h2>Crop a Raster Using Vector Extent</h2>
 <p>To get the boundary box from CHM, the <code>st_bbox()</code> will extract the 4 corners of the rectangle that encompass all the features contained in this object. The <code>st_as_sfc()</code> converts these 4 coordinates into a polygon that we can plot:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>CHM_TUD_Cropped_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(CHM_TUD_Cropped, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>CHM_TUD_Cropped_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(CHM_TUD_Cropped, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">st_as_sfc</span>(<span class="fu">st_bbox</span>(CHM_TUD)), <span class="at">fill =</span> <span class="st">"green"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6"></a>          <span class="at">color =</span> <span class="st">"green"</span>, <span class="at">alpha =</span> .<span class="dv">2</span>) <span class="sc">+</span>  </span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> CHM_TUD_Cropped_df,</span>
+<span id="cb4-8"><a href="#cb4-8"></a>              <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> layer)) <span class="sc">+</span> </span>
+<span id="cb4-9"><a href="#cb4-9"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">name =</span> <span class="st">"Canopy Height"</span>, <span class="at">colors =</span> <span class="fu">terrain.colors</span>(<span class="dv">10</span>)) <span class="sc">+</span> </span>
+<span id="cb4-10"><a href="#cb4-10"></a>  <span class="fu">coord_sf</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="crop-a-raster-using-vector-extent-4" class="slide level2">
+<h2>Crop a Raster Using Vector Extent</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="fig/rmd-04c-unnamed-chunk-4-1.png"></p>
+</div><div class="column" style="width:50%;">
+<p>The plot shows that the full CHM extent (plotted in green) is much larger than the resulting cropped raster. Our new cropped CHM now has the same extent as the aoi_boundary_HARV object that was used as a crop extent (blue border below).</p>
+</div>
+</div>
+</section>
+<section id="crop-a-raster-using-vector-extent-5" class="slide level2">
 <h2>Crop a Raster Using Vector Extent</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -526,19 +539,255 @@
 </div>
 </div>
 </section>
+<section id="crop-a-raster-using-vector-extent-6" class="slide level2">
+<h2>Crop a Raster Using Vector Extent</h2>
+<p>We can look at the extent of all of our other objects for this field site.</p>
+<p>The original:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">st_bbox</span>(CHM_TUD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The cropped one:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">st_bbox</span>(CHM_TUD_Cropped)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The area of interest:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">st_bbox</span>(oai_boundary_tudlib)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Leisure locations:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>leisure_locations_selection <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"delft-leisure.shp"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">filter</span>(leisure <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"playground"</span>, <span class="st">"picnic_table"</span>))</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="fu">st_bbox</span>(leisure_locations_selection)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Our plot location extent is not the largest but is larger than the AOI Boundary. It would be nice to see our vegetation plot locations plotted on top of the Canopy Height Model information.</p>
+</section>
 <section id="challenge" class="slide level2">
-<h2>Challenge</h2>
+<h2>⏰ Challenge</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_0efd48b3" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_23b9ad74" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li class="fragment">Crop the Canopy Height Model to the extent of the study plot locations.</li>
+<li class="fragment">Plot the vegetation plot location points on top of the Canopy Height Model.</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="fig/rmd-04c-unnamed-chunk-10-1.png"></p>
 </div>
 </div>
 </section>
 <section id="solution" class="slide level2">
 <h2>Solution</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>CHM_plots_TUDcrop <span class="ot">&lt;-</span> <span class="fu">crop</span>(<span class="at">x =</span> CHM_TUD, <span class="at">y =</span> leisure_locations_selection)</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a>CHM_plots_TUDcrop_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(CHM_plots_TUDcrop, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> CHM_plots_TUDcrop_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> layer)) <span class="sc">+</span> </span>
+<span id="cb10-7"><a href="#cb10-7"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">name =</span> <span class="st">"Canopy Height"</span>, <span class="at">colors =</span> <span class="fu">terrain.colors</span>(<span class="dv">10</span>)) <span class="sc">+</span> </span>
+<span id="cb10-8"><a href="#cb10-8"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> leisure_locations_selection) <span class="sc">+</span> </span>
+<span id="cb10-9"><a href="#cb10-9"></a>  <span class="fu">coord_sf</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In this plot, all the vegetation plot locations (black dots) appear on the Canopy Height Model raster layer except for one. One is situated on the blank space to the left of the map. Why?</p>
+</section>
+<section id="cropping-vector-layers" class="slide level2">
+<h2>Cropping vector layers</h2>
+<p>The <code>crop()</code> function will make a raster extent smaller, it will not expand the extent in areas where there are no data. Thus, the extent of our vegetation plot layer will still extend further west than the extent of our (cropped) raster data (dark green).</p>
+<p><img data-src="fig/rmd-11-repeat-compare-data-extents-1.png" alt="Image Source: DCC"> ## Define an extent</p>
+<p>So far, we have used a shapefile to crop the extent of a raster dataset.</p>
+<p>Alternatively, we can also the <code>extent()</code> function to define an extent to be used as a cropping boundary. This creates a new object of class extent.</p>
+<p>Here we will provide the <code>extent()</code> function our <strong>xmin, xmax, ymin, and ymax</strong> (in that order).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># extent(CHM_TUD_Cropped_df)</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>new_extent <span class="ot">&lt;-</span> <span class="fu">extent</span>(<span class="fl">85272.25</span>, <span class="fl">85661.25</span>, <span class="fl">446295.2</span>, <span class="fl">446693.8</span>)</span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="fu">class</span>(new_extent)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>TIP: The extent can be created from a numeric vector (as shown above), a matrix, or a list. For more details see the <code>extent()</code> function help file (<code>?raster::extent</code>).</strong></p>
+</section>
+<section id="define-an-extent" class="slide level2">
+<h2>Define an extent</h2>
+<p>Once we have defined our new extent, we can use the crop() function to crop our raster to this extent object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>CHM_TUD_manual_cropped <span class="ot">&lt;-</span> <span class="fu">crop</span>(<span class="at">x =</span> CHM_TUD, <span class="at">y =</span> new_extent)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To plot this data using <code>ggplot()</code> we need to convert it to a dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>CHM_TUD_manual_cropped_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(CHM_TUD_manual_cropped, <span class="at">xy =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="define-an-extent-1" class="slide level2">
+<h2>Define an extent</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Now we can plot this cropped data. We will show the AOI boundary on the same plot for scale.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb14-2"><a href="#cb14-2"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> oai_boundary_tudlib, <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="fu">geom_raster</span>(<span class="at">data =</span> CHM_TUD_manual_cropped_df,</span>
+<span id="cb14-4"><a href="#cb14-4"></a>              <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> layer)) <span class="sc">+</span> </span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">name =</span> <span class="st">"Canopy Height"</span>, <span class="at">colors =</span> <span class="fu">terrain.colors</span>(<span class="dv">10</span>)) <span class="sc">+</span> </span>
+<span id="cb14-6"><a href="#cb14-6"></a>  <span class="fu">coord_sf</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<p><img data-src="fig/rmd-04c-unnamed-chunk-14-1.png"></p>
+</div>
+</div>
+</section>
+<section id="extract-raster-pixels-values-using-vector-polygons" class="slide level2">
+<h2>Extract Raster Pixels Values Using Vector Polygons</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Often we want to extract values from a raster layer for particular locations - for example, plot locations that we are sampling on the ground.</p>
+<p>We can extract all pixel values within 20m of our x,y point of interest. These can then be summarized into some value of interest (e.g.&nbsp;mean, maximum, total).</p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="fig/BufferSquare.png"></p>
+<p></p><figcaption>Image Source: National Ecological Observatory Network (NEON)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="extract-raster-pixels-values-using-vector-polygons-1" class="slide level2">
+<h2>Extract Raster Pixels Values Using Vector Polygons</h2>
+<p>To do this in R, we use the <code>extract()</code> function. The <code>extract()</code> function requires:</p>
+<ul>
+<li class="fragment">The raster that we wish to extract values from,</li>
+<li class="fragment">The vector layer containing the polygons that we wish to use as a boundary or boundaries.</li>
+</ul>
+<p>We can tell it to store the output values in a data frame using <code>df = TRUE</code>. (This is optional, the default is to return a list, NOT a data frame.)</p>
+<p>We will begin by extracting all canopy height pixel values located within our <code>aoi_boundary_HARV</code> polygon which surrounds the tower located at the NEON Harvard Forest field site.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>tree_height <span class="ot">&lt;-</span> <span class="fu">extract</span>(<span class="at">x =</span> CHM_TUD, </span>
+<span id="cb15-2"><a href="#cb15-2"></a>                       <span class="at">y =</span> <span class="fu">st_as_sf</span>(oai_boundary_tudlib),</span>
+<span id="cb15-3"><a href="#cb15-3"></a>                       <span class="at">df =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-4"><a href="#cb15-4"></a></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="fu">str</span>(tree_height)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When we use the <code>extract()</code> function, R extracts the value for each pixel located within the boundary of the polygon being used to perform the extraction - in this case the <code>aoi_boundary_HARV</code> object (a single polygon). Here, the function extracted values from 621,642 pixels.</p>
+</section>
+<section id="extract-raster-pixels-values-using-vector-polygons-2" class="slide level2">
+<h2>Extract Raster Pixels Values Using Vector Polygons</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>We can create a histogram of tree height values within the boundary to better understand the structure or height distribution of trees at our site. We will use the column <code>layer</code> from our data frame as our x values, as this column represents the tree heights for each pixel.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2"></a>  <span class="fu">geom_histogram</span>(<span class="at">data =</span> tree_height, <span class="fu">aes</span>(<span class="at">x =</span> layer)) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="fu">ggtitle</span>(<span class="st">"Histogram of CHM Height Values (m)"</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="fu">xlab</span>(<span class="st">"Tree Height"</span>) <span class="sc">+</span> </span>
+<span id="cb16-5"><a href="#cb16-5"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency of Pixels"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can also use the <code>summary()</code> function to view descriptive statistics including min, max, and mean height values. These values help us better understand vegetation at our field site.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">summary</span>(tree_height<span class="sc">$</span>layer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<p><img data-src="fig/rmd-04c-unnamed-chunk-16-1.png"></p>
+</div>
+</div>
+</section>
+<section id="summarize-extracted-raster-values" class="slide level2">
+<h2>Summarize Extracted Raster Values</h2>
+<p>We often want to extract summary values from a raster.</p>
+<p>We can tell R the type of summary statistic we are interested in using the <code>fun = argument</code>.</p>
+<p>Let’s extract a mean height value for our AOI. Because we are extracting only a single number, we will not use the <code>df = TRUE</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>mean_tree_height_AOI <span class="ot">&lt;-</span> <span class="fu">extract</span>(</span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="at">x =</span> CHM_TUD, </span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="at">y =</span> <span class="fu">st_as_sf</span>(oai_boundary_tudlib), </span>
+<span id="cb18-4"><a href="#cb18-4"></a>  <span class="at">fun =</span> mean)</span>
+<span id="cb18-5"><a href="#cb18-5"></a></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="fu">head</span>(mean_tree_height_AOI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>It appears that the mean height value, extracted from our LiDAR data derived canopy height model is 4.3 meters.</p>
+</section>
+<section id="extract-data-using-xy-locations" class="slide level2">
+<h2>Extract Data using x,y Locations</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>We can also extract pixel values from a raster by defining a buffer or area surrounding individual point locations using the <code>extract()</code> function.</p>
+<p>To do this we define the summary argument (<code>fun = mean</code>) and the buffer distance (<code>buffer = 20</code>) which represents the radius of a circular region around each point.</p>
+<p>By default, the units of the buffer are the same units as the data’s CRS. All pixels that are touched by the buffer region are included in the extract.</p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="fig/BufferCircular.png"></p>
+<p></p><figcaption>Image Source:National Ecological Observatory Network (NEON)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="extract-data-using-xy-locations-1" class="slide level2">
+<h2>Extract Data using x,y Locations</h2>
+<p>Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (<code>point_HARV</code>). Because we are extracting only a single number, we will not use the <code>df = TRUE</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>point_Delft <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"delft-leisure.shp"</span>))</span>
+<span id="cb19-2"><a href="#cb19-2"></a></span>
+<span id="cb19-3"><a href="#cb19-3"></a>mean_tree_height_tower <span class="ot">&lt;-</span> <span class="fu">extract</span>(<span class="at">x =</span> CHM_TUD,</span>
+<span id="cb19-4"><a href="#cb19-4"></a>                                  <span class="at">y =</span> point_Delft,</span>
+<span id="cb19-5"><a href="#cb19-5"></a>                                  <span class="at">buffer =</span> <span class="dv">20</span>,</span>
+<span id="cb19-6"><a href="#cb19-6"></a>                                  <span class="at">fun =</span> mean)</span>
+<span id="cb19-7"><a href="#cb19-7"></a></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="fu">head</span>(mean_tree_height_tower)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="challenge-extract-raster-height-values-for-plot-locations" class="slide level2">
+<h2>⏰ Challenge: Extract Raster Height Values For Plot Locations</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="countdown" id="timer_ffe8a707" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li class="fragment">Use the plot locations object (<code>plot_locations_sp_HARV</code>) to extract an average tree height for the area within 20m of each vegetation plot location in the study area. Because there are multiple plot locations, there will be multiple averages returned, so the <code>df = TRUE</code> argument should be used.</li>
+<li class="fragment">Create a plot showing the mean tree height of each area.</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="fig/rmd-04c-unnamed-chunk-21-1.png"></p>
+</div>
+</div>
+</section>
+<section id="solution-1" class="slide level2">
+<h2>Solution</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>leisure_locations_selection <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"delft-leisure.shp"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">filter</span>(leisure <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"playground"</span>, <span class="st">"picnic_table"</span>))</span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="co"># extract data at each plot location</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a>mean_tree_height_plots_TUD <span class="ot">&lt;-</span> <span class="fu">extract</span>(<span class="at">x =</span> CHM_TUD,</span>
+<span id="cb20-6"><a href="#cb20-6"></a>                                       <span class="at">y =</span> leisure_locations_selection,</span>
+<span id="cb20-7"><a href="#cb20-7"></a>                                       <span class="at">buffer =</span> <span class="dv">20</span>,</span>
+<span id="cb20-8"><a href="#cb20-8"></a>                                       <span class="at">fun =</span> mean,</span>
+<span id="cb20-9"><a href="#cb20-9"></a>                                       <span class="at">df =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-10"><a href="#cb20-10"></a></span>
+<span id="cb20-11"><a href="#cb20-11"></a><span class="co"># view data</span></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="fu">head</span>(mean_tree_height_plots_TUD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Visualisation of the results:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mean_tree_height_plots_TUD, <span class="fu">aes</span>(ID, layer)) <span class="sc">+</span> </span>
+<span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span> </span>
+<span id="cb21-3"><a href="#cb21-3"></a>  <span class="fu">ggtitle</span>(<span class="st">"Mean Tree Height at each Plot"</span>) <span class="sc">+</span> </span>
+<span id="cb21-4"><a href="#cb21-4"></a>  <span class="fu">xlab</span>(<span class="st">"Plot ID"</span>) <span class="sc">+</span> </span>
+<span id="cb21-5"><a href="#cb21-5"></a>  <span class="fu">ylab</span>(<span class="st">"Tree Height (m)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="summary-and-keypoints" class="slide level2">
 <h2>Summary and keypoints</h2>

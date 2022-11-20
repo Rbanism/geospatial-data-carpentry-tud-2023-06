@@ -45,7 +45,7 @@ A Problem with download? Try:
 assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
 ```
 
-## the 'sf' package
+## the 'sf' package `r emo::ji("box")` 
 
 - `sf` is a package which supports simple features (sf), ["a standardized way to
 encode spatial vector data."](https://cran.r-project.org/web/packages/sf/sf.pdf).
@@ -55,14 +55,14 @@ encode spatial vector data."](https://cran.r-project.org/web/packages/sf/sf.pdf)
 - We are going to go through some of these basics with the case study of Rotterdam buildings.
 
 
-## Conservation in Rotterdam
+## Conservation in Rotterdam `r emo::ji("building")` 
 
 Let's focus on really old building and imagine we're in charge of their conservation. We want to know how much of the city would be affected by a non-construction zone of 500m around pre-1800 buildings.
 
 Let's select them and see where they are.
 
 
-## Conservation in Rotterdam
+## Conservation in Rotterdam `r emo::ji("building")` 
 
 ```{r old-buildings}
 #| eval: false
@@ -75,7 +75,7 @@ old_buildings <- filter(buildings, start_date <= old)
 
 ![](fig/rmd-04b-old-buildings-1.png){fig-align="center"}
 
-## Challenge: make it more visible!
+## `r emo::ji("alarm")`Challenge: make it more visible!
 
 ```{r}
 #| echo: false
@@ -98,7 +98,7 @@ old_buildings <- filter(buildings, start_date <= old)
 
 As conservationists, we want to create a zone around historical buildings where building regulation will have special restrictions to preserve historical buildings. 
 
-## Buffer
+## Buffer 
 
 Let's say this zone should be 500 meters. In GIS terms, we want to create a buffer around polygons. 
 The corresponding function `sf` is `st_buffer`, with 2 arguments:
@@ -115,7 +115,7 @@ The corresponding function `sf` is `st_buffer`, with 2 arguments:
 ```
 
 
-## Buffer
+## Buffer 
 
 ![](fig/rmd-04b-buffers-1.png){fig-align="center"}
 
@@ -169,7 +169,7 @@ Now what we would like to distinguish conservation areas based on the number of 
 ```
 
 
-## Challenge: visualise the new buffers
+## `r emo::ji("alarm")`Challenge: visualise the new buffers
 
 ```{r}
 #| echo: false
@@ -221,7 +221,7 @@ ggplot() +
  
  
 
-## Challenge: map the new conservation rules
+## `r emo::ji("alarm")`Challenge: map the new conservation rules
 
 ```{r}
 #| echo: false
@@ -273,7 +273,7 @@ Can you map the number of all buildings per 100m fused buffer?
 ```
 
 
-## Challenge: visualise the density of old buildings
+## `r emo::ji("alarm")` Challenge: visualise the density of old buildings
 
 ```{r}
 #| echo: false

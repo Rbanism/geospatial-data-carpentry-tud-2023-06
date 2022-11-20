@@ -405,7 +405,7 @@
 
 <img data-src="fig/OSM1.png" class="r-stretch quarto-figure-center"></section>
 <section id="osm" class="slide level2">
-<h2>OSM</h2>
+<h2>OSM 🗾</h2>
 <p>Anyone can contribute, by mapping geographical objects their encounter by</p>
 <ul>
 <li class="fragment"><strong>mapping spatial features</strong> (e.g.&nbsp;buildings or roads), from located device or satellite imagery.</li>
@@ -413,28 +413,25 @@
 </ul>
 </section>
 <section id="osm-1" class="slide level2">
-<h2>OSM</h2>
+<h2>OSM 🗾</h2>
 <ul>
 <li class="fragment">This information is then <strong>validated</strong> by other users and eventually added to the common “map” or information system.</li>
 <li class="fragment">This ensures that the information is <strong>accessible, open, verified, accurate</strong> and <strong>up-to-date</strong>. cf.&nbsp;HOT: Humanitarian OpenStreetMap Team</li>
 </ul>
 </section>
 <section id="osm-2" class="slide level2">
-<h2>OSM</h2>
+<h2>OSM 🗺</h2>
 <p>The geospatial data underlying this interface is made of geometrical objects (i.e.&nbsp;points, lines, polygons) and their associated tags (#building #height, #road #secondary #90kph, etc.).</p>
 </section>
 <section id="how-to-extract-geospatial-data-from-open-street-map-with-r" class="slide level2">
 <h2>How to extract geospatial data from Open Street Map with R?</h2>
-</section>
-<section id="the-bounding-box" class="slide level2">
-<h2>The Bounding Box</h2>
 <p>The first thing to do is to define the area within which you want to retrieve data, aka the <em>bounding box</em>. This can be defined easily using a place name and the function <code>getbb()</code> from the package <code>osmdata</code>.</p>
 <blockquote>
 <p>“This function uses the free Nominatim API provided by OpenStreetMap to find the bounding box (bb) associated with place names.”</p>
 </blockquote>
 </section>
-<section id="the-bounding-box-1" class="slide level2">
-<h2>The Bounding Box</h2>
+<section id="the-bounding-box" class="slide level2">
+<h2>The Bounding Box ❎</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>bb <span class="ot">&lt;-</span> <span class="fu">getbb</span>(<span class="st">'Delft'</span>, <span class="at">format_out =</span> <span class="st">'sf_polygon'</span>)</span>
 <span id="cb1-2"><a href="#cb1-2"></a>bb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -454,16 +451,12 @@ Geodetic CRS:  WGS 84
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">assign</span>(<span class="st">"has_internet_via_proxy"</span>, <span class="cn">TRUE</span>, <span class="fu">environment</span>(curl<span class="sc">::</span>has_internet))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="why-multiple-polygons" class="slide level2">
-<h2>Why multiple polygons?</h2>
-<ul>
-<li class="fragment">Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.</li>
-</ul>
+<p>Why multiple polygons?</p>
+<p>Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.</p>
 </section>
 <section id="extracting-osm-features" class="slide level2">
 <h2>Extracting OSM features</h2>
-<p>A <a href="https://wiki.openstreetmap.org/wiki/Map_features">feature</a> in the OSM language is a category or tag of a geospatial object. Features are described by general keys (e.g.&nbsp;“building”, “boundary”, “landuse”, “highway”) Features are decomposed into sub-categories (values) such as “farm”, “hotel” or “house” for <code>buildings</code>, “motorway”, “secondary” and “residential” for <code>highway</code>. This determines how they are represented on the map.</p>
+<p>A <a href="https://wiki.openstreetmap.org/wiki/Map_features">feature</a> in the OSM language is a category or tag of a geospatial object. <strong>Features</strong> are described by general keys (e.g.&nbsp;“building”, “boundary”, “landuse”, “highway”) Features are decomposed into sub-categories (values) such as “farm”, “hotel” or “house” for <code>buildings</code>, “motorway”, “secondary” and “residential” for <code>highway</code>. This determines how they are represented on the map.</p>
 </section>
 <section id="extracting-osm-features-1" class="slide level2">
 <h2>Extracting OSM features</h2>
@@ -542,10 +535,10 @@ Geodetic CRS:  WGS 84
 <p><em>It will take some time to extract all buildings, so we will check the result after the coffee break.</em></p>
 </section>
 <section id="challenge-post-war-buildings-rdam" class="slide level2">
-<h2>Challenge: post-war buildings, R’dam</h2>
+<h2>⏰ Challenge: post-war buildings, R’dam</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_45a93d1b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_1b7d4e09" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
