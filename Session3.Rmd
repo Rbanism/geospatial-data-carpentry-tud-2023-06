@@ -61,7 +61,7 @@ We can use `ggplot()` to plot this data with another `geom_` function called `ge
 ```{r}
 ggplot() +
     geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = tud.dsm)) +
-    scale_fill_viridis_c() +  # remember, the this color palette was introduced in the first lesson
+    scale_fill_viridis_c() +  # remember, this color palette was introduced in the first lesson
     coord_quickmap() 
 ```
 
@@ -167,12 +167,12 @@ To customize cutoff values:
 ```{r}
 custom_bins <- c(-10, 0, 5, 100)
 
-DSM_TUD_df
+head(DSM_TUD_df)
 
 DSM_TUD_df <- DSM_TUD_df %>%
   mutate(fct_elevation_cb = cut(tud.dsm, breaks = custom_bins))
 
-DSM_TUD_df
+head(DSM_TUD_df)
 
 unique(DSM_TUD_df$fct_elevation_cb)
 ```
