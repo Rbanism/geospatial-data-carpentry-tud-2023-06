@@ -26,6 +26,15 @@ knitr::opts_chunk$set(
 ```
 
 
+## Outline
+
+1. Intro to raster data: packages, metadata (CRS, resolution)
+2. Plotting raster data
+3. Reprojecting raster data
+4. Raster calculations
+5. Working with multi-band rasters
+
+
 ## `raster` package for spatial raster data
 
 ![](fig/tudlib-green.png){fig-align="center"}
