@@ -589,7 +589,7 @@ region are included in the extract.</p>
 (NEON)</p>
 </div>
 <p>Let’s put this into practice by figuring out the mean tree height in
-the 20m around the tower location (<code>point_HARV</code>). Because we
+the 20m around the tower location (<code>point_Delft</code>). Because we
 are extracting only a single number, we will not use the
 <code>df = TRUE</code> argument.</p>
 <pre class="r"><code>point_Delft &lt;- st_read(here(&quot;data&quot;, &quot;delft-leisure.shp&quot;))</code></pre>
@@ -661,11 +661,11 @@ mean_tree_height_tower</code></pre>
 <div id="challenge-extract-raster-height-values-for-plot-locations" class="section level1">
 <h1>Challenge: Extract Raster Height Values For Plot Locations</h1>
 <ul>
-<li><p>Use the plot locations object
-(<code>plot_locations_sp_HARV</code>) to extract an average tree height
-for the area within 20m of each vegetation plot location in the study
-area. Because there are multiple plot locations, there will be multiple
-averages returned, so the <code>df = TRUE</code> argument should be
+<li><p>Use the leisure locations object (<code>point_Delft</code>) to
+extract an average tree height for the area within 20m of each
+playground and picnic table in the study area. Because there are
+multiple playgrounds and picnic tables, there will be multiple averages
+returned, so the <code>df = TRUE</code> argument should be
 used.</p></li>
 <li><p>Create a plot showing the mean tree height of each area.</p></li>
 </ul>
@@ -718,7 +718,6 @@ overlay.</p>
 <li>Use the <code>crop()</code> function to crop a raster object.</li>
 <li>Use the <code>extract()</code> function to extract pixels from a
 raster object that fall within a particular extent boundary.</li>
-<li>Use the <code>extent()</code> function to define an extent.</li>
 </ul>
 </div>
 
