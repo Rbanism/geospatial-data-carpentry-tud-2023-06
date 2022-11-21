@@ -820,7 +820,7 @@ tree_height <- extract(x = CHM_TUD,
 str(tree_height)
 ```
 
-When we use the `extract()` function, R extracts the value for each pixel located within the boundary of the polygon being used to perform the extraction - in this case the `aoi_boundary_HARV` object (a single polygon). Here, the function extracted values from 621,642 pixels.
+When we use the `extract()` function, R extracts the value for each pixel located within the boundary of the polygon being used to perform the extraction - in this case the `oai_boundary_tudlib` object (a single polygon). Here, the function extracted values from 621,642 pixels.
 
 
 
@@ -912,7 +912,7 @@ By default, the units of the buffer are the same units as the data’s CRS. All 
 
 ## Extract Data using x,y Locations
 
-Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (`point_HARV`). Because we are extracting only a single number, we will not use the `df = TRUE` argument.
+Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (`point_Delft`). Because we are extracting only a single number, we will not use the `df = TRUE` argument.
 
 ```{r}
 #| eval: false
@@ -942,8 +942,11 @@ countdown::countdown(minutes = 10)
 
 ::: {.column width="50%"}
 
-- Use the plot locations object (`plot_locations_sp_HARV`) to extract an average tree height for the area within 20m of each vegetation plot location in the study area. Because there are multiple plot locations, there will be multiple averages returned, so the `df = TRUE` argument should be used.
+
+- Use the leisure locations object (`point_Delft`) to extract an average tree height for the area within 20m of each playground and picnic table in the study area. Because there are multiple playgrounds and picnic tables, there will be multiple averages returned, so the `df = TRUE` argument should be used.
+
 - Create a plot showing the mean tree height of each area.
+
 
 :::
 
@@ -991,4 +994,3 @@ In short:
 
 - Use the `crop()` function to crop a raster object.
 - Use the `extract()` function to extract pixels from a raster object that fall within a particular extent boundary.
-- Use the `extent()` function to define an extent.

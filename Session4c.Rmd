@@ -268,4 +268,3 @@ In short:
 
 - Use the `crop()` function to crop a raster object.
 - Use the `extract()` function to extract pixels from a raster object that fall within a particular extent boundary.
-- Use the `extent()` function to define an extent.
