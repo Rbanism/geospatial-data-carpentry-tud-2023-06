@@ -27,6 +27,7 @@ knitr::opts_chunk$set(
   )
 ```
 
+
 ## Objectives:
 
 - Show how to create spatial **buffers and centroids**
@@ -68,7 +69,12 @@ Let's select them and see where they are.
 #| eval: false
 old <- 1800 # year prior to which you consider a building old
  
-old_buildings <- filter(buildings, start_date <= old)
+summary(buildings$start_date)
+buildings$start_date <- as.numeric(as.character(buildings$start_date))
+
+old_buildings <- buildings |>
+  filter(start_date <= old)
+
  ggplot(data = old_buildings) + geom_sf()
 ```
 
@@ -89,7 +95,9 @@ Make the buildings show in red on the "map"
 
 ```{r old-buildings_red}
 #| eval: false
-old_buildings <- filter(buildings, start_date <= old)
+old_buildings <- buildings |>
+  filter(start_date <= old)
+
  ggplot(data = old_buildings) + geom_sf(colour="red")
 ```
 
@@ -103,14 +111,16 @@ As conservationists, we want to create a zone around historical buildings where 
 Let's say this zone should be 500 meters. In GIS terms, we want to create a buffer around polygons. 
 The corresponding function `sf` is `st_buffer`, with 2 arguments:
 
-- the polygons around which to create buffers
-- the radius of the buffer.
+- "x", the polygons around which to create buffers
+- "dist" the radius of the buffer.
 
 
 ```{r buffers}
 #| eval: false
  distance <- 500 # in meters 
- buffer_old_buildings <- st_buffer(old_buildings, dist = distance)
+ buffer_old_buildings <- 
+  st_buffer(x = old_buildings, dist = distance)
+ 
  ggplot(data = buffer_old_buildings) + geom_sf()
 ```
 
@@ -126,10 +136,13 @@ We would rather create a unique conservation zone rather than overlapping ones i
 
 ```{r union}
 #| eval: false
- single_old_buffer <- st_union(buffer_old_buildings) %>% 
-   st_cast(to = "POLYGON") %>% st_as_sf()  %>% 
-   add_column("ID"=as.factor(1:nrow(.)))  %>% st_transform(.,crs=4326) 
+ single_old_buffer <- st_union(buffer_old_buildings) |> 
+   st_cast(to = "POLYGON") |> 
+  st_as_sf() |>
+  add_column("ID"=as.factor(1:nrow(.)))  |>   st_transform(.,crs=28992) 
 ```
+
+We also use `st_cast()` to explicit the type of the resulting object (*POLYGON* instead of the default *MULTIPOLYGON*), `st_as_sf()` to transform the polygon into an `sf` object.
 
 
 ## Centroids
@@ -141,7 +154,8 @@ This operation means defining their centroid and the corresponding function is `
 ```{r centroids}
 #| eval: false
 sf::sf_use_s2(FALSE)
-centroids_old <- st_centroid(old_buildings) %>% st_transform(.,crs=4326)  
+centroids_old <- st_centroid(old_buildings) |> st_transform(.,crs=28992)  
+
 ggplot() + 
     geom_sf(data = single_old_buffer, aes(fill=ID)) +
     geom_sf(data = centroids_old)
@@ -158,14 +172,13 @@ Now what we would like to distinguish conservation areas based on the number of 
 
 ```{r intersection}
 #| eval: false
- centroids_buffers <- st_intersection(centroids_old,single_old_buffer) %>% 
+ centroids_buffers <- st_intersection(centroids_old,single_old_buffer) |> 
    add_column(n=1)
- centroid_by_buffer <- centroids_buffers %>% 
-   group_by(ID) %>%
-   summarise(
-   n = sum(n)
-   )
- single_buffer <- single_old_buffer %>% add_column(n_buildings = centroid_by_buffer$n)
+ centroid_by_buffer <- centroids_buffers |> 
+   group_by(ID) |>
+   summarise(n = sum(n))
+ single_buffer <- single_old_buffer |> 
+   add_column(n_buildings = centroid_by_buffer$n)
 ```
 
 
@@ -244,24 +257,28 @@ Can you map the number of all buildings per 100m fused buffer?
  old <- 1939 
  distance <- 100
  #select
- old_buildings <- filter(buildings, start_date <= old)
+ old_buildings <- buildings |>
+   filter(start_date <= old)
  #buffer
  buffer_old_buildings <- st_buffer(old_buildings, dist = distance)
   #union
- single_old_buffer <- st_union(buffer_old_buildings) %>% 
-   st_cast(to = "POLYGON") %>% st_as_sf()  %>% 
-   add_column("ID"=1:nrow(.))  %>% st_transform(.,crs=4326) 
+ single_old_buffer <- st_union(buffer_old_buildings) |> 
+   st_cast(to = "POLYGON") |> 
+   st_as_sf()  |> 
+   add_column("ID"=1:nrow(.))  |> 
+   st_transform(.,crs=4326) 
  #centroids
- centroids_old <- st_centroid(old_buildings) %>% st_transform(.,crs=4326)  
+ centroids_old <- st_centroid(old_buildings) |> st_transform(.,crs=4326)  
   #intersection
-  centroids_buffers <- st_intersection(centroids_old,single_old_buffer) %>% 
+  centroids_buffers <- st_intersection(centroids_old,single_old_buffer) |> 
    add_column(n=1)
- centroid_by_buffer <- centroids_buffers %>% 
-   group_by(ID) %>%
+ centroid_by_buffer <- centroids_buffers |> 
+   group_by(ID) |>
    summarise(
    n = sum(n)
    )
- single_buffer <- single_old_buffer %>% add_column(n_buildings = centroid_by_buffer$n)
+ single_buffer <- single_old_buffer |> 
+   add_column(n_buildings = centroid_by_buffer$n)
   ggplot() + 
    geom_sf(data = buildings) +
    geom_sf(data = single_buffer, aes(fill=n_buildings), colour = NA) +
@@ -292,7 +309,7 @@ Let's compute the **density** of old buildings per buffer zone (= number of buil
 
 ```{r area}
 #| eval: false
-single_buffer$area <- st_area(single_buffer, ) %>% units::set_units(., km^2)
+single_buffer$area <- st_area(single_buffer, ) |> units::set_units(., km^2)
 
 single_buffer$old_buildings_per_km2 <- as.numeric(single_buffer$n_buildings / single_buffer$area)
 
