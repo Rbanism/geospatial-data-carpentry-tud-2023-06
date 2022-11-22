@@ -32,14 +32,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r lib}
-library(dplyr)
+library(tidyverse)
 library(sf)
-library(tibble)
-library(ggplot2)
-library(raster)
 library(rgdal)
-library(ggplot2)
-library(dplyr)
+library(raster)
 library(here)
 ```
 
@@ -65,7 +61,11 @@ Frequent use cases of cropping a raster file include reducing file size and crea
 
 ## Import the raster 
 
-Data available [here](https://ndownloader.figshare.com/articles/2009586/versions/10).
+
+We import a *DSM* (Digital Surface Model) and a *DTM* (Digital Terrain Model) of TU-Delft.
+
+The difference between the two altitudes gives us a *CHM*, a Canopy Height Model.
+
 
 ```{r}
 DSM_TUD <- raster(here("data","tud-dsm.tif"))
@@ -120,7 +120,7 @@ ggplot() +
   coord_sf()
 ```
 
-The plot above shows that the full CHM extent (plotted in green) is much larger than the resulting cropped raster. Our new cropped CHM now has the same extent as the aoi_boundary_HARV object that was used as a crop extent (blue border below).
+The plot above shows that the full CHM extent (plotted in green) is much larger than the resulting cropped raster. Our new cropped CHM now has the same extent as the oai_boundary_tudlib object that was used as a crop extent (blue border below).
 
 ```{r}
 ggplot() +
@@ -146,7 +146,7 @@ st_bbox(oai_boundary_tudlib)
 ```
 
 ```{r}
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) |> 
   filter(leisure %in% c("playground", "picnic_table"))
 
 st_bbox(leisure_locations_selection)
@@ -154,67 +154,6 @@ st_bbox(leisure_locations_selection)
 
 Our plot location extent is not the largest but is larger than the AOI Boundary. It would be nice to see our vegetation plot locations plotted on top of the Canopy Height Model information.
 
-
-# Challenge :
-- Crop the Canopy Height Model to the extent of the study plot locations.
-- Plot the vegetation plot location points on top of the Canopy Height Model.
-
-## Solution
-
-```{r}
-CHM_plots_TUDcrop <- crop(x = CHM_TUD, y = leisure_locations_selection)
-
-CHM_plots_TUDcrop_df <- as.data.frame(CHM_plots_TUDcrop, xy = TRUE)
-
-ggplot() + 
-  geom_raster(data = CHM_plots_TUDcrop_df, aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  geom_sf(data = leisure_locations_selection) + 
-  coord_sf()
-```
-
-In the plot above, created in the challenge, all the vegetation plot locations (black dots) appear on the Canopy Height Model raster layer except for one. One is situated on the blank space to the left of the map. Why?
-
-A modification of the first figure in this episode is below, showing the relative extents of all the spatial objects. Notice that the extent for our vegetation plot layer (black) extends further west than the extent of our CHM raster (bright green). The `crop()` function will make a raster extent smaller, it will not expand the extent in areas where there are no data. Thus, the extent of our vegetation plot layer will still extend further west than the extent of our (cropped) raster data (dark green).
-
-![Image Source: DCC](fig/rmd-11-repeat-compare-data-extents-1.png)
-# Define an extent
-
-So far, we have used a shapefile to crop the extent of a raster dataset. Alternatively, we can also the `extent()` function to define an extent to be used as a cropping boundary. This creates a new object of class extent. Here we will provide the `extent()` function our xmin, xmax, ymin, and ymax (in that order).
-
-```{r}
-# extent(CHM_TUD_Cropped_df)
-new_extent <- extent(85272.25, 85661.25, 446295.2, 446693.8)
-class(new_extent)
-```
-
-**TIP: The extent can be created from a numeric vector (as shown above), a matrix, or a list. For more details see the `extent()` function help file (`?raster::extent`).**
-
-Once we have defined our new extent, we can use the crop() function to crop our raster to this extent object.
-
-```{r}
-CHM_TUD_manual_cropped <- crop(x = CHM_TUD, y = new_extent)
-
-```
-
-To plot this data using `ggplot()` we need to convert it to a dataframe.
-
-```{r}
-CHM_TUD_manual_cropped_df <- as.data.frame(CHM_TUD_manual_cropped, xy = TRUE)
-
-```
-
-Now we can plot this cropped data. We will show the AOI boundary on the same plot for scale.
-
-```{r}
-ggplot() + 
-  geom_sf(data = oai_boundary_tudlib, color = "blue", fill = NA) +
-  geom_raster(data = CHM_TUD_manual_cropped_df,
-              aes(x = x, y = y, fill = layer)) + 
-  scale_fill_gradientn(name = "Canopy Height", colors = terrain.colors(10)) + 
-  coord_sf()
-
-```
 
 # Extract Raster Pixels Values Using Vector Polygons
 
@@ -227,7 +166,7 @@ To do this in R, we use the `extract()` function. The `extract()` function requi
 The raster that we wish to extract values from,
 The vector layer containing the polygons that we wish to use as a boundary or boundaries,
 we can tell it to store the output values in a data frame using `df = TRUE`. (This is optional, the default is to return a list, NOT a data frame.) .
-We will begin by extracting all canopy height pixel values located within our `aoi_boundary_HARV` polygon which surrounds the tower located at the NEON Harvard Forest field site.
+We will begin by extracting all canopy height pixel values located within our `oai_boundary_tudlib` polygon.
 
 ```{r}
 tree_height <- extract(x = CHM_TUD, y = st_as_sf(oai_boundary_tudlib), df = TRUE)
@@ -272,7 +211,7 @@ We can also extract pixel values from a raster by defining a buffer or area surr
 ![Image Source:National Ecological Observatory Network (NEON)](BufferCircular.png)
 
 
-Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (`point_HARV`). Because we are extracting only a single number, we will not use the `df = TRUE` argument.
+Let’s put this into practice by figuring out the mean tree height in the 20m around the tower location (`point_Delft`). Because we are extracting only a single number, we will not use the `df = TRUE` argument.
 
 ```{r}
 point_Delft <- st_read(here("data", "delft-leisure.shp"))
@@ -287,7 +226,7 @@ mean_tree_height_tower
 
 # Challenge: Extract Raster Height Values For Plot Locations
 
-- Use the plot locations object (`plot_locations_sp_HARV`) to extract an average tree height for the area within 20m of each vegetation plot location in the study area. Because there are multiple plot locations, there will be multiple averages returned, so the `df = TRUE` argument should be used.
+- Use the leisure locations object (`point_Delft`) to extract an average tree height for the area within 20m of each playground and picnic table in the study area. Because there are multiple playgrounds and picnic tables, there will be multiple averages returned, so the `df = TRUE` argument should be used.
 
 - Create a plot showing the mean tree height of each area.
 
@@ -296,7 +235,7 @@ mean_tree_height_tower
 
 ## Solution
 ```{r}
-leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) %>% 
+leisure_locations_selection <- st_read(here("data", "delft-leisure.shp")) |> 
   filter(leisure %in% c("playground", "picnic_table"))
 
 # extract data at each plot location
@@ -329,4 +268,3 @@ In short:
 
 - Use the `crop()` function to crop a raster object.
 - Use the `extract()` function to extract pixels from a raster object that fall within a particular extent boundary.
-- Use the `extent()` function to define an extent.
