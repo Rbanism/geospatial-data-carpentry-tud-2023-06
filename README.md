@@ -1,1 +1,1 @@
-# Data Carpentry for Geospatial Data
+# Data Carpentry for Geospatial Data workshop
