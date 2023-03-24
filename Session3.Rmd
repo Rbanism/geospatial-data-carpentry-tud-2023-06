@@ -26,9 +26,11 @@ In this part of the workshop we will talk about raster data. We will start with 
 The dataset we chose is a set of GeoTIFF files on Delft or subdivisions of it. The files were included in the archive you downloaded before the workshop.
 
 ## View Raster File Attributes
+
 The GeoTIFF format contains a set of embedded tags with metadata about the raster data. We can use the function GDALinfo() from the `rgdal` package to get information about our raster data before we read that data into R. It is recommended to do this before importing your data.
+
 ```{r attr}
-GDALinfo(here("data","tud-dsm.tif"))
+GDALinfo(here("data","tud-dsm-5m.tif"))
 ```
 
 ## Open a Raster in R
@@ -36,38 +38,45 @@ GDALinfo(here("data","tud-dsm.tif"))
 Now that we've previewed the metadata for our GeoTIFF, let's import this raster dataset. We are going to work with a Digital Surface Model (DSM) which is in the GeoTIFF format. We can use the `raster()` function to import a raster file.
 
 ```{r}
-DSM_TUD <- raster(here("data","tud-dsm.tif"))
+DSM_TUD <- raster(here("data","tud-dsm-5m.tif"))
 DSM_TUD
 ```
-Similar to other data structures in R like vectors and data frame columns, descriptive statistics for raster data can be retreived with the `summary()` function.
+Similar to other data structures in R like vectors and data frame columns, descriptive statistics for raster data can be retrieved with the `summary()` function.
 
 ```{r}
 summary(DSM_TUD)
 ```
 But note the warning. Unless you force R to calculate these statistics using every cell, it will take a random sample of 100,000 cells and calculate from them instead. Now, raster objects are not data frames so you cannot count the cells with `nrow()`, but with the `ncell()` function of the `raster` package.
+
 ```{r}
 summary(DSM_TUD, maxsamp = ncell(DSM_TUD))
 ```
+
 To visualise raster data in `ggplot2`, we will need to convert it to a data frame. The `raster` package has a `as.data.frame` function for that purpose.
+
 ```{r}
 DSM_TUD_df <- as.data.frame(DSM_TUD, xy = TRUE)
 ```
 
-Now when we view the structure of our data, we will see a standard dataframe format.
+Now when we view the structure of our data, we will see a standard data frame format.
+
 ```{r}
 str(DSM_TUD_df)
 ```
+
 We can use `ggplot()` to plot this data with another `geom_` function called `geom_raster()`. The `coord_quickmap()` gives a quick approximation that preserves straight lines. This approximation is suitable for small areas that are not too close to the poles.
+
 ```{r}
 ggplot() +
-    geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = tud.dsm)) +
+    geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = tud.dsm.5m)) +
     scale_fill_viridis_c() +  # remember, this color palette was introduced in the first lesson
     coord_quickmap() 
 ```
 
-These map, a so-called Digital Surface Model, shows the elevation of our study site, including buildings and vegetation.
+This map, a so-called Digital Surface Model, shows the elevation of our study site, including buildings and vegetation.
 
 For faster previews, you can use the `plot()` function.
+
 ```{r}
 plot(DSM_TUD)
 ```
@@ -112,16 +121,17 @@ This dataset has only 1 band. We will discuss multi-band raster data in a later 
 ## Creating a histogram of raster values
 
 A histogram can be used to inspect the distribution of raster values visually. It can show if there are values above the max or below the min of the expected range. We can create a histogram with the ggplot2 function `geom_histogram()`.
+
 ```{r}
 ggplot() +
-  geom_histogram(data = DSM_TUD_df, aes(tud.dsm))
+  geom_histogram(data = DSM_TUD_df, aes(tud.dsm.5m))
 ```
 
 Adjust the level of desired detail by setting the number of bins.
 
 ```{r}
 ggplot() +
-  geom_histogram(data = DSM_TUD_df, aes(tud.dsm), bins = 40)
+  geom_histogram(data = DSM_TUD_df, aes(tud.dsm.5m), bins = 40)
 ```
 
 Looking at the distribution can help us identify bad data values, that is, values that are out of the min/max range.
@@ -136,7 +146,7 @@ Use `GDALinfo()` to determine the following about the `tud-dsm-hill.tif` file:
 4. Is the file a multi- or single-band raster?
 
 ```{r}
-GDALinfo(here("data","tud-dsm-hill.tif"))
+GDALinfo(here("data","tud-dsm-5m-hill.tif"))
 ```
 
 # Plot raster data 
@@ -146,7 +156,7 @@ In this part we will plot our raster object using `ggplot2` with customized colo
 
 ```{r}
 DSM_TUD_df <- DSM_TUD_df %>%
-  mutate(fct_elevation = cut(tud.dsm, breaks = 3))
+  mutate(fct_elevation = cut(tud.dsm.5m, breaks = 3))
 
 ggplot() +
     geom_bar(data = DSM_TUD_df, aes(fct_elevation))
@@ -170,7 +180,7 @@ custom_bins <- c(-10, 0, 5, 100)
 head(DSM_TUD_df)
 
 DSM_TUD_df <- DSM_TUD_df %>%
-  mutate(fct_elevation_cb = cut(tud.dsm, breaks = custom_bins))
+  mutate(fct_elevation_cb = cut(tud.dsm.5m, breaks = custom_bins))
 
 head(DSM_TUD_df)
 
@@ -228,7 +238,7 @@ Create a plot of the TU Delft Digital Surface Model (`DSM_TUD`) that has:
 
 ```{r}
 DSM_TUD_df <- DSM_TUD_df %>%
-  mutate(fct_elevation_6 = cut(tud.dsm, breaks = 6))
+  mutate(fct_elevation_6 = cut(tud.dsm.5m, breaks = 6))
 
 unique(DSM_TUD_df$fct_elevation_6)
 ```
@@ -251,7 +261,7 @@ ggplot() +
 We can layer a raster on top of a hillshade raster for the same area, and use a transparency factor to create a 3-dimensional shaded effect. A hillshade is a raster that maps the shadows and texture that you would see from above when viewing terrain. We will add a custom color, making the plot grey.
 
 ```{r}
-DSM_hill_TUD <- raster(here("data","tud-dsm-hill.tif"))
+DSM_hill_TUD <- raster(here("data","tud-dsm-5m-hill.tif"))
 DSM_hill_TUD
 ```
 
@@ -263,7 +273,7 @@ str(DSM_hill_TUD_df)
 ```{r}
 ggplot() +
   geom_raster(data = DSM_hill_TUD_df,
-              aes(x = x, y = y, alpha = tud.dsm.hill)) + 
+              aes(x = x, y = y, alpha = tud.dsm.5m.hill)) + 
   scale_alpha(range =  c(0.15, 0.65), guide = "none") + 
   coord_quickmap()
 ```
@@ -274,10 +284,10 @@ We can layer another raster on top of our hillshade by adding another call to th
 ggplot() +
   geom_raster(data = DSM_TUD_df , 
               aes(x = x, y = y, 
-                  fill = tud.dsm)) + 
+                  fill = tud.dsm.5m)) + 
   geom_raster(data = DSM_hill_TUD_df, 
               aes(x = x, y = y, 
-                  alpha = tud.dsm.hill)) +  
+                  alpha = tud.dsm.5m.hill)) +  
   scale_fill_viridis_c() +  
   scale_alpha(range = c(0.15, 0.65), guide = "none") +  
   ggtitle("Elevation with hillshade") +
@@ -297,22 +307,22 @@ Make sure to:
 
 ```{r}
 # import DTM
-DTM_TUD <- raster(here("data","tud-dtm.tif"))
+DTM_TUD <- raster(here("data","tud-dtm-5m.tif"))
 DTM_TUD_df <- as.data.frame(DTM_TUD, xy = TRUE)
 
 # DTM Hillshade
-DTM_hill_TUD <- raster(here("data","tud-dtm-hill.tif"))
+DTM_hill_TUD <- raster(here("data","tud-dtm-5m-hill.tif"))
 DTM_hill_TUD_df <- as.data.frame(DTM_hill_TUD, xy = TRUE)
 
 ggplot() +
     geom_raster(data = DTM_TUD_df ,
                 aes(x = x, y = y,
-                     fill = tud.dtm,
+                     fill = tud.dtm.5m,
                      alpha = 2.0)
                 ) +
     geom_raster(data = DTM_hill_TUD_df,
                 aes(x = x, y = y,
-                  alpha = tud.dtm.hill)
+                  alpha = tud.dtm.5m.hill)
                 ) +
     scale_fill_viridis_c() +
     guides(fill = guide_colorbar()) +
@@ -334,8 +344,8 @@ What happens when maps don't line up? That is usually a sign that layers are in 
 In this episode, we will be working with the digital terrain model.
 
 ```{r}
-DTM_TUD <- raster(here("data","tud-dtm.tif"))
-DTM_hill_TUD <- raster(here("data","tud-dtm-hill-ETRS89.tif"))
+DTM_TUD <- raster(here("data","tud-dtm-5m.tif"))
+DTM_hill_TUD <- raster(here("data","tud-dtm-5m-hill-ETRS89.tif"))
 ```
 
 ```{r}
@@ -347,11 +357,11 @@ DTM_hill_TUD_df <- as.data.frame(DTM_hill_TUD, xy = TRUE)
 ggplot() +
      geom_raster(data = DTM_TUD_df , 
                  aes(x = x, y = y, 
-                  fill = tud.dtm)) + 
+                  fill = tud.dtm.5m)) + 
      geom_raster(data = DTM_hill_TUD_df, 
                  aes(x = x, y = y, 
-                   alpha = tud.dtm.hill.ETRS89)) +
-     scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
+                   alpha = tud.dtm.5m.hill.ETRS89)) +
+     scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) +
      coord_quickmap()
 ```
 
@@ -361,7 +371,7 @@ Our results are curious - neither the Digital Terrain Model (`DTM_TUD_df`) nor t
 ggplot() +
   geom_raster(data = DTM_TUD_df,
               aes(x = x, y = y,
-                  fill = tud.dtm)) +
+                  fill = tud.dtm.5m)) +
   scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) +
   coord_quickmap()
 ```
@@ -370,7 +380,7 @@ ggplot() +
 ggplot() +
   geom_raster(data = DTM_hill_TUD_df,
               aes(x = x, y = y,
-                  alpha = tud.dtm.hill.ETRS89)) +
+                  alpha = tud.dtm.5m.hill.ETRS89)) +
   coord_quickmap()
 ```
 
@@ -454,10 +464,10 @@ DTM_hill_TUD_2_df <- as.data.frame(DTM_hill_EPSG28992_TUD, xy = TRUE)
 ggplot() +
      geom_raster(data = DTM_TUD_df , 
                  aes(x = x, y = y, 
-                  fill = tud.dtm)) + 
+                  fill = tud.dtm.5m)) + 
      geom_raster(data = DTM_hill_TUD_2_df, 
                  aes(x = x, y = y, 
-                   alpha = tud.dtm.hill.ETRS89)) +
+                   alpha = tud.dtm.5m.hill.ETRS89)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
@@ -472,17 +482,17 @@ We often want to perform calculations on two or more rasters to create a new out
 
 
 ```{r}
-GDALinfo(here("data","tud-dtm.tif"))
+GDALinfo(here("data","tud-dtm-5m.tif"))
 ```
 
 ```{r}
-GDALinfo(here("data","tud-dsm.tif"))
+GDALinfo(here("data","tud-dsm-5m.tif"))
 ```
 
 ```{r}
  ggplot() +
       geom_raster(data = DTM_TUD_df , 
-              aes(x = x, y = y, fill = tud.dtm)) +
+              aes(x = x, y = y, fill = tud.dtm.5m)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
@@ -490,7 +500,7 @@ GDALinfo(here("data","tud-dsm.tif"))
 ```{r}
  ggplot() +
       geom_raster(data = DSM_TUD_df , 
-              aes(x = x, y = y, fill = tud.dsm)) +
+              aes(x = x, y = y, fill = tud.dsm.5m)) +
      scale_fill_gradientn(name = "Elevation", colors = terrain.colors(10)) + 
      coord_quickmap()
 ```
@@ -576,7 +586,7 @@ RGB_band1_TUD_df  <- as.data.frame(RGB_band1_TUD, xy = TRUE)
 ```{r}
 ggplot() +
   geom_raster(data = RGB_band1_TUD_df,
-              aes(x = x, y = y, alpha = tudlib.rgb)) + 
+              aes(x = x, y = y, alpha = tudlib.rgb_1)) + 
   coord_quickmap()  # use `coord_equal()` instead
 ```
 
@@ -600,7 +610,7 @@ RGB_band2_TUD_df <- as.data.frame(RGB_band2_TUD, xy = TRUE)
 ```{r}
 ggplot() +
   geom_raster(data = RGB_band2_TUD_df,
-              aes(x = x, y = y, alpha = tudlib.rgb)) + 
+              aes(x = x, y = y, alpha = tudlib.rgb_1)) + 
   coord_equal() 
 ```
 
@@ -633,19 +643,19 @@ str(RGB_stack_TUD_df)
 
 ```{r}
 ggplot() +
-  geom_histogram(data = RGB_stack_TUD_df, aes(tudlib.rgb.1))
+  geom_histogram(data = RGB_stack_TUD_df, aes(tudlib.rgb_1))
 ```
 
 ```{r}
 ggplot() +
   geom_raster(data = RGB_stack_TUD_df,
-              aes(x = x, y = y, alpha = tudlib.rgb.2)) + 
+              aes(x = x, y = y, alpha = tudlib.rgb_2)) + 
   coord_equal()
 ```
 
 ## Create a three-band image
 
-To create an RGB image, we will use the ``plotRGB` function from the `raster` package.
+To create an RGB image, we will use the `plotRGB` function from the `raster` package.
 
 ```{r}
 plotRGB(RGB_stack_TUD,
