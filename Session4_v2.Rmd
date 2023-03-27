@@ -347,6 +347,7 @@ We have seen how OpenStreetMap (OSM) geodata works and how to import, select, an
 We have seen how to create spatial buffers and centroids, how to intersect vector data and how retrieve the area of polygons.
 
 In short:
+
 - Use the `osmdata`, `ggplot` and `sf` packages
 - Select features and attributes among osm tags
 - Use the `st_*` functions for basic GIS operations
