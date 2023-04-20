@@ -6,9 +6,7 @@ teaching: 75
 exercises: 45
 ---
 
-# Question: "How can I use vector data from Open Street Map?"
-
-## Objectives:
+# Objectives:
 - Import, select, and visualise OSM vector data
 - Learn about basic GIS operation: spatial buffers, centroids, area calculation and vector/raster intersection
 
@@ -37,7 +35,7 @@ library(osmdata)
 library(leaflet)
 ```
 
-# Import vector data from Open Street Map
+# Part 1. Import vector data from Open Street Map
 
 ## What is Open Street Map?
 
@@ -57,7 +55,7 @@ The first thing to do is to define the area within which you want to retrieve da
 
 > "This function uses the free Nominatim API provided by OpenStreetMap to find the bounding box (bb) associated with place names."
 
-We are going to look at Brielle together, but you can also work with the small cities of Naarden, Geertruidenberg, Gorinchem, Enkhuizen or Dokkum.
+We are going to look at *Brielle* together, but you can also work with the small cities of *Naarden*, *Geertruidenberg*, *Gorinchem*, *Enkhuizen* or *Dokkum*.
 
 ```{r osm-bounding-box}
 assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
@@ -118,7 +116,7 @@ Then we create a variable which a threshold at 1900. Every date prior to 1900 wi
 Then we use the `ggplot` function to visualise the buildings by age. The specific function to represent information as a map is `geom_sf()`. The rest works like other graphs and visualisation, with `aes()` for the aesthetics.
 
 ```{r map-age}
-buildings$build_date <- as.numeric(ifelse(buildings$start_date <1900, 1900,buildings$start_date))
+buildings$build_date <- as.numeric(if_else(as.numeric(buildings$start_date) <1900, 1900,as.numeric(buildings$start_date)))
 
  ggplot(data = buildings) +
    geom_sf(aes(fill = build_date, colour=build_date))  +
@@ -141,7 +139,7 @@ buildings2 <- buildings %>%
   st_transform(.,crs=4326)
 
 leaflet(buildings2) %>%
-# addTiles() %>% addPolygons()
+# addTiles()
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(color = "#444444", weight = 0.1, smoothFactor = 0.5,
   opacity = 0.2, fillOpacity = 0.8,
@@ -152,7 +150,7 @@ leaflet(buildings2) %>%
 ```
 
 
-# Basic GIS operations with the `sf` package
+# Part 2. Basic GIS operations with the `sf` package
 
 
 ## Why `sf`?
