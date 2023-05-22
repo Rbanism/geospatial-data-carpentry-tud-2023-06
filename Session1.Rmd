@@ -163,7 +163,7 @@ here('data')
 We still need to download data for the first part of the workshop. You can do it with the function `download.file()`. We will save it in the `data` folder, where the **raw** data should go. 
 
 ```{r download-files}
-download.file('bit.ly/GeospatialGapminder', here('data','gapminder_data.csv'), mode = 'wb')
+download.file('https://bit.ly/geospatial_data', here('data','gapminder_data.csv'), mode = 'wb')
 
 ```
 
@@ -287,7 +287,7 @@ without_na
 
 Another important data structure is called a **factor**. Factors look like character data, but are used to represent categorical information.
 
-Factors create a structured relation between the different levels (values) of a categorical variable, such as days of the week or responses to a question in a survey. While factors look (and often behave) like character vectors, they are actually treated as integer vectors by `R`. So you need to be very careful when treating them as strings.
+Factors create a structured relation between the different levels (values) of a categorical variable, such as days of the week or responses to a question in a survey. While factors look (and often behave) like character vectors, they are actually treated as numbers by `R`. So you need to be very careful when treating them as strings.
 
 ### Create factors
 Once created, factors can only contain a pre-defined set of values, known as levels. 
@@ -355,7 +355,7 @@ Now we turn to the bread-and-butter of working with `R`: working with tabular da
 A data frame is a representation of data in the format of a **table** where the columns are **vectors** that all have the **same length**. 
 
 
-Because columns are vectors, each column must contain a **single type of data** (e.g., characters, integers, factors). 
+Because columns are vectors, each column must contain a **single type of data** (e.g., characters, numeric, factors). 
 For example, here is a figure depicting a data frame comprising a numeric, a character, and a logical vector.
 
 ![](assets/img/data-frame.svg)
