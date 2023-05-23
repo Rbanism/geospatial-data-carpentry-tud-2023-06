@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-First we need to load the packages we will use in this lesson. We will use `tidyverse` and `here` with which you are already familiar from the previous lesson. In addition, we need to load the [`sf`](https://r-spatial.github.io/sf/) package. `sf` stands for Simple Features which is a standard defined by the Open Geospatial Consortium for storing and accessing geospatial vector data. PostGIS uses the same standard; so those of you who used PostGIS, might find some resemblances with the functions used by the `sf` package. If you have not installed it yet, run `install.packages("sf")` first to install the `sf` package. Note that the `sf` package has some external dependencies.
+First we need to load the packages we will use in this lesson. We will use `tidyverse` and `here` with which you are already familiar from the previous lesson. In addition, we need to load the [`sf`](https://r-spatial.github.io/sf/) package. `sf` stands for Simple Features which is a standard defined by the Open Geospatial Consortium for storing and accessing geospatial vector data. PostGIS uses the same standard; so those of you who used PostGIS, might find some resemblances with the functions used by the `sf` package. If you have not installed it yet, run `install.packages("sf")` first to install the `sf` package. Note that the `sf` package has some external dependencies, namely GEOS, PROJ.4, GDAL and UDUNITS, listed in the workshop [setup instructions](https://datacarpentry.org/geospatial-workshop/setup.html).
 
 ```{r lib}
 library(tidyverse)  # tools for wrangling, reshaping and visualizing data
