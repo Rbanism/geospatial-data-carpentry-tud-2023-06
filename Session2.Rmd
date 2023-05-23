@@ -278,7 +278,7 @@ nrow(motorway_Delft)
 ggplot(data = motorway_Delft) + 
   geom_sf(size = 1.5) +
   labs(title = "Fast mobility network", subtitle = "Motorways") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -355,7 +355,7 @@ ggplot(data = lines_Delft_selection) +
        title = "Mobility network of Delft",
        subtitle = "Roads & Cycleways") +
   scale_size_manual(values = line_widths) +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ### Challenge
@@ -383,7 +383,7 @@ ggplot(data = lines_Delft_selection) +
   scale_linewidth_manual(values = line_width) +
   labs(title = "Mobility network of Delft",
        subtitle = "Roads & Cycleways - Line width varies") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ## Add plot legend
@@ -397,7 +397,7 @@ ggplot(data = lines_Delft_selection) +
   labs(color = 'Road Type') + 
   labs(title = "Mobility network of Delft", 
        subtitle = "Roads & Cycleways - Default Legend") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -409,7 +409,7 @@ ggplot(data = lines_Delft_selection) +
         legend.box.background = element_rect(size = 1)) + 
   labs(title = "Mobility network of Delft", 
        subtitle = "Roads & Cycleways - Modified Legend") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -423,7 +423,7 @@ ggplot(data = lines_Delft_selection) +
         legend.box.background = element_rect(size = 1)) + 
   labs(title = "Mobility network of Delft", 
        subtitle = "Roads & Cycleways - Modified Legend") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ### Challenge 5 (5 minutes)
@@ -449,7 +449,7 @@ ggplot(data = lines_Delft) +
   geom_sf(data = lines_Delft_bicycle, aes(color = highway), linewidth = 1) +
   scale_color_manual(values = "magenta") +
   labs(title = "Mobility network in Delft", subtitle = "Roads dedicated to Bikes") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 ### Challenge 6 (5 minutes)
 
@@ -468,7 +468,7 @@ levels(factor(municipal_boundaries_NL$ligtInPr_1))
 ggplot(data = municipal_boundaries_NL) +
   geom_sf(aes(color = ligtInPr_1), size = 1) +
   labs(title = "Contiguous NL Municipal Boundaries") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 # Plot multiple shapefiles (40 + 20 minutes - 15 minutes from plot costomisation)
@@ -485,7 +485,7 @@ ggplot() +
   geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) +
   geom_sf(data = point_Delft) +
   labs(title = "Mobility network of Delft") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 Now let's create a custom legend.
@@ -500,7 +500,7 @@ ggplot() +
   scale_color_manual(values = road_colors, name = "Road Type") + 
   scale_fill_manual(values = leisure_colors, name = "Lesiure Location") + 
   labs(title = "Mobility network and leisure in Delft") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -511,7 +511,7 @@ ggplot() +
   scale_color_manual(values = road_colors, name = "Line Type") +
   scale_fill_manual(values = leisure_colors, name = "Leisure Location") +
   labs(title = "Mobility network and leisure in Delft") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 We notice that there are quite some playgrounds in the residential parts of Delft, whereas on campus there is a concentration of picnic tables. So that is what our next challenge is about.
@@ -545,7 +545,7 @@ ggplot() +
   scale_fill_manual(name = "Soil Type", values = blue_orange,
      guide = guide_legend(override.aes = list(linetype = "blank", shape = 21, colour = NA))) + 
   labs(title = "Traffic and leisure") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -558,7 +558,7 @@ ggplot() +
      guide = guide_legend(override.aes = list(linetype = "blank", shape = c(21, 22),
      color = "black"))) + 
   labs(title = "Road network and leisure") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 <!-- End of challenge -->
@@ -575,7 +575,7 @@ municipal_boundary_NL <- st_read(here("data","nl-gemeenten.shp"))
 ggplot() +
   geom_sf(data = municipal_boundary_NL) +
   labs(title = "Map of Contiguous NL Municipal Boundaries") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 We can add a country boundary layer to make it look nicer. If we specify a thicker line width using size = 2 for the country boundary layer, it will make our map pop!
@@ -589,7 +589,7 @@ ggplot() +
   geom_sf(data = country_boundary_NL, color = "gray18", linewidth = 2) +
   geom_sf(data = municipal_boundary_NL, color = "gray40") +
   labs(title = "Map of Contiguous NL Municipal Boundaries") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -616,7 +616,7 @@ ggplot() +
   geom_sf(data = municipal_boundary_NL, color = "gray40") +
   geom_sf(data = boundary_Delft, color = "purple", fill = "purple") +
   labs(title = "Map of Contiguous NL Municipal Boundaries") +
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
 ### Challenge 8 (5 minutes)
@@ -641,7 +641,7 @@ ggplot() +
     scale_shape_manual(name = "", labels = "Municipality of Delft", values = c("shape" = 19)) +
     labs(title = "Delft location") +
     theme(legend.background = element_rect(color = NA)) +
-    coord_sf()
+    coord_sf(datum = st_crs(28992))
 ```
 
 <!-- End of challange -->
