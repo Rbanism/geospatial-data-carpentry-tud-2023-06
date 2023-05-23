@@ -44,7 +44,7 @@ The `st_geometry_type()` function gives us information about the geometry type, 
 st_geometry_type(boundary_Delft)
 ```
 
-The `st_crs()` function gives us the coordinate reference system used by the shapefile, which in this case is `WGS84`, which has the unique reference code `EPSG: 4326`. The `st_bbox()` function shows the extent of the layer. As `WGS84` is a **geographic CRS**, the extent of the shapefile is displayed in degrees.
+The `st_crs()` function gives us the coordinate reference system (CRS) used by the shapefile, which in this case is `WGS84`, which has the unique reference code `EPSG: 4326`. The `st_bbox()` function shows the extent of the layer. As `WGS84` is a **geographic CRS**, the extent of the shapefile is displayed in degrees.
 
 ```{r}
 st_crs(boundary_Delft)
@@ -59,7 +59,7 @@ st_crs(boundary_Delft)
 st_bbox(boundary_Delft)
 ```
 
-We confirm the transofrmation by examining the reprojected shapefile.
+We confirm the transformation by examining the reprojected shapefile.
 
 ```{r}
 boundary_Delft
