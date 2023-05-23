@@ -72,7 +72,7 @@ Now, let's plot this shapefile. You are already familiar with the `ggplot2` pack
 ```{r}
 ggplot(data = boundary_Delft) +
   geom_sf(size = 3, color = "black", fill = "cyan1") +
-  ggtitle("Delft Administrative Boundary") +
+  labs(title = "Delft Administrative Boundary") +
   coord_sf(datum = st_crs(28992))  # this is needed to display the axes in meters
 ```
 
@@ -234,7 +234,7 @@ Now we can plot only the cycleways.
 ```{r}
 ggplot(data = cycleway_Delft) +
   geom_sf() +
-  ggtitle("Slow mobility network in Delft", subtitle = "Cycleways") +
+  labs(title = "Slow mobility network in Delft", subtitle = "Cycleways") +
   coord_sf(datum = st_crs(28992))
 ```
 
@@ -277,7 +277,7 @@ nrow(motorway_Delft)
 ```{r}
 ggplot(data = motorway_Delft) + 
   geom_sf(size = 1.5) +
-  ggtitle("Fast mobility network", subtitle = "Motorways") + 
+  labs(title = "Fast mobility network", subtitle = "Motorways") + 
   coord_sf()
 ```
 
@@ -296,7 +296,7 @@ nrow(pedestrian_Delft)
 ```{r}
 ggplot() +
   geom_sf(data = pedestrian_Delft) +
-  ggtitle("Slow mobility network", subtitle = "Pedestrian") + 
+  labs(title = "Slow mobility network", subtitle = "Pedestrian") + 
   coord_sf(datum = st_crs(28992))
 ```
 
@@ -395,8 +395,8 @@ ggplot(data = lines_Delft_selection) +
   geom_sf(aes(color = highway), size = 1.5) +
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') + 
-  ggtitle("Mobility network of Delft", 
-          subtitle = "Roads & Cycleways - Default Legend") + 
+  labs(title = "Mobility network of Delft", 
+       subtitle = "Roads & Cycleways - Default Legend") + 
   coord_sf()
 ```
 
@@ -407,8 +407,8 @@ ggplot(data = lines_Delft_selection) +
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
         legend.box.background = element_rect(size = 1)) + 
-  ggtitle("Mobility network of Delft", 
-          subtitle = "Roads & Cycleways - Modified Legend") +
+  labs(title = "Mobility network of Delft", 
+       subtitle = "Roads & Cycleways - Modified Legend") +
   coord_sf()
 ```
 
@@ -421,8 +421,8 @@ ggplot(data = lines_Delft_selection) +
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
         legend.box.background = element_rect(size = 1)) + 
-  ggtitle("Mobility network of Delft", 
-          subtitle = "Roads & Cycleways - Modified Legend") +
+  labs(title = "Mobility network of Delft", 
+       subtitle = "Roads & Cycleways - Modified Legend") +
   coord_sf()
 ```
 
@@ -448,7 +448,7 @@ ggplot(data = lines_Delft) +
   geom_sf() +
   geom_sf(data = lines_Delft_bicycle, aes(color = highway), linewidth = 1) +
   scale_color_manual(values = "magenta") +
-  ggtitle("Mobility network in Delft", subtitle = "Roads dedicated to Bikes") +
+  labs(title = "Mobility network in Delft", subtitle = "Roads dedicated to Bikes") +
   coord_sf()
 ```
 ### Challenge 6 (5 minutes)
@@ -484,7 +484,7 @@ ggplot() +
   geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
   geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) +
   geom_sf(data = point_Delft) +
-  ggtitle("Mobility network of Delft") + 
+  labs(title = "Mobility network of Delft") + 
   coord_sf()
 ```
 
@@ -499,7 +499,7 @@ ggplot() +
   geom_sf(data = point_Delft, aes(fill = leisure), shape = 21) +
   scale_color_manual(values = road_colors, name = "Road Type") + 
   scale_fill_manual(values = leisure_colors, name = "Lesiure Location") + 
-  ggtitle("Mobility network and leisure in Delft") + 
+  labs(title = "Mobility network and leisure in Delft") + 
   coord_sf()
 ```
 
@@ -510,7 +510,7 @@ ggplot() +
   geom_sf(data = point_Delft, aes(fill = leisure), shape = 22) +
   scale_color_manual(values = road_colors, name = "Line Type") +
   scale_fill_manual(values = leisure_colors, name = "Leisure Location") +
-  ggtitle("Mobility network and leisure in Delft") + 
+  labs(title = "Mobility network and leisure in Delft") + 
   coord_sf()
 ```
 
@@ -544,7 +544,7 @@ ggplot() +
      guide = guide_legend(override.aes = list(linetype = "solid", shape = NA))) + 
   scale_fill_manual(name = "Soil Type", values = blue_orange,
      guide = guide_legend(override.aes = list(linetype = "blank", shape = 21, colour = NA))) + 
-  ggtitle("Traffic and leisure") + 
+  labs(title = "Traffic and leisure") + 
   coord_sf()
 ```
 
@@ -557,7 +557,7 @@ ggplot() +
   scale_fill_manual(name = "Leisure Type", values = rainbow(15),
      guide = guide_legend(override.aes = list(linetype = "blank", shape = c(21, 22),
      color = "black"))) + 
-  ggtitle("Road network and leisure") + 
+  labs(title = "Road network and leisure") + 
   coord_sf()
 ```
 
@@ -574,7 +574,7 @@ municipal_boundary_NL <- st_read(here("data","nl-gemeenten.shp"))
 ```{r}
 ggplot() +
   geom_sf(data = municipal_boundary_NL) +
-  ggtitle("Map of Contiguous NL Municipal Boundaries") +
+  labs(title = "Map of Contiguous NL Municipal Boundaries") +
   coord_sf()
 ```
 
@@ -588,7 +588,7 @@ country_boundary_NL <- st_read(here("data", "nl-boundary.shp"))
 ggplot() +
   geom_sf(data = country_boundary_NL, color = "gray18", linewidth = 2) +
   geom_sf(data = municipal_boundary_NL, color = "gray40") +
-  ggtitle("Map of Contiguous NL Municipal Boundaries") +
+  labs(title = "Map of Contiguous NL Municipal Boundaries") +
   coord_sf()
 ```
 
@@ -615,7 +615,7 @@ ggplot() +
   geom_sf(data = country_boundary_NL, linewidth = 2, color = "gray18") +
   geom_sf(data = municipal_boundary_NL, color = "gray40") +
   geom_sf(data = boundary_Delft, color = "purple", fill = "purple") +
-  ggtitle("Map of Contiguous NL Municipal Boundaries") +
+  labs(title = "Map of Contiguous NL Municipal Boundaries") +
   coord_sf()
 ```
 
