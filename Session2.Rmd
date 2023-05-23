@@ -173,7 +173,7 @@ Explore the attributes associated with the `point_Delft` spatial object.
 ncol(point_Delft)
 ```
 
-Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can [either] increase the number of rows we want to see[, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways.] Printing the object will also give us the first 10 rows.
+Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can either increase the number of rows we want to see, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways. Printing the object will also give us the first 10 rows.
 
 ```{r}
 head(point_Delft)
