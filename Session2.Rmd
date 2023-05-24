@@ -621,7 +621,7 @@ ggplot() +
 
 ### Challenge 7 (5 minutes)
 
-Create a map of the South Holland as follows:
+Create a map of South Holland as follows:
 
 1. Import and plot `nl-gemeenten.shp`. Adjust line width as necessary.
 2. Layer the boundary of Delft onto the plot.
