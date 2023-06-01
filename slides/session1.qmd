@@ -57,10 +57,10 @@ knitr::opts_chunk$set(
 ::: 
 
 ## Handling paths
- ![*Credit*: [kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)](../assets/img/relative_root.png){fig-align="center" width="65%"}
+ ![*Source*: [kaggle.com](https://www.kaggle.com/code/rtatman/reproducibility-tips-absolute-vs-relative-paths/notebook)](../assets/img/relative_root.png){fig-align="center" width="65%"}
 
 ## `here` package
-![*Credit*: [Allison horst](https://github.com/allisonhorst)](../assets/img/here.png){fig-align="center" width="65%"}
+![*Source*: [Allison horst](https://github.com/allisonhorst)](../assets/img/here.png){fig-align="center" width="65%"}
 
 
 ## Exploring data frames
@@ -69,7 +69,7 @@ A data frame is the representation of data in the format of a **table** where th
 
 ![](../assets/img/data-frame.svg){fig-align="center"}
 
-## Challenge 1: `r emo::ji("clock")` **3 mins**
+## Your turn! `r emo::ji("grinning face")` 
 
 Write a single command (you can use pipes) that will produce a **data frame** that has only the **African** values for:
 
@@ -99,7 +99,7 @@ nrow(year_country_lifeExp_Africa)
 ```
 
 
-## Challenge 2:`r emo::ji("clock")` **3 mins*
+## Your turn! `r emo::ji("grinning face")` 
 
 Calculate the **average life expectancy per country**. Which country has the **longest** average life expectancy and which has the **shortest** average life expectancy?
 
