@@ -516,7 +516,7 @@ ggplot() +
 
 We notice that there are quite some playgrounds in the residential parts of Delft, whereas on campus there is a concentration of picnic tables. So that is what our next challenge is about.
 
-### Challenge 6 (5 minutes)
+### Challenge 7 (5 minutes)
 
 Create a map of leisure locations only including `playground` and `picnic_table`, with each point colored by the leisure type. Overlay this layer on top of the `lines_Delft` layer (the streets). Create a custom legend that applies line symbols to lines and point symbols to the points.
 
@@ -619,7 +619,7 @@ ggplot() +
   coord_sf(datum = st_crs(28992))
 ```
 
-### Challenge 7 (5 minutes)
+### Challenge 8 (5 minutes)
 
 Create a map of South Holland as follows:
 

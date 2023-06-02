@@ -56,7 +56,7 @@ knitr::opts_chunk$set(
 
 # Open and Plot Shapefiles
 
-## Challenge 1: `r emo::ji("clock")` **3 mins**
+## Challenge 1: `r emo::ji("clock")` **5 mins**
 
 Read in `delft-streets.shp` and `delft-leisure.shp` and call them `lines_Delft` and `point_Delft` respectively.
 
@@ -70,7 +70,7 @@ Answer the following questions:
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 5)
 ``` 
 
 . . .
@@ -132,7 +132,7 @@ point_Delft
 names(point_Delft)
 ```
 
-## Challenge 3: `r emo::ji("clock")` **5 mins**
+## Challenge 3: `r emo::ji("clock")` **7 mins**
 
 1. Create a new object that only contains the motorways in Delft. 
 2. How many features does the new object have?
@@ -143,7 +143,7 @@ names(point_Delft)
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 5)
+countdown::countdown(minutes = 7)
 ``` 
 . . . 
 
@@ -249,7 +249,7 @@ ggplot() +
   coord_sf()
 ```
 
-## Challenge 6: `r emo::ji("clock")` **3 mins**
+## Challenge 6: `r emo::ji("clock")` **5 mins**
 
 Create a map of the municipal boundaries in the Netherlands, as follows:
 
@@ -260,7 +260,7 @@ Create a map of the municipal boundaries in the Netherlands, as follows:
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 5)
 ``` 
 . . . 
 
@@ -335,7 +335,7 @@ ggplot() +
 
 # Handle spatial projections
 
-## Challenge 8: `r emo::ji("clock")` **3 mins**
+## Challenge 8: `r emo::ji("clock")` **5 mins**
 
 Create a map of the South Holland, as follows:
 
@@ -348,7 +348,7 @@ Create a map of the South Holland, as follows:
 ``` {r}
 #| echo: false
 #| cache: false
-countdown::countdown(minutes = 3)
+countdown::countdown(minutes = 5)
 ``` 
 . . . 
 
