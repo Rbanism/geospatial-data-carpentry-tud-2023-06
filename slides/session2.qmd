@@ -5,7 +5,7 @@ format:
   revealjs:
     # logo: assets/img/TUDelft_logo_rgb.png
     # css: logo.css
-    footer: "Data Carpentry for Geospatial Data"
+    # footer: "Data Carpentry for Geospatial Data"
     chalkboard: true
     incremental: true   
     theme: [default, custom.scss]
@@ -58,6 +58,10 @@ knitr::opts_chunk$set(
 - `sf` provides [simple features access](https://en.wikipedia.org/wiki/Simple_Features) to R
 - represents simple features as records in a `data.frame` or `tibble` with a `geometry` column
 - function names start with a prefix `st_` ("st" stands for spatial type), which is also handy for auto-completion in RStudio
+
+## Geometry types: the big seven {.smaller}
+
+![The main simple feature geometry types. Source: [Pebesma & Bivand, 2023](https://r-spatial.org/book/)](https://r-spatial.org/book/03-Geometries_files/figure-html/fig-sfgeometries-1.png)
 
 # Open and Plot Shapefiles
 
