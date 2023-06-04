@@ -30,7 +30,8 @@ knitr::opts_chunk$set(
 - Workshop material and links to other resources will be shared via email
 - [R Café](https://delft-rcafe.github.io/home/Index.html) - Join the next session on June 20 dedicated to our workshop participants
 - Join the [Rbanism Scalable GIS challenge](https://github.com/Rbanism/scalegis-challenge) - deadline June 22
+- [Become an Rbanism community member](https://edu.nl/uveef) to stay up to date with our events, activities and resources.
 - Join the Rbanism community launch on June 8
 - [DCC](https://www.tudelft.nl/index.php?id=67120&L=1/) and the [TU Delft Library](https://www.tudelft.nl/en/library/research-data-management/r/training-events/training-for-researchers) - They are there to help
-- Give us feedback!
+- Give us feedback! ![](post-workshop-survey.png){.absolute top=390 left=270 width=200}
 - Drinks!
