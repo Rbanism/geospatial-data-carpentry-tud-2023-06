@@ -43,6 +43,11 @@ knitr::opts_chunk$set(
   )
 ```
 
+## First, let's get the data for this lesson
+
+1. Download the data from **[https://edu.nl/qydvw](https://edu.nl/qydvw)**
+2. Extract its content into the data folder of your RStudio project
+
 
 ## `sf` package for spatial vector data
 
