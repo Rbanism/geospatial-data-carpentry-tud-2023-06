@@ -1,6 +1,6 @@
 ---
 title: "Data Carpentry for Geospatial Data with R"
-subtitle: "**Second pilot, will run more**"
+subtitle: "**Second pilot**"
 author: "Aleksandra Wilczynska, Ana Petrović, Ashley Cryan, Claudiu Forgaci, Clémentine Cottineau, Daniele Cannatella, Jérôme Francisco Conceicao, Kyri Janssen, Manuel Garcia Alvarez, Paula Martinez Lavanchy"
 format: 
   revealjs:
