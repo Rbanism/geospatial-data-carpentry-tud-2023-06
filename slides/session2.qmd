@@ -49,19 +49,29 @@ knitr::opts_chunk$set(
 2. Extract its content into the data folder of your RStudio project
 
 
-## `sf` package for spatial vector data
+## `sf` package for spatial vector data {.smaller}
 
-![](https://user-images.githubusercontent.com/520851/50280460-e35c1880-044c-11e9-9ed7-cc46754e49db.jpg){fig-align="center"}
+::::{.columns}
 
-## `sf` package for spatial vector data
-
+:::{.column width=22%}
 - `sf` provides [simple features access](https://en.wikipedia.org/wiki/Simple_Features) to R
 - represents simple features as records in a `data.frame` or `tibble` with a `geometry` column
-- function names start with a prefix `st_` ("st" stands for spatial type), which is also handy for auto-completion in RStudio
+- function names start with a prefix `st_` (spatial type), which is handy for auto-completion in RStudio
+:::
 
-## Geometry types: the big seven {.smaller}
+:::{.column width=78%}
+![](https://user-images.githubusercontent.com/520851/50280460-e35c1880-044c-11e9-9ed7-cc46754e49db.jpg){fig-align="center"}
+:::
 
-![The main simple feature geometry types. Source: [Pebesma & Bivand, 2023](https://r-spatial.org/book/)](https://r-spatial.org/book/03-Geometries_files/figure-html/fig-sfgeometries-1.png)
+::::
+
+## `sf` package for spatial vector data {.smaller}
+
+![The main simple feature geometry types: the big seven. Source: [Pebesma & Bivand, 2023](https://r-spatial.org/book/)](https://r-spatial.org/book/03-Geometries_files/figure-html/fig-sfgeometries-1.png)
+
+## `sf` package for spatial vector data {.smaller}
+
+![Components of an sf object. Source: [Pebesma & Bivand, 2023](https://r-spatial.org/book/)](https://r-spatial.org/book/images/sf_obj.png)
 
 # Open and Plot Shapefiles
 
