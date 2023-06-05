@@ -34,6 +34,10 @@ knitr::opts_chunk$set(
 4. Raster calculations
 5. Working with multi-band rasters
 
+## First, let's get the data for this lesson
+
+1. Download the data from **[https://edu.nl/trr7n]( https://edu.nl/trr7n)**
+2. Extract its content into the data folder of your RStudio project
 
 ## `raster` package for spatial raster data
 
