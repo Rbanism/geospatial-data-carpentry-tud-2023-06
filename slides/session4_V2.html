@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Clémentine Cottineau">
-  <title>Session 4: Combining Vector and Raster Data</title>
+  <title>Session 4: GIS Operations</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -393,7 +393,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Session 4: Combining Vector and Raster Data</h1>
+  <h1 class="title">Session 4: GIS Operations</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -412,6 +412,13 @@ Clémentine Cottineau
 </ul>
 </section>
 
+<section id="resources" class="title-slide slide level1 center">
+<h1>Resources</h1>
+<p>https://datacarpentry.org/organization-geospatial/03-crs.html</p>
+<p>https://saylordotorg.github.io/text_essentials-of-geographic-information-systems/</p>
+<p>https://www.nfb.ca/film/impossible_map/</p>
+</section>
+
 <section>
 <section id="part-1.-import-vector-data-from-open-street-map" class="title-slide slide level1 center">
 <h1>Part 1. Import vector data from Open Street Map</h1>
@@ -423,7 +430,7 @@ Clémentine Cottineau
 
 <img data-src="fig/OSM1.png" class="r-stretch quarto-figure-center"></section>
 <section id="osm" class="slide level2">
-<h2>OSM 🗾</h2>
+<h2>OSM 🗺</h2>
 <p>Anyone can contribute, by mapping geographical objects their encounter by</p>
 <ul>
 <li class="fragment"><strong>mapping spatial features</strong> (e.g.&nbsp;buildings or roads), from located device or satellite imagery.</li>
@@ -438,7 +445,7 @@ Clémentine Cottineau
 </ul>
 </section>
 <section id="osm-2" class="slide level2">
-<h2>OSM 🗾</h2>
+<h2>OSM 🗺</h2>
 <p>The geospatial data underlying this interface is made of geometrical objects (i.e.&nbsp;points, lines, polygons) and their associated tags (#building #height, #road #secondary #90kph, etc.).</p>
 </section>
 <section id="how-to-extract-geospatial-data-from-open-street-map-with-r" class="slide level2">
@@ -450,7 +457,7 @@ Clémentine Cottineau
 <p>We are going to look at <em>Brielle</em> together, but you can also work with the small cities of <em>Naarden</em>, <em>Geertruidenberg</em>, <em>Gorinchem</em>, <em>Enkhuizen</em> or <em>Dokkum</em>.</p>
 </section>
 <section id="the-bounding-box" class="slide level2">
-<h2>The Bounding Box 🔳</h2>
+<h2>The Bounding Box ◾</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>bb <span class="ot">&lt;-</span> <span class="fu">getbb</span>(<span class="st">'Brielle'</span>, <span class="at">format_out =</span> <span class="st">'sf_polygon'</span>)</span>
 <span id="cb1-2"><a href="#cb1-2"></a>bb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -482,7 +489,7 @@ Geodetic CRS:  WGS 84
 <span id="cb4-2"><a href="#cb4-2"></a>bb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   place_id
-1 308228079
+1 298284242
                                                                  licence
 1 Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright
   osm_type  osm_id                                  boundingbox       lat
@@ -577,7 +584,7 @@ Geodetic CRS:  WGS 84
 <h2>⏰ Challenge: import an interactive basemap layer under the buildings with <code>Leaflet</code></h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_fde5bb72" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_b30a35b9" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -630,20 +637,29 @@ Geodetic CRS:  WGS 84
 </ul>
 </section>
 <section id="the-sf-package" class="slide level2">
-<h2>the ‘sf’ package 🗳</h2>
+<h2>the ‘sf’ package 📦</h2>
 <ul>
 <li class="fragment"><p><code>sf</code> is a package which supports simple features (sf), <a href="https://cran.r-project.org/web/packages/sf/sf.pdf">“a standardized way to encode spatial vector data.”</a>.</p></li>
-<li class="fragment"><p>It contains a large set of functions to achieve all the operations on vector spatial data for which you might use traditional GIS software: change the coordinate system, join layers, intersect or unit polygons, create buffers and centroids, etc. cf.&nbsp;the <code>sf</code> <a href="https://raw.githubusercontent.com/rstudio/cheatsheets/main/sf.pdf">cheatsheet</a>.</p></li>
-<li class="fragment"><p>We are going to go through some of these basics with the case study of Brielle buildings.</p></li>
+<li class="fragment"><p>It contains a large set of functions to achieve all the operations on vector spatial data for which you might use traditional GIS software: change the coordinate system, join layers, intersect or unit polygons, create buffers and centroids, etc.</p></li>
+<li class="fragment"><p>cf.&nbsp;the <code>sf</code> <a href="https://raw.githubusercontent.com/rstudio/cheatsheets/main/sf.pdf">cheatsheet</a>.</p></li>
 </ul>
 </section>
+<section id="the-sf-cheatsheet" class="slide level2">
+<h2>the ‘sf’ cheatsheet 🗺</h2>
+
+<img data-src="fig/sf_cheatsheet1.png" class="r-stretch quarto-figure-center"></section>
+<section id="the-sf-cheatsheet-1" class="slide level2">
+<h2>the ‘sf’ cheatsheet 🗾</h2>
+
+<img data-src="fig/sf_cheatsheet2.png" class="r-stretch quarto-figure-center"></section>
 <section id="conservation-in-brielle-nl" class="slide level2">
 <h2>Conservation in Brielle, NL 🏦</h2>
+<p>We are going to go through some of these basics with the case study of Brielle buildings.</p>
 <p>Let’s focus on really old building and imagine we’re in charge of their conservation. We want to know <strong>how much of the city would be affected by a non-construction zone of 100m around pre-1800 buildings</strong>.</p>
 <p>Let’s select them and see where they are.</p>
 </section>
 <section id="conservation-in-brielle-nl-1" class="slide level2">
-<h2>Conservation in Brielle, NL 🏫</h2>
+<h2>Conservation in Brielle, NL 🏭</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
@@ -725,11 +741,18 @@ Geodetic CRS:  WGS 84
 </section>
 <section id="centroids-1" class="slide level2">
 <h2>Centroids</h2>
-
-<img data-src="fig/rmd-04centroids-1.png" class="r-stretch quarto-figure-center"></section>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="fig/rmd-04centroids-1.png" style="height:100.0%"></p>
+</figure>
+</div>
+</section>
 <section id="intersection" class="slide level2">
 <h2>Intersection</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <p>Now what we would like to distinguish conservation areas based on the number of historic buildings they contain. In GIS terms, we would like to know how many centroids each fused buffer polygon contains. This operation means intersecting the layer of polygons with the layer of points and the corresponding function is <code>st_intersection</code>.</p>
+</div><div class="column" style="width:50%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a> centroids_buffers <span class="ot">&lt;-</span> </span>
 <span id="cb17-2"><a href="#cb17-2"></a>  <span class="fu">st_intersection</span>(centroids_old,single_old_buffer) <span class="sc">%&gt;%</span></span>
@@ -749,6 +772,8 @@ Geodetic CRS:  WGS 84
 <span id="cb17-16"><a href="#cb17-16"></a>                        <span class="at">end =</span> <span class="dv">1</span>,</span>
 <span id="cb17-17"><a href="#cb17-17"></a>                        <span class="at">direction =</span> <span class="sc">-</span><span class="dv">1</span>,</span>
 <span id="cb17-18"><a href="#cb17-18"></a>                        <span class="at">option =</span> <span class="st">"B"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="final-output" class="slide level2">
@@ -780,7 +805,7 @@ Geodetic CRS:  WGS 84
 <p>The historical threshold now applies to all pre-war buildings, but the distance to these building is reduced to 10m. Can you map the number of all buildings per 10m fused buffer?</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_7ddfcc4e" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_2424a4ec" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -847,7 +872,7 @@ Geodetic CRS:  WGS 84
 <h2>⏰ Challenge: visualise the density of old buildings</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_546f7918" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_0fccf108" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -908,19 +933,26 @@ Geodetic CRS:  WGS 84
 </ul>
 <p>But be careful to keep it as a help, tool and support whose quality you can still assess. They can provide fixes that you do not understand, answers that don’t make sense, and even wrong answers! So build yourself some foundations before you get into them.</p>
 </section>
-<section id="better-together" class="slide level2">
-<h2>👪 Better together</h2>
-<p>If you have a question or want to exchange with R-enthustiastic urbanists, we have a community called Rbanism. You are welcome to join our educational, social and technical events.</p>
-<p><strong>The next one is actually next Thursday (8th June). 3:30pm-7pm, BK Room K then Bouwpub.</strong></p>
-</section>
-<section id="better-together-1" class="slide level2">
-<h2>🍕 Better together</h2>
-<p>Additionally, at the TU-Delft level, there is an initiative called the R-Café, meeting monthly to discuss tools, applications and functions in R, whilst eating pizza and drinking coffee (aka healthy lifestyle). The next one will be dedicated to this workshop, and will happen on Tuesday 20th June at 3pm (no pizza exceptionally…)</p>
-<p>https://delft-rcafe.github.io/home/Index.html</p>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="fig/rcafe.png"></p>
-</figure>
+<section id="whats-next" class="slide level2">
+<h2>What’s next?</h2>
+<ul>
+<li class="fragment">Workshop material and links to other resources will be shared via email</li>
+<li class="fragment"><a href="https://delft-rcafe.github.io/home/Index.html">R Café</a> - Join the next session on June 20 (3pm <span class="citation" data-cites="BK">@BK</span>) dedicated to our workshop participants</li>
+<li class="fragment">Join the <a href="https://github.com/Rbanism/scalegis-challenge">Rbanism Scalable GIS challenge</a> - deadline June 22</li>
+<li class="fragment">Join the Rbanism community launch on June 8, 3:30pm-7pm, <span class="citation" data-cites="BK-Room">@BK-Room</span> K then Bouwpub</li>
+<li class="fragment">Join the Lunch Discussion <a href="https://www.eventbrite.com/e/lunch-discussion-time-travelling-in-geo-spatial-data-tickets-643560676307?aff=oddtdtcreator">Time Travelling in Geo-spatial Data</a> organised by the OSCD</li>
+<li class="fragment"><a href="https://www.tudelft.nl/index.php?id=67120&amp;L=1/">DCC</a> and the <a href="https://www.tudelft.nl/en/library/research-data-management/r/training-events/training-for-researchers">TU Delft Library</a> - They are there to help</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li class="fragment">Give us feedback! <img data-src="post-workshop-survey.png" class="absolute" style="top: 340px; left: 240px; width: 200px; "></li>
+</ul>
+</div><div class="column">
+<ul>
+<li class="fragment">Drinks! Join Rbanism: <img data-src="rbanism-membership.png" class="absolute" style="top: 340px; left: 760px; width: 200px; "></li>
+</ul>
+</div>
 </div>
 <p><img src="BKTUD.png" class="slide-logo"></p>
 <div class="footer footer-default">
