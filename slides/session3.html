@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.285">
+<script src="session3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="session3_files/libs/quarto-html/tabby.min.js"></script>
+<script src="session3_files/libs/quarto-html/popper.min.js"></script>
+<script src="session3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="session3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="session3_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="session3_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Claudiu Forgaci">
   <title>Intro to Geospatial Raster Data with R</title>
@@ -13,19 +19,17 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
   </style>
   <link rel="stylesheet" href="session3_files/libs/revealjs/dist/theme/quarto.css" id="theme">
-  <script src="session3_files/libs/clipboard/clipboard.min.js"></script>
-  <script src="session3_files/libs/quarto-html/tabby.min.js"></script>
-  <script src="session3_files/libs/quarto-html/popper.min.js"></script>
-  <script src="session3_files/libs/quarto-html/tippy.umd.min.js"></script>
-  <link href="session3_files/libs/quarto-html/tippy.css" rel="stylesheet">
-  <link href="session3_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet">
-  <link id="quarto-text-highlighting-styles" href="session3_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
   <link href="session3_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="session3_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="session3_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -41,7 +45,7 @@
   }
 
   .callout.callout-style-simple { 
-    padding: 0em 0.7em;
+    padding: 0em 0.5em;
     border-left: solid #acacac .3rem;
     border-right: solid 1px silver;
     border-top: solid 1px silver;
@@ -152,8 +156,7 @@
     display: none !important;
   }
 
-  .callout.callout-captioned .callout-body > :last-child,
-  .callout.callout-captioned .callout-body > div > :last-child {
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
     margin-bottom: 0.5rem;
   }
 
@@ -317,18 +320,25 @@
       margin-right: 0; 
     }
   </style>
-  <link href="session3_files/libs/countdown-0.3.5/countdown.css" rel="stylesheet">
-  <script src="session3_files/libs/countdown-0.3.5/countdown.js"></script>
+  <link href="session3_files/libs/countdown-0.4.0/countdown.css" rel="stylesheet">
+  <script src="session3_files/libs/countdown-0.4.0/countdown.js"></script>
 </head>
-<body>
+<body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" class="center">
+<section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Intro to Geospatial Raster Data with R</h1>
-  <p class="author">Claudiu Forgaci</p>
-</section>
 
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Claudiu Forgaci 
+</div>
+</div>
+</div>
+
+</section>
 <section id="outline" class="slide level2">
 <h2>Outline</h2>
 <ol type="1">
@@ -339,13 +349,20 @@
 <li class="fragment">Working with multi-band rasters</li>
 </ol>
 </section>
+<section id="first-lets-get-the-data-for-this-lesson" class="slide level2">
+<h2>First, let’s get the data for this lesson</h2>
+<ol type="1">
+<li class="fragment">Download the data from <strong><a href="https://edu.nl/trr7n">https://edu.nl/trr7n</a></strong></li>
+<li class="fragment">Extract its content into the data folder of your RStudio project</li>
+</ol>
+</section>
 <section id="raster-package-for-spatial-raster-data" class="slide level2">
 <h2><code>raster</code> package for spatial raster data</h2>
 
-<img data-src="fig/tudlib-green.png" class="r-stretch quarto-figure-center"></section>
+<img data-src="tudlib-green.png" class="r-stretch quarto-figure-center"></section>
 <section id="challenge-1-2-mins" class="slide level2">
-<h2>Challenge 1: 🕠 <strong>2 mins</strong></h2>
-<p>Use <code>GDALinfo()</code> to determine the following about the <code>tud-dsm-hill.tif</code> file:</p>
+<h2>Challenge 1: 🕚 <strong>2 mins</strong></h2>
+<p>Use <code>GDALinfo()</code> to determine the following about the <code>tud-dsm-5m-hill.tif</code> file:</p>
 <ol type="1">
 <li class="fragment">Does this file have the same CRS as <code>DSM_TUD</code>?</li>
 <li class="fragment">What is resolution of the raster data?</li>
@@ -354,14 +371,15 @@
 </ol>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_637a90b3" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_b9b6bf2b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">02</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>
 </section>
 <section id="challenge-2-5-mins" class="slide level2">
-<h2>Challenge 2: 🕦 <strong>5 mins</strong></h2>
+<h2>Challenge 2: 🕓 <strong>5 mins</strong></h2>
 <p>Create a plot of the TU Delft Digital Surface Model (<code>DSM_TUD</code>) that has:</p>
 <ol type="1">
 <li class="fragment">Six classified ranges of values (break points) that are evenly divided among the range of pixel values.</li>
@@ -370,15 +388,16 @@
 </ol>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_637a92dd" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_47504035" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>
 </section>
 <section id="challenge-3-8-mins" class="slide level2">
-<h2>Challenge 3: 🕘 <strong>8 mins</strong></h2>
-<p>Use the <code>tud-dtm.tif</code> and <code>tud-dtm-hill.tif</code> files from the <code>data</code> directory to create a Digital Terrain Model map of the TU Delft area.</p>
+<h2>Challenge 3: 🕗 <strong>8 mins</strong></h2>
+<p>Use the <code>tud-dtm-5m.tif</code> and <code>tud-dtm-5m-hill.tif</code> files from the <code>data</code> directory to create a Digital Terrain Model map of the TU Delft area.</p>
 <p>Make sure to:</p>
 <ul>
 <li class="fragment">include hillshade in the maps,</li>
@@ -388,25 +407,27 @@
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_637a912a" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_ba9ba19c" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">08</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>
 </section>
 <section id="challenge-4-2-mins" class="slide level2">
-<h2>Challenge 4: 🕧 <strong>2 mins</strong></h2>
+<h2>Challenge 4: ⏱ <strong>2 mins</strong></h2>
 <p>View the CRS for each of these two datasets. What projection does each use?</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_637a933e" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_2f234047" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">02</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>
 </section>
 <section id="challenge-5-5-mins" class="slide level2">
-<h2>Challenge 5: 🕙 <strong>5 mins</strong></h2>
+<h2>Challenge 5: 🕜 <strong>5 mins</strong></h2>
 <p>It’s often a good idea to explore the range of values in a raster dataset just like we might explore a dataset that we collected in the field.</p>
 <ol type="1">
 <li class="fragment">What is the min and maximum value for the Canopy Height Model <code>CHM_TUD</code> that we just created?</li>
@@ -417,13 +438,14 @@
 </ol>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_637a8fc8" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_fbee2200" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>
 <div class="footer footer-default">
-<p>Data Carpentry for Geospatial Data</p>
+
 </div>
 </section>
     </div>
@@ -645,12 +667,15 @@
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -661,13 +686,6 @@
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
@@ -681,8 +699,26 @@
       })();
     </script>
 
-    <script type="application/javascript">
+    <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
       const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
       tabsets.forEach(function(tabset) {
         const tabby = new Tabby('#' + tabset.id);
@@ -701,7 +737,24 @@
         button.classList.add('code-copy-button-checked');
         var currentTitle = button.getAttribute("title");
         button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
         setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
           button.setAttribute("title", currentTitle);
           button.classList.remove('code-copy-button-checked');
         }, 1000);
@@ -731,31 +784,50 @@
       for (var i=0; i<noterefs.length; i++) {
         const ref = noterefs[i];
         tippyHover(ref, function() {
-          let href = ref.getAttribute('href');
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);
           return note.innerHTML;
         });
       }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
       var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
       for (var i=0; i<bibliorefs.length; i++) {
         const ref = bibliorefs[i];
-        const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-        tippyHover(ref, function() {
-          var popup = window.document.createElement('div');
-          cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
-            }
-            popup.appendChild(citeDiv);
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
           });
-          return popup.innerHTML;
-        });
+        }
       }
     });
     </script>

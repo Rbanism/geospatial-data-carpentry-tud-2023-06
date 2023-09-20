@@ -1,7 +1,7 @@
 ---
 title: "Geospatial Data Carpentry | Session 2: Working with vector data"
 author: "Claudiu Forgaci"
-date: "2022-11-18"
+date: "2023-06-05"
 output: html_document
 ---
 
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-First we need to load the packages we will use in this lesson. We will use `tidyverse` and `here` with which you are already familiar from the previous lesson. In addition, we need to load the `sf` package. `sf` stands for Simple Features which is a standard defined by the Open Geospatial Consortium for storing and accessing geospatial vector data. PostGIS uses the same standard; so those of you who used PostGIS, might find some resemblances with the functionality of the `sf` package. If you have not installed it yet, run `install.packages("sf")` first to install the `sf` package.
+First we need to load the packages we will use in this lesson. We will use `tidyverse` and `here` with which you are already familiar from the previous lesson. In addition, we need to load the [`sf`](https://r-spatial.github.io/sf/) package. `sf` stands for Simple Features which is a standard defined by the Open Geospatial Consortium for storing and accessing geospatial vector data. PostGIS uses the same standard; so those of you who used PostGIS, might find some resemblances with the functions used by the `sf` package. If you have not installed it yet, run `install.packages("sf")` first to install the `sf` package. Note that the `sf` package has some external dependencies, namely GEOS, PROJ.4, GDAL and UDUNITS, listed in the workshop [setup instructions](https://datacarpentry.org/geospatial-workshop/setup.html).
 
 ```{r lib}
 library(tidyverse)  # tools for wrangling, reshaping and visualizing data
@@ -28,7 +28,7 @@ library(sf)         # work with spatial vector data
 
 ## Import shapefiles
 
-Let's start by opening a shapefile. Most of you must be already familiar with shapefiles, a common file format to store spatial vector data used in GIS software. We will read a shapefile with the administrative boundary of Delft with the function `st_read()` from the `sf` package. Note that all functions from the `sf` package start with the standard prefix `st_` which stands for Spatial Type. This is helpful in at least two ways: (1) it  makes the interaction with or translation to/from software using the simple features standard like PostGIS easy, and (2) it allows for easy autocompletion of function names in RStudio.
+Let's start by opening a shapefile. Most of you might be already familiar with shapefiles, a common file format to store spatial vector data used in GIS software. We will read a shapefile with the administrative boundary of Delft with the function `st_read()` from the `sf` package. Note that all functions from the `sf` package start with the standard prefix `st_` which stands for Spatial Type. This is helpful in at least two ways: (1) it  makes the interaction with or translation to/from software using the simple features standard like PostGIS easy, and (2) it allows for easy autocompletion of function names in RStudio.
 
 ```{r}
 boundary_Delft <- st_read(here("data", "delft-boundary.shp"))
@@ -44,17 +44,22 @@ The `st_geometry_type()` function gives us information about the geometry type, 
 st_geometry_type(boundary_Delft)
 ```
 
-The `st_crs()` function gives us the coordinate reference system used by the shapefile, which in this case is `WGS84`. This is not what we want, so we will use the `st_transform()` function to reproject the file to the right CRS. For the `crs` argument we can use the EPSG code of the CRS we want to use. For the Netherlands, we want to use the Amersfort / RD New projection, which has the EPSG code 28992.
+The `st_crs()` function gives us the coordinate reference system (CRS) used by the shapefile, which in this case is `WGS84`, which has the unique reference code `EPSG: 4326`. The `st_bbox()` function shows the extent of the layer. As `WGS84` is a **geographic CRS**, the extent of the shapefile is displayed in degrees.
 
 ```{r}
 st_crs(boundary_Delft)
 st_bbox(boundary_Delft)
 ```
+
+We need a **projected CRS**, which in the case of the Netherlands is typically the Amersfort / RD New projection. To reproject our shapefile, we will use the `st_transform()` function. For the `crs` argument we can use the EPSG code of the CRS we want to use, which is 28992 for the Amersfort / RD New projection. Notice that the bounding box is measured in meters after the transformation.
+
 ```{r}
 boundary_Delft <- st_transform(boundary_Delft, 28992)
 st_crs(boundary_Delft)
 st_bbox(boundary_Delft)
 ```
+
+We confirm the transformation by examining the reprojected shapefile.
 
 ```{r}
 boundary_Delft
@@ -67,26 +72,24 @@ Now, let's plot this shapefile. You are already familiar with the `ggplot2` pack
 ```{r}
 ggplot(data = boundary_Delft) +
   geom_sf(size = 3, color = "black", fill = "cyan1") +
-  ggtitle("Delft Administrative Boundary") +
+  labs(title = "Delft Administrative Boundary") +
   coord_sf(datum = st_crs(28992))  # this is needed to display the axes in meters
 ```
 
-### Challenge
+### Challenge 1 (5 minutes)
 
-Read in `delft-streets.shp` and `delft-leisure.shp` and call them `lines_Delft` and `point_Delft` respectively.
+Read in `delft-streets.shp` and `delft-leisure.shp` and assign them to `lines_Delft` and `point_Delft` respectively.
 
 Answer the following questions:
 
 1. What type of R spatial object is created when you import each layer?
 2. What is the CRS and extent for each object?
 3. Do the files contain points, lines, or polygons?
-4. How many spatial objects are in each file?
+4. How many features are in each file?
 
 ```{r}
 lines_Delft <- st_read(here("data", "delft-streets.shp"))
 ```
-
-For points data we use leisure data from OSM.
 
 ```{r}
 point_Delft <- st_read(here("data", "delft-leisure.shp"))
@@ -98,7 +101,7 @@ We can check the type of data with the `class()` function from base R. `lines_De
 class(lines_Delft)
 ```
 
-We see that `point_Delft` has the same class and structure.
+We see that `point_Delft` has the same class.
 
 ```{r}
 class(point_Delft)
@@ -110,10 +113,12 @@ class(point_Delft)
 st_crs(lines_Delft)
 ```
 
-And so is `point_Delft`.
+And so is `point_Delft`. As the output of `st_crs()` can be long, you can use `$Name` and `$epsg` after the `crs()` call to extract the projection name and EPSG code respectively.
 
 ```{r}
 st_crs(point_Delft)
+st_crs(point_Delft)$Name
+st_crs(point_Delft)$epsg
 ```
 
 When looking at the bounding boxes with the `st_bbox()` function, we see the spatial extent of the two objects in a projected CRS using meters as units. `lines_Delft()` and `pont_Delft` have similar extents.
@@ -130,13 +135,13 @@ st_bbox(point_Delft)
 
 # Explore and plot by vector layer attributes (40 + 20 minutes)
 
-Let's have a look at the content of the loaded data, starting with `lines_Delft`. In essence, an `"sf"` object is a data.frame with a "sticky" geometry column and some extra metadata, like CRS and geometry type we examined earlier.
+Let's have a look at the content of the loaded data, starting with `lines_Delft`. In essence, an `"sf"` object is a data.frame with a "sticky" geometry column and some extra metadata, like the CRS, extent and geometry type we examined earlier.
 
 ```{r}
 lines_Delft
 ```
 
-This means that we can manipulate them as data frames. For instance, we can look at the number of variables (columns in a data frame) with `ncol()`. 
+This means that we can examine and manipulate them as data frames. For instance, we can look at the number of variables (columns in a data frame) with `ncol()`. 
 
 ```{r}
 ncol(lines_Delft)
@@ -148,19 +153,19 @@ In the case of `point_Delft` those columns are `"osm_id"`, `"highway"` and `"geo
 names(lines_Delft)
 ```
 
-We can also preview the content of the object with the `head()` function.
+We can also preview the content of the object with the `head()` function, which is in the case of an `sf` object the same as examining the object directly.
 
 ```{r}
 head(lines_Delft)
 ```
 
-### Challenge
+### Challenge 2 (3 minutes)
 
-Explore the attributes associated with the `point_Delft` and `boundary_Delft` spatial objects.
+Explore the attributes associated with the `point_Delft` spatial object.
 
-1. How many attributes does each have?
+1. How many attributes does it have?
 2. What types of leisure points do the points represent? Give three examples.
-3. Which of the following is NOT an attribute of the point_Delft data object?
+3. Which of the following is NOT an attribute of the `point_Delft` data object?
 
   A) location B) leisure C) osm_id
 
@@ -168,11 +173,7 @@ Explore the attributes associated with the `point_Delft` and `boundary_Delft` sp
 ncol(point_Delft)
 ```
 
-```{r}
-ncol(boundary_Delft)
-```
-
-Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can [either] increase the number of rows we want to see[, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways.] Printing the object will also give us the first 10 rows.
+Using the `$` operator already introduced in the morning, we can examine the content of a single variable. We only see two values and `NA`s with the `head()` function, so we can either increase the number of rows we want to see, use the function `na.omit()` to remove `NA`s completely or use the `unique()` function to only see the first occurrence of each distinct value (note that NA will still be included once). This is an example of how in R you can do things in many different ways. Printing the object will also give us the first 10 rows.
 
 ```{r}
 head(point_Delft)
@@ -233,11 +234,11 @@ Now we can plot only the cycleways.
 ```{r}
 ggplot(data = cycleway_Delft) +
   geom_sf() +
-  ggtitle("Slow mobility network in Delft", subtitle = "Cycleways") +
+  labs(title = "Slow mobility network in Delft", subtitle = "Cycleways") +
   coord_sf(datum = st_crs(28992))
 ```
 
-### Challenge
+### Challenge 3 (7 minutes)
 
 1. Create a new object that only contains the motorways in Delft. 
 2. How many features does the new object have?
@@ -245,19 +246,29 @@ ggplot(data = cycleway_Delft) +
 4. Plot the motorways.
 5. Extra: follow the same steps with pedestrian streets. 
 
+Let's first see which value of in the `highway` column holds motorways. There is a value called `motorway`.
+
 ```{r}
 levels(factor(lines_Delft$highway))
 ```
+We extract only the features with the value `motorway`.
 
 ```{r}
 motorway_Delft <- lines_Delft %>% 
   filter(highway == "motorway")
 
-motorway_Delft %>% 
+motorway_Delft
+```
+
+There are `r nrow(motorway_Delft)` features with the value `motorway`.
+
+```{r}
+motorway_Delft_length <- motorway_Delft %>% 
   mutate(length = st_length(.)) %>% 
   select(everything(), geometry) %>%
   summarise(total_length = sum(length))
 ```
+The total length of motorways is `r motorway_Delft_length$total_length`.
 
 ```{r}
 nrow(motorway_Delft)
@@ -266,8 +277,8 @@ nrow(motorway_Delft)
 ```{r}
 ggplot(data = motorway_Delft) + 
   geom_sf(size = 1.5) +
-  ggtitle("Fast mobility network", subtitle = "Motorways") + 
-  coord_sf()
+  labs(title = "Fast mobility network", subtitle = "Motorways") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -285,7 +296,7 @@ nrow(pedestrian_Delft)
 ```{r}
 ggplot() +
   geom_sf(data = pedestrian_Delft) +
-  ggtitle("Slow mobility network", subtitle = "Pedestrian") + 
+  labs(title = "Slow mobility network", subtitle = "Pedestrian") + 
   coord_sf(datum = st_crs(28992))
 ```
 
@@ -299,7 +310,7 @@ Let's say that we want to color different road types with different colors and t
 levels(factor(lines_Delft$highway))
 ```
 
-If we look at all the unique values of the higway field of our street network we see more than 20 values. I will focus on a subset of four values to illustrate the use of distinct colours. We use a piped expression in which we only filter the rows of our data frame that have one of the four given values `"motorway"`, `"primary"`, `"secondary"`, and `"cycleway"`. We also make sure that the highway column is a factor column.
+If we look at all the unique values of the highway field of our street network we see more than 20 values. Let's focus on a subset of four values to illustrate the use of distinct colors. We use a piped expression in which we only filter the rows of our data frame that have one of the four given values `"motorway"`, `"primary"`, `"secondary"`, and `"cycleway"`. We also make sure that the highway column is a factor column.
 
 ```{r}
 road_types <- c("motorway", "primary", "secondary", "cycleway")
@@ -321,9 +332,10 @@ We can use the defined color palette in ggplot.
 ggplot(data = lines_Delft_selection) +
   geom_sf(aes(color = highway)) + 
   scale_color_manual(values = road_colors) +
-  labs(color = 'Road Type') +
-  ggtitle("Road network of Delft", subtitle = "Roads & Cycleways") + 
-  coord_sf()
+  labs(color = 'Road Type',
+       title = "Road network of Delft", 
+       subtitle = "Roads & Cycleways") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 ## Adjust line width
@@ -338,13 +350,15 @@ line_widths <- c(1, 0.75, 0.5, 0.25)
 ggplot(data = lines_Delft_selection) +
   geom_sf(aes(color = highway, size = highway)) +
   scale_color_manual(values = road_colors) +
-  labs(color = 'Road Type') +
+  labs(color = 'Road Type',
+       size = 'Road Type',
+       title = "Mobility network of Delft",
+       subtitle = "Roads & Cycleways") +
   scale_size_manual(values = line_widths) +
-  ggtitle("Mobility network of Delft", subtitle = "Roads & Cycleways") + 
-  coord_sf()
+  coord_sf(datum = st_crs(28992))
 ```
 
-### Challenge
+### Challenge 4
 
 In the example above, we set the line widths to be 1, 0.75, 0.5, and 0.25. In our case line thicknesses are consistent with the hierarchy of the selected road types, but in some cases we might want to show a different hierarchy.
 
@@ -365,10 +379,11 @@ line_width <- c(0.25, 0.75, 0.5, 1)
 
 ```{r}
 ggplot(data = lines_Delft_selection) +
-  geom_sf(aes(size = highway)) +
-  scale_size_manual(values = line_width) +
-  ggtitle("Mobility network of Delft", subtitle = "Roads & Cycleways - Line width varies") + 
-  coord_sf()
+  geom_sf(aes(linewidth = highway)) +
+  scale_linewidth_manual(values = line_width) +
+  labs(title = "Mobility network of Delft",
+       subtitle = "Roads & Cycleways - Line width varies") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 ## Add plot legend
@@ -380,9 +395,9 @@ ggplot(data = lines_Delft_selection) +
   geom_sf(aes(color = highway), size = 1.5) +
   scale_color_manual(values = road_colors) +
   labs(color = 'Road Type') + 
-  ggtitle("Mobility network of Delft", 
-          subtitle = "Roads & Cycleways - Default Legend") + 
-  coord_sf()
+  labs(title = "Mobility network of Delft", 
+       subtitle = "Roads & Cycleways - Default Legend") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -392,9 +407,9 @@ ggplot(data = lines_Delft_selection) +
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
         legend.box.background = element_rect(size = 1)) + 
-  ggtitle("Mobility network of Delft", 
-          subtitle = "Roads & Cycleways - Modified Legend") +
-  coord_sf()
+  labs(title = "Mobility network of Delft", 
+       subtitle = "Roads & Cycleways - Modified Legend") +
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -406,14 +421,15 @@ ggplot(data = lines_Delft_selection) +
   labs(color = 'Road Type') +
   theme(legend.text = element_text(size = 20), 
         legend.box.background = element_rect(size = 1)) + 
-  ggtitle("Mobility network of Delft", 
-          subtitle = "Roads & Cycleways - Modified Legend") +
-  coord_sf()
+  labs(title = "Mobility network of Delft", 
+       subtitle = "Roads & Cycleways - Modified Legend") +
+  coord_sf(datum = st_crs(28992))
 ```
 
-### Challenge 
+### Challenge 5 (5 minutes)
 
 Create a plot that emphasizes only roads where bicycles are allowed. To emphasize this, make the lines where bicycles are not allowed THINNER than the roads where bicycles are allowed. Be sure to add a title and legend to your map. You might consider a color palette that has all bike-friendly roads displayed in a bright color. All other lines can be black.
+
 ```{r}
 class(lines_Delft_selection$highway)
 ```
@@ -430,11 +446,12 @@ lines_Delft_bicycle <- lines_Delft %>%
 # Next, visualise using ggplot
 ggplot(data = lines_Delft) +
   geom_sf() +
-  geom_sf(data = lines_Delft_bicycle, aes(color = highway), size = 2) +
+  geom_sf(data = lines_Delft_bicycle, aes(color = highway), linewidth = 1) +
   scale_color_manual(values = "magenta") +
-  ggtitle("Mobility network in Delft", subtitle = "Roads dedicated to Bikes") +
-  coord_sf()
+  labs(title = "Mobility network in Delft", subtitle = "Roads dedicated to Bikes") +
+  coord_sf(datum = st_crs(28992))
 ```
+### Challenge 6 (5 minutes)
 
 Create a map of the municipal boundaries in the Netherlands using the data located in your data folder: `nl-gemeenten.shp`. Apply a line color to each state using its region value. Add a legend.
 
@@ -450,11 +467,11 @@ levels(factor(municipal_boundaries_NL$ligtInPr_1))
 ```{r}
 ggplot(data = municipal_boundaries_NL) +
   geom_sf(aes(color = ligtInPr_1), size = 1) +
-  ggtitle("Contiguous NL Municipal Boundaries") + 
-  coord_sf()
+  labs(title = "Contiguous NL Municipal Boundaries") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
-# Plot multiple shapefiles (40 + 20 minutes - 15 minutes from plot costomisation)
+# Plot multiple shapefiles (40 + 20 minutes - 15 minutes from plot customisation)
 
 So far we learned how to plot information from a single shapefile and do some plot customization. What if we want to create a more complex plot with many shapefiles and unique symbols that need to be represented clearly in a legend?
 
@@ -467,8 +484,8 @@ ggplot() +
   geom_sf(data = boundary_Delft, fill = "grey", color = "grey") +
   geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) +
   geom_sf(data = point_Delft) +
-  ggtitle("Mobility network of Delft") + 
-  coord_sf()
+  labs(title = "Mobility network of Delft") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 Now let's create a custom legend.
@@ -482,8 +499,8 @@ ggplot() +
   geom_sf(data = point_Delft, aes(fill = leisure), shape = 21) +
   scale_color_manual(values = road_colors, name = "Road Type") + 
   scale_fill_manual(values = leisure_colors, name = "Lesiure Location") + 
-  ggtitle("Mobility network and leisure in Delft") + 
-  coord_sf()
+  labs(title = "Mobility network and leisure in Delft") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -493,13 +510,13 @@ ggplot() +
   geom_sf(data = point_Delft, aes(fill = leisure), shape = 22) +
   scale_color_manual(values = road_colors, name = "Line Type") +
   scale_fill_manual(values = leisure_colors, name = "Leisure Location") +
-  ggtitle("Mobility network and leisure in Delft") + 
-  coord_sf()
+  labs(title = "Mobility network and leisure in Delft") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 We notice that there are quite some playgrounds in the residential parts of Delft, whereas on campus there is a concentration of picnic tables. So that is what our next challenge is about.
 
-### Challenge
+### Challenge 7 (5 minutes)
 
 Create a map of leisure locations only including `playground` and `picnic_table`, with each point colored by the leisure type. Overlay this layer on top of the `lines_Delft` layer (the streets). Create a custom legend that applies line symbols to lines and point symbols to the points.
 
@@ -527,21 +544,21 @@ ggplot() +
      guide = guide_legend(override.aes = list(linetype = "solid", shape = NA))) + 
   scale_fill_manual(name = "Soil Type", values = blue_orange,
      guide = guide_legend(override.aes = list(linetype = "blank", shape = 21, colour = NA))) + 
-  ggtitle("Traffic and leisure") + 
-  coord_sf()
+  labs(title = "Traffic and leisure") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
 ggplot() + 
   geom_sf(data = lines_Delft_selection, aes(color = highway), size = 1) + 
-  geom_sf(data = leisure_locations_selection, aes(fill = leisure, shape = leisure), size = 3) + 
+  geom_sf(data = leisure_locations_selection, aes(fill = leisure, shape = leisure), size = 2) + 
   scale_shape_manual(name = "Leisure Type", values = c(21, 22)) +
   scale_color_manual(name = "Line Type", values = road_colors) + 
   scale_fill_manual(name = "Leisure Type", values = rainbow(15),
      guide = guide_legend(override.aes = list(linetype = "blank", shape = c(21, 22),
      color = "black"))) + 
-  ggtitle("Road network and leisure") + 
-  coord_sf()
+  labs(title = "Road network and leisure") + 
+  coord_sf(datum = st_crs(28992))
 ```
 
 <!-- End of challenge -->
@@ -557,8 +574,8 @@ municipal_boundary_NL <- st_read(here("data","nl-gemeenten.shp"))
 ```{r}
 ggplot() +
   geom_sf(data = municipal_boundary_NL) +
-  ggtitle("Map of Contiguous NL Municipal Boundaries") +
-  coord_sf()
+  labs(title = "Map of Contiguous NL Municipal Boundaries") +
+  coord_sf(datum = st_crs(28992))
 ```
 
 We can add a country boundary layer to make it look nicer. If we specify a thicker line width using size = 2 for the country boundary layer, it will make our map pop!
@@ -569,10 +586,10 @@ country_boundary_NL <- st_read(here("data", "nl-boundary.shp"))
 
 ```{r}
 ggplot() +
-  geom_sf(data = country_boundary_NL, color = "gray18", size = 2) +
+  geom_sf(data = country_boundary_NL, color = "gray18", linewidth = 2) +
   geom_sf(data = municipal_boundary_NL, color = "gray40") +
-  ggtitle("Map of Contiguous NL Municipal Boundaries") +
-  coord_sf()
+  labs(title = "Map of Contiguous NL Municipal Boundaries") +
+  coord_sf(datum = st_crs(28992))
 ```
 
 ```{r}
@@ -580,36 +597,36 @@ ggplot() +
 ```
 
 ```{r}
-st_crs(municipal_boundary_NL)
+st_crs(municipal_boundary_NL)$epsg
 ```
 
 ```{r}
-st_crs(country_boundary_NL)
+st_crs(country_boundary_NL)$epsg
 ```
 
 ```{r}
 boundary_Delft <- st_read(here("data", "delft-boundary.shp"))
-st_crs(boundary_Delft)
+st_crs(boundary_Delft)$epsg
 boundary_Delft <- st_transform(boundary_Delft, 28992)
 ```
 
 ```{r}
 ggplot() +
-  geom_sf(data = country_boundary_NL, size = 2, color = "gray18") +
+  geom_sf(data = country_boundary_NL, linewidth = 2, color = "gray18") +
   geom_sf(data = municipal_boundary_NL, color = "gray40") +
   geom_sf(data = boundary_Delft, color = "purple", fill = "purple") +
-  ggtitle("Map of Contiguous NL Municipal Boundaries") +
-  coord_sf()
+  labs(title = "Map of Contiguous NL Municipal Boundaries") +
+  coord_sf(datum = st_crs(28992))
 ```
 
-### Challenge
+### Challenge 8 (5 minutes)
 
-Create a map of the South Holland as follows:
+Create a map of South Holland as follows:
 
 1. Import and plot `nl-gemeenten.shp`. Adjust line width as necessary.
 2. Layer the boundary of Delft onto the plot.
 3. Add a title.
-4. Add a legend that shows both the privince boundaries (as a line) and the boundary of Delft (as a filled polygon).
+4. Add a legend that shows both the province boundaries (as a line) and the boundary of Delft (as a filled polygon).
 
 ```{r}
 boundary_ZH <- municipal_boundary_NL %>% 
@@ -619,12 +636,12 @@ boundary_ZH <- municipal_boundary_NL %>%
 ```{r}
 ggplot() +
     geom_sf(data = boundary_ZH, aes(color ="color"), show.legend = "line") +
-    scale_color_manual(name = "", labels = "Municipal Boundaries", values = c("color" = "gray18")) +
+    scale_color_manual(name = "", labels = "Municipal Boundaries in South Holland", values = c("color" = "gray18")) +
     geom_sf(data = boundary_Delft, aes(shape = "shape"), color = "purple", fill = "purple") +
     scale_shape_manual(name = "", labels = "Municipality of Delft", values = c("shape" = 19)) +
-    ggtitle("Delft location") +
+    labs(title = "Delft location") +
     theme(legend.background = element_rect(color = NA)) +
-    coord_sf()
+    coord_sf(datum = st_crs(28992))
 ```
 
 <!-- End of challange -->

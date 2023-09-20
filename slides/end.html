@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.285">
+<script src="end_files/libs/clipboard/clipboard.min.js"></script>
+<script src="end_files/libs/quarto-html/tabby.min.js"></script>
+<script src="end_files/libs/quarto-html/popper.min.js"></script>
+<script src="end_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="end_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="end_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="end_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.2.335">
 
-  <meta name="author" content="Aleksandra Wilczynska, Ana Petrović, Ashley Cryan, Claudiu Forgaci, Clémentine Cottineau, Daniele Cannatella, Manuel Garcia Alvarez, Paula Martinez Lavanchy">
+  <meta name="author" content="Aleksandra Wilczynska, Ana Petrović, Ashley Cryan, Claudiu Forgaci, Clémentine Cottineau, Daniele Cannatella, Jérôme Francisco Conceicao, Kyri Janssen, Manuel Garcia Alvarez, Paula Martinez Lavanchy">
   <title>Data Carpentry for Geospatial Data with R</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,19 +19,17 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
   </style>
   <link rel="stylesheet" href="end_files/libs/revealjs/dist/theme/quarto.css" id="theme">
-  <script src="end_files/libs/clipboard/clipboard.min.js"></script>
-  <script src="end_files/libs/quarto-html/tabby.min.js"></script>
-  <script src="end_files/libs/quarto-html/popper.min.js"></script>
-  <script src="end_files/libs/quarto-html/tippy.umd.min.js"></script>
-  <link href="end_files/libs/quarto-html/tippy.css" rel="stylesheet">
-  <link href="end_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet">
-  <link id="quarto-text-highlighting-styles" href="end_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
   <link href="end_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="end_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="end_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -41,7 +45,7 @@
   }
 
   .callout.callout-style-simple { 
-    padding: 0em 0.7em;
+    padding: 0em 0.5em;
     border-left: solid #acacac .3rem;
     border-right: solid 1px silver;
     border-top: solid 1px silver;
@@ -152,8 +156,7 @@
     display: none !important;
   }
 
-  .callout.callout-captioned .callout-body > :last-child,
-  .callout.callout-captioned .callout-body > div > :last-child {
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
     margin-bottom: 0.5rem;
   }
 
@@ -318,28 +321,45 @@
     }
   </style>
 </head>
-<body>
+<body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" class="center">
+<section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Data Carpentry for Geospatial Data with R</h1>
-  <p class="subtitle"><strong>(Pilot)</strong></p>
-  <p class="author">Aleksandra Wilczynska, Ana Petrović, Ashley Cryan, Claudiu Forgaci, Clémentine Cottineau, Daniele Cannatella, Manuel Garcia Alvarez, Paula Martinez Lavanchy</p>
-</section>
+  <p class="subtitle"><strong>Second pilot</strong></p>
 
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Aleksandra Wilczynska, Ana Petrović, Ashley Cryan, Claudiu Forgaci, Clémentine Cottineau, Daniele Cannatella, Jérôme Francisco Conceicao, Kyri Janssen, Manuel Garcia Alvarez, Paula Martinez Lavanchy 
+</div>
+</div>
+</div>
+
+</section>
 <section id="whats-next" class="slide level2">
 <h2>What’s next?</h2>
 <ul>
 <li class="fragment">Workshop material and links to other resources will be shared via email</li>
-<li class="fragment"><a href="https://delft-rcafe.github.io/home/Index.html">R Café</a> - Join the next session on 2 December dedicated to geospatial data</li>
-<li class="fragment"><a href="https://rbanism.github.io/Rbanism/about.html">Rbanism</a> - Scalable GIS workshop in ’23</li>
+<li class="fragment"><a href="https://delft-rcafe.github.io/home/Index.html">R Café</a> - Join the next session on June 20 dedicated to our workshop participants</li>
+<li class="fragment">Join the <a href="https://github.com/Rbanism/scalegis-challenge">Rbanism Scalable GIS challenge</a> - deadline June 22</li>
+<li class="fragment">Join the Rbanism community launch on June 8</li>
 <li class="fragment"><a href="https://www.tudelft.nl/index.php?id=67120&amp;L=1/">DCC</a> and the <a href="https://www.tudelft.nl/en/library/research-data-management/r/training-events/training-for-researchers">TU Delft Library</a> - They are there to help</li>
-<li class="fragment">Give us feedback!</li>
-<li class="fragment">Drinks!</li>
 </ul>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li class="fragment">Give us feedback! <img data-src="post-workshop-survey.png" class="absolute" style="top: 340px; left: 240px; width: 200px; "></li>
+</ul>
+</div><div class="column">
+<ul>
+<li class="fragment">Drinks! Join Rbanism: <img data-src="rbanism-membership.png" class="absolute" style="top: 340px; left: 760px; width: 200px; "></li>
+</ul>
+</div>
+</div>
 <div class="footer footer-default">
-<p>Data Carpentry for Geospatial Data</p>
+
 </div>
 </section>
     </div>
@@ -561,12 +581,15 @@
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -577,13 +600,6 @@
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
@@ -597,8 +613,26 @@
       })();
     </script>
 
-    <script type="application/javascript">
+    <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
       const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
       tabsets.forEach(function(tabset) {
         const tabby = new Tabby('#' + tabset.id);
@@ -617,7 +651,24 @@
         button.classList.add('code-copy-button-checked');
         var currentTitle = button.getAttribute("title");
         button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
         setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
           button.setAttribute("title", currentTitle);
           button.classList.remove('code-copy-button-checked');
         }, 1000);
@@ -647,31 +698,50 @@
       for (var i=0; i<noterefs.length; i++) {
         const ref = noterefs[i];
         tippyHover(ref, function() {
-          let href = ref.getAttribute('href');
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);
           return note.innerHTML;
         });
       }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
       var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
       for (var i=0; i<bibliorefs.length; i++) {
         const ref = bibliorefs[i];
-        const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-        tippyHover(ref, function() {
-          var popup = window.document.createElement('div');
-          cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
-            }
-            popup.appendChild(citeDiv);
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
           });
-          return popup.innerHTML;
-        });
+        }
       }
     });
     </script>
