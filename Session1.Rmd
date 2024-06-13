@@ -163,7 +163,7 @@ here('data')
 We still need to download data for the first part of the workshop. You can do it with the function `download.file()`. We will save it in the `data` folder, where the **raw** data should go. 
 
 ```{r download-files}
-download.file('https://bit.ly/geospatial_data', here('data','gapminder_data.csv'), mode = 'wb')
+download.file('https://bit.ly/geospatial_data', here('data','cbs_statistics_wijk.csv'), mode = 'wb')
 
 ```
 
@@ -365,24 +365,22 @@ For example, here is a figure depicting a data frame comprising a numeric, a cha
 ## Reading data
 
 `read.csv()` is a function used to read coma separated data files (`.csv` format)). There are other functions for files separated with other delimiters. 
-We're gonna read in the `gapminder` data set with information about countries' size, GDP and average life expectancy in different years.
+We're gonna read in the `cbs_stat` data set with information about districts in the five largest cities in the Netherlands (Amsterdam, The Hague, Rotterdam, and Utrecht), such as their size, average income, average house value and population density in different years.
 
 ```{r reading-data}
-gapminder <- read.csv(here('data','gapminder_data.csv') )
-
+cbs_stat <- read.csv("data/cbs_statistics_wijk.csv")
 ```
 
 ## Exploring dataset
-Let’s investigate the `gapminder` data frame a bit; the first thing we should always do is check out what the data looks like.
+Let’s investigate the `cbs_stat` data frame a bit; the first thing we should always do is check out what the data looks like.
 
 It is important to see if all the variables (columns) have the data type that we require. Otherwise we can run into trouble.
 
 ```{r inspecting-data-str}
-str(gapminder) 
-
+str(cbs_stat) 
 ```
 
-We can see that the `gapminder` object is a data.frame with `r nrow(gapminder)` observations/ rows and `r ncol(gapminder)` variables/columns. 
+We can see that the `cbs_stat` object is a data.frame with `r nrow(cbs_stat)` observations/ rows and `r ncol(cbs_stat)` variables/columns. 
 In each line after a `$` sign, we see the name of each column, its type and first few values. 
 
 
@@ -391,13 +389,14 @@ There are multiple ways to explore a data set. Here are just a few examples:
 
 
 ```{r}
-head(gapminder) # see first 5  rows of the data set
+head(cbs_stat) # shows first 6  rows of the data set
 
-summary(gapminder) # gives basic statistical information about each column. Information format differes by data type.
+summary(cbs_stat, na.rm = TRUE) # basic statistical information about each column.
+# Information format differes by data type.
 
-nrow(gapminder) # returns number of rows in a dataset
+nrow(cbs_stat) # returns number of rows in a dataset
 
-ncol(gapminder) # returns number of columns in a dataset
+ncol(cbs_stat) # returns number of columns in a dataset
 
 ```
 
@@ -407,9 +406,9 @@ When you're analyzing a data set, you often need to access its specific columns.
 
 One handy way to access a column is using it's name and a dollar sign `$`: 
 ```{r subset-dollar-sign}
-country_vec <- gapminder$country  # Notation means: From dataset gapminder, give me column country. You can see that the column accessed in this way is just a vector of characters. 
+district_name_vec <- cbs_stat$district_name  # Notation means: From the cbs_stat dataset, give me column district_name. You can see that the column accessed in this way is just a vector of characters. 
 
-head(country_vec)
+head(district_name_vec)
 
 ```
 Note that the calling a column with a `$` sign will return a *vector*, it's not a data frame anymore.
@@ -423,9 +422,9 @@ Let's start manipulating the data.
 First, we will adapt our data set, by keeping only the columns we're interested in, using the `select()` function from the `dplyr` package:
 
 ```{r dplyr-select}
-year_country_gdp <- select(gapminder, year, country, gdpPercap) 
+year_muni_av_inc <- select(cbs_stat, year, district_name, av_inc_rec)
 
-head(year_country_gdp)
+head(year_muni_av_inc)
 
 ```
 
@@ -440,10 +439,10 @@ The `select()` statement with pipe would look like that:
 
 ```{r dplyr-pipe}
 
-year_country_gdp <- gapminder %>% 
-  select(year,country,gdpPercap)
+year_muni_av_inc <- cbs_stat %>%
+  select(year, district_name, av_inc_rec)
 
-head(year_country_gdp)
+head(year_muni_av_inc)
 
 ```
 
@@ -453,30 +452,30 @@ First we define data set, then - with the use of pipe we pass it on to the `sele
 
 We already now how to select only the needed columns. But now, we also want to filter the data set via certain condition with `filter()` function. Instead doing it in separate steps, we can do it all together. 
 
-In the `gapminder` data set, we want to see the results from outside of Europe for the 21st century. 
+In the `cbs_stat` data set, we want to see the results in Amsterdam from 2015. 
 ```{r}
-year_country_gdp_euro <- gapminder %>% 
-  filter(continent != "Europe" & year > 2000) %>% # & operator (AND) - both conditions must be met
-  select(year, country, gdpPercap)
+year_muni_av_inc <- cbs_stat %>%
+  filter(municipality == "Amsterdam" & year >= 2015) %>%
+  select(year, district_name, av_inc_rec)
+# '&' operator (AND) - both conditions must be met
 
-head(year_country_gdp_euro)
+head(year_muni_av_inc)
 ```
-Let's now find all the observations from Eurasia: 
+Let's now find all the observations from Amsterdam and Utrecht in 2022: 
 
 ```{r}
-year_country_gdp_eurasia <- gapminder %>% 
-  filter(continent == "Europe" | continent == "Asia") %>% # I operator (OR) - one of the conditions must be met
-  select(year, country, gdpPercap)
+year_district_inc_amsutr <- cbs_stat %>%
+  filter(municipality == "Amsterdam" | municipality == "Utrecht", year == 2022) %>% # I operator (OR) - one of the conditions must be met
+  select(year, district_name, av_inc_rec)
 
-head(year_country_gdp_eurasia)
+head(year_district_inc_amsutr)
 ```
 
 ###  Exercise 1
 
 <div class="alert alert-info">
 <strong>Challenge</strong>
-Write a single command (which can span multiple lines and includes pipes) that will produce a dataframe that has the African values for life expectancy, country and year, but not for other Continents. How many rows does your data frame have and why?
-
+Write a single command (which can span multiple lines and includes pipes) that will produce a data frame that has the values for average income per income recipient, district name and year, only for The Hague ('s-Gravenhage) and Rotterdam. How many rows does your data frame have and why? 
 
 <strong>Solution</strong>
 
@@ -484,31 +483,30 @@ Write a single command (which can span multiple lines and includes pipes) that w
 
 
 ```{r ex5, class.source="bg-info"}
-year_country_lifeExp_Africa <- gapminder %>%
-                           filter(continent=="Africa"  ) %>%
-                           select(year,country,lifeExp)
+year_district_inc <- cbs_stat %>%
+  filter(municipality == "Rotterdam" | municipality == "'s-Gravenhage") %>%
+  select(year, district_name, av_inc_rec)
+# '|' operator (OR) - one of the conditions must be met
 
-
-nrow(year_country_lifeExp_Africa)
+nrow(year_district_inc)
 ``` 
 
 
 
 ## Group and summarize
-So far, we have created a data frame for one of the continents represented in the `gapminder` data set. But often instead of doing that, we would like to know statistics about all of the continents, presented by group.
+So far, we have created a data frame for some of the municipalities represented in the `cbs_stat` data set. But often instead of doing that, we would like to know statistics about all municipalities, presented by group.
 
 ```{r dplyr-group}
-gapminder %>% # select the dataset
-  group_by(continent) %>% # group by continent
-  summarize(avg_gdpPercap = mean(gdpPercap)) # summarize function creates statistics for the data set 
+cbs_stat %>% # select the dataset
+  group_by(municipality) %>% # group by municipality
+  summarize(av_district_size = mean(land_ha, na.rm = TRUE)) # summarize function creates statistics for the data set 
 
 ```
 
 ### Exercise 2
 <div class="alert alert-info">
 <strong>Challenge</strong> 
-Calculate the average life expectancy per country. Which country has the longest average life expectancy and which has the shortest average life expectancy?
-
+Calculate the average income for the overall nine period for each district in Rotterdam. Which district has the highest average income and which has the lowest average income?
 <strong>Hint</strong> Use `max()`  and `min()` functions to find minimum and maximum.
 
 <strong>Solution</strong>
@@ -517,37 +515,36 @@ Calculate the average life expectancy per country. Which country has the longest
 
 
 ```{r ex6 , class.source="bg-info"}
-lifeExp_bycountry <- gapminder %>%
-   group_by(country) %>%
-   summarize(avg_lifeExp=mean(lifeExp))
+av_inc_bymuni <- cbs_stat %>%
+  filter(municipality == "Rotterdam") %>%
+  group_by(district_name) %>%
+  summarize(av_inc_all_years = mean(av_inc_rec))
 
-
-lifeExp_bycountry %>%
-   filter(avg_lifeExp == min(avg_lifeExp) | avg_lifeExp == max(avg_lifeExp))
+av_inc_bymuni %>%
+   filter(av_inc_all_years == min(av_inc_all_years, na.rm = TRUE) |
+         av_inc_all_years == max(av_inc_all_years, na.rm = TRUE))
 ```
 
 ### Multiple groups and summary variables
 You can also group by multiple columns:
 
 ```{r dplyr-group-multi}
-
-gapminder %>%
-  group_by(continent, year) %>%
-  summarize(avg_gdpPercap = mean(gdpPercap))
+cbs_stat %>%
+  filter(municipality == "Rotterdam") %>%
+  group_by(municipality, year) %>%
+  summarize(municipality_pop_year = sum(pop, na.rm = TRUE))
 
 ```
 
 On top of this, you can also make multiple summaries of those groups:
 ```{r dplyr-summ}
-gdp_pop_bycontinents_byyear <- gapminder %>%
-  group_by(continent,year) %>%
+pop_bymuni_byyear <- cbs_stat %>%
+  group_by(municipality, year) %>%
   summarize(
-    avg_gdpPercap = mean(gdpPercap),
-    sd_gdpPercap = sd(gdpPercap),
     avg_pop = mean(pop),
     sd_pop = sd(pop),
     n_obs = n()
-    )
+  )
 
 ```
 
@@ -555,10 +552,11 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
 
 If you need only a number of observations per group, you can use the `count()` function
 ```{r dplyr-count}
+cbs_stat %>%
+  filter(year == 2022) %>% 
+  group_by(municipality) %>%
+  count()
 
-gapminder %>%
-    group_by(continent) %>%
-    count()
 ```
  
 
@@ -566,12 +564,14 @@ gapminder %>%
 
 Frequently you’ll want to create new columns based on the values in existing columns, for example to do unit conversions, or to find the ratio of values in two columns. For this we’ll use `mutate()`.
 
+
 ```{r dplyr-mutate}
-gapminder_gdp <- gapminder %>%
-  mutate(gdpBillion = gdpPercap*pop/10^9)
+cbs_stat_gdp <- cbs_stat %>%
+  filter(!is.na(av_house_val) & !is.na(house_stock)) %>% 
+  mutate(sum_house_val = av_house_val * house_stock / 10^6) %>% 
+  select(district_name, municipality, sum_house_val)
 
-head(gapminder_gdp)
-
+cbs_stat_gdp
 ```
 
 
@@ -584,12 +584,11 @@ Package `ggplot2` is a powerful plotting system. I will introduce key features o
 
 Fun part about `ggplot` is that you can then add additional layers to the plot providing more information and make it more beautiful. 
 
-First, lets plot distribution of life expectancy in the `gapminder` data set. 
+First, lets plot distribution of life expectancy in the `cbs_stat` data set. 
 
 ```{r ggplot}
-  ggplot(data = gapminder,  aes(x = lifeExp) ) + # aesthetics layer 
+ggplot(data = cbs_stat, aes(x = av_house_val)) + # data and aesthetics layer
   geom_histogram() # geometry layer
-
 ```
 
 You can see that in `ggplot` you use `+` as a pipe, to add layers. Within `ggplot` call, it is the only pipe that will work. 
@@ -598,83 +597,89 @@ But, it is possible to chain operations on a data set with a pipe that we have a
 Let's create another plot, this time only on a subset of observations:
 
 ```{r ggplot-col}
-gapminder %>%  # we select a data set
-  filter(year == 2007 & 
-         continent == 'Americas') %>% # and filter it to keep only one year and one continent
-  ggplot(aes(x = country, y = gdpPercap)) + # we create aesthetics, both x and y axis represent values of  columns
+cbs_stat %>%  # we select a data set
+  filter(year == 2022 & municipality == "Rotterdam") %>% # filter to keep only one year and one municipality
+  ggplot(aes(x = district_name, y = av_house_val)) + # we create aesthetics, both x and y axis represent values of  columns
   geom_col() # we select a column graph as a geometry
 ```
 
-Now, you can iteratively improve how the plot looks like. For example, you might want to flip it, to better display the labels.
+Now, you can iteratively improve how the plot looks like. For example, you might want to flip it, to better display the labels and remove districts with missing values.
 
 ```{r ggplot-coord-flip}
-gapminder %>%  
-  filter(year == 2007, 
-         continent == 'Americas') %>% 
-  ggplot(aes(x = country, y = gdpPercap)) + 
-  geom_col()+ 
-  coord_flip()
+cbs_stat %>%
+  filter(
+    year == 2022,
+    municipality == "Rotterdam",
+    !is.na(av_inc_rec)) %>%
+  ggplot(aes(x = district_name, y = av_inc_rec)) +
+  geom_col() +
+  coord_flip() # flip axes
 ```
 
-One thing you might want to change here is the order in which countries are displayed. It would be easier to compare GDP per capita, if they were showed in order. 
+One thing you might want to change here is the order in which countries are displayed. It would be easier to compare the average income, if they were showed in order. 
 To do that, we need to reorder factor levels (you remember, we've already done this before).
 
-Now the order of the levels will depend on another variable - GDP per capita.
+Now the order of the levels will depend on another variable - the average income (av_inc_rec).
+
+
 
 ```{r ggplot-color}
-gapminder %>%  
-  filter(year == 2007, 
-         continent == 'Americas') %>% 
-  mutate(country = fct_reorder(country, gdpPercap )) %>%
-  ggplot(aes(x = country , y = gdpPercap)) + 
+cbs_stat %>%
+  filter(
+    year == 2022,
+    municipality == "Rotterdam",
+    !is.na(av_inc_rec)) %>%
+  mutate(district_name = fct_reorder(district_name, av_inc_rec)) %>% # reorder factor levels
+  ggplot(aes(x = district_name, y = av_inc_rec)) +
   geom_col() +
   coord_flip()
-
 ```
 
-Let's make things more colorful - let's represent the average life expectancy of a country by color
+Let's make things more colorful - let's represent the average house value of a district by color
 
 ```{r ggplot-colors}
-gapminder %>%  
-  filter(year == 2007, 
-         continent == 'Americas') %>% 
-  mutate(country = fct_reorder(country, gdpPercap )) %>%
-  ggplot(aes(x = country, y = gdpPercap, fill = lifeExp  )) + # fill argument for coloring surfaces, color for points and lines
-  geom_col()+ 
+cbs_stat %>%
+  filter(
+    year == 2022,
+    municipality == "Rotterdam",
+    !is.na(av_inc_rec)) %>%
+  mutate(district_name = fct_reorder(district_name, av_inc_rec)) %>%
+  ggplot(aes(x = district_name,y = av_inc_rec, fill = av_house_val)) + # fill argument for coloring surfaces, color for points and lines
+  geom_col() +
   coord_flip()
-
 
 ```
 
 We can also adapt the color scale. Common choice that is used for its readibility and colorblind-proofness are the pallettes available in the `viridis` package.
 
 ```{r ggplot-colors-adapt}
-plot_c <-
-  gapminder %>%  
-  filter(year == 2007, 
-         continent == 'Americas') %>% 
-  mutate(country = fct_reorder(country, gdpPercap )) %>%
-  ggplot(aes(x = country, y = gdpPercap, fill = lifeExp   )) + 
-  geom_col()+ 
+cbs_stat %>%
+  filter(year == 2022,
+         municipality == "Rotterdam",
+         !is.na(av_inc_rec)) %>%
+  mutate(district_name = fct_reorder(district_name, av_inc_rec)) %>%
+  ggplot(aes(x = district_name,y = av_inc_rec, fill = av_house_val)) +
+  geom_col() +
   coord_flip()+
-  scale_fill_viridis_c() # _c stands for continuous scale 
+  scale_fill_viridis_c() # _c stands for continuous scale
 
 ```
 
-Maybe we don't need that much information about the life expectancy. We only want to know if it's below or above average.
+Maybe we don't need that much information about the average house value.  We only want to know if it's below or above average.
 
 ```{r ggplot-colors-discrete}
 plot_d <-  # this time let's save the plot in the object.
-  gapminder %>%  
-  filter(year == 2007 & 
-         continent == 'Americas') %>% 
-  mutate(country_reordered = fct_reorder(country, gdpPercap ),
-         lifeExpCat = if_else(lifeExp >= mean(lifeExp), 'high', 'low' )
+  cbs_stat %>%
+  filter(year == 2022,
+    municipality == "Rotterdam",
+    !is.na(av_inc_rec)) %>%
+  mutate(district_name = fct_reorder(district_name, av_inc_rec),
+         av_house_val_bin = if_else(av_house_val >= mean(av_house_val), "high", "low")
          ) %>%
-  ggplot(aes(x = country_reordered, y = gdpPercap, fill = lifeExpCat   )) + 
-  geom_col()+ 
-  coord_flip()+
-  scale_fill_manual(values = c('light blue', 'orange')) 
+  ggplot(aes(x = district_name, y = av_inc_rec, fill = av_house_val_bin)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c( "light blue", "orange")) # customize the colors
 
 ```
 
@@ -691,9 +696,9 @@ Let's also give it a title and name the axes:
 ```{r ggplot-titles}
 plot_d <- 
   plot_d +
-  ggtitle('GDP per capita in Americas', subtitle = 'Year 2007') +
-  xlab('Country')+
-  ylab('GDP per capita')
+  ggtitle("Average income per district in Rotterdam", subtitle = "Year 2022") +
+  xlab("District (Wijk)") +
+  ylab("Average income per income recipient (x 1,000 euros)")
 
 plot_d
 ```
@@ -705,7 +710,7 @@ Once we are happy with our plot we can save it in a format of our choice. Rememb
 
 ```{r save-plot}
 ggsave(plot = plot_d, 
-       filename = here('fig_output','plot_americas_2007.pdf') ) # By default, ggsave() saves the last displayed plot, but you can also explicitly name the plot you want to save
+       filename = here("fig_output", "plot_rotterdam_2022.pdf")) # By default, ggsave() saves the last displayed plot, but you can also explicitly name the plot you want to save
 
 ```
 
@@ -721,19 +726,21 @@ We can read that it uses the "size of the current graphics device". That would e
 
 ## Saving the data
 
-Another output of your work you want to save is a cleaned data set. In your analysis, you can then load directly that data set. Say we want to save the data only for Australia:
+Another output of your work you want to save is a cleaned data set. In your analysis, you can then load directly that data set. Say we want to
+save the data only for Amsterdam:
 
 ```{r writing-data}
-gapminder_amr_2007 <-  gapminder %>%  
-  filter(year == 2007 & 
-         continent == 'Americas') %>% 
-  mutate(country_reordered = fct_reorder(country, gdpPercap ),
-         lifeExpCat = if_else(lifeExp >= mean(lifeExp), 'high', 'low' )) 
+cbs_Ams_2022 = cbs_stat %>%
+  filter(year == 2022,
+         municipality == "Amsterdam",
+         !is.na(av_inc_rec)) %>%
+  mutate(district_name = fct_reorder(district_name, av_inc_rec),
+         av_house_val_bin = if_else(av_house_val >= mean(av_house_val), "high", "low"))
 
-write.csv(gapminder_amr_2007, 
-          here('data_output', 'gapminder_americas_2007.csv'), 
-          row.names=FALSE)
-
+write.csv(cbs_Ams_2022,
+  here("data_output", "cbs_statistics_wijk_Amsterdam_2022.csv"),
+  row.names = FALSE
+)
 
 ```
 
